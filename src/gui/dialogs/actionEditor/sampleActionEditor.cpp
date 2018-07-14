@@ -36,7 +36,7 @@
 #include "../../elems/actionEditor/envelopeEditor.h"
 #include "../../elems/actionEditor/muteEditor.h"
 #include "../../elems/actionEditor/noteEditor.h"
-#include "../../elems/actionEditor/gridTool_NEW.h"
+#include "../../elems/actionEditor/gridTool.h"
 #include "sampleActionEditor.h"
 
 
@@ -45,6 +45,7 @@ namespace giada
 gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 	: gdBaseActionEditor(ch)
 {
+#if 0
 	/* container with zoom buttons and the action type selector. Scheme of
 	 * the resizable boxes: |[--b1--][actionType][--b2--][+][-]| */
 
@@ -110,5 +111,6 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 	resizable(viewport);
 
 	show();
+#endif
 }
 } // giada::

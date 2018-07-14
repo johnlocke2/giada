@@ -191,8 +191,6 @@ sourcesCore =                            \
 	src/gui/elems/actionEditor/action.cpp               \
 	src/gui/elems/actionEditor/gridTool.h               \
 	src/gui/elems/actionEditor/gridTool.cpp             \
-	src/gui/elems/actionEditor/gridTool_NEW.h               \
-	src/gui/elems/actionEditor/gridTool_NEW.cpp             \
 	src/gui/elems/mainWindow/mainIO.h          \
 	src/gui/elems/mainWindow/mainIO.cpp        \
 	src/gui/elems/mainWindow/mainMenu.h        \
