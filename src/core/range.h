@@ -2,7 +2,6 @@
  *
  * Giada - Your Hardcore Loopmachine
  *
- *
  * -----------------------------------------------------------------------------
  *
  * Copyright (C) 2010-2018 Giovanni A. Zuliani | Monocasual
@@ -26,30 +25,33 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef GE_BASE_ACTION_EDITOR_H
-#define GE_BASE_ACTION_EDITOR_H
+#ifndef G_RANGE_H
+#define G_RANGE_H
 
 
-#include <FL/Fl_Group.H>
+#include <cassert>
 
 
-class gdActionEditor;
-
-
-class geBaseActionEditor : public Fl_Group
+namespace giada
 {
-protected:
+template<typename T>
+class Range
+{
+private:
 
-	gdActionEditor *pParent;
-
-  void baseDraw(bool clear=true);
+	T m_a;
+	T m_b;
 
 public:
 
-	virtual void updateActions() = 0;
+	Range() : m_a(0), m_b(0) {}
+	Range(T a, T b) : m_a(a), m_b(b) { assert(a < b); }
 
-	geBaseActionEditor(int x, int y, int w, int h, gdActionEditor *pParent);
-	~geBaseActionEditor();
+	T getBegin() const  { return m_a; }
+	T getEnd() const    { return m_b; }
+	T getLength() const { return m_b - m_a; }
 };
+} // giada::
+
 
 #endif

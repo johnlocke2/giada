@@ -14,6 +14,7 @@ sourcesMain = src/main.cpp
 sourcesCore =                            \
 	src/core/const.h                       \
 	src/core/types.h                       \
+	src/core/range.h                       \
 	src/core/channel.h                     \
 	src/core/channel.cpp                   \
 	src/core/sampleChannel.h               \
@@ -116,14 +117,16 @@ sourcesCore =                            \
 	src/gui/dialogs/gd_actionEditor.cpp    \
 	src/gui/dialogs/pluginChooser.h        \
 	src/gui/dialogs/pluginChooser.cpp      \
-	src/gui/dialogs/browser/browserBase.h           \
-	src/gui/dialogs/browser/browserBase.cpp         \
-	src/gui/dialogs/browser/browserDir.h            \
-	src/gui/dialogs/browser/browserDir.cpp          \
-	src/gui/dialogs/browser/browserLoad.h           \
-	src/gui/dialogs/browser/browserLoad.cpp         \
-	src/gui/dialogs/browser/browserSave.h           \
-	src/gui/dialogs/browser/browserSave.cpp         \
+	src/gui/dialogs/actionEditor/baseActionEditor.h   \
+	src/gui/dialogs/actionEditor/baseActionEditor.cpp \
+	src/gui/dialogs/browser/browserBase.h            \
+	src/gui/dialogs/browser/browserBase.cpp          \
+	src/gui/dialogs/browser/browserDir.h             \
+	src/gui/dialogs/browser/browserDir.cpp           \
+	src/gui/dialogs/browser/browserLoad.h            \
+	src/gui/dialogs/browser/browserLoad.cpp          \
+	src/gui/dialogs/browser/browserSave.h            \
+	src/gui/dialogs/browser/browserSave.cpp          \
 	src/gui/dialogs/midiIO/midiOutputBase.h          \
 	src/gui/dialogs/midiIO/midiOutputBase.cpp        \
 	src/gui/dialogs/midiIO/midiOutputSampleCh.h      \
