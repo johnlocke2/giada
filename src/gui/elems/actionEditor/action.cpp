@@ -42,12 +42,11 @@ using namespace giada::m;
 /** TODO - index is useless?
  *  TODO - pass a record::action pointer and let geAction compute values */
 
-geAction::geAction(int X, int Y, int H, int frame_a, unsigned index,
-  gdActionEditor *parent, SampleChannel *ch, bool record, char type)
+geAction::geAction(int X, int Y, int H, int frame_a, unsigned index, 
+	SampleChannel *ch, bool record, char type)
 : Fl_Box     (X, Y, MIN_WIDTH, H),
   selected   (false),
   index      (index),
-  parent     (parent),
   ch         (ch),
   type       (type),
   frame_a    (frame_a),
@@ -74,7 +73,7 @@ geAction::geAction(int X, int Y, int H, int frame_a, unsigned index,
 		recorder::getNextAction(ch->index, G_ACTION_KEYREL, frame_a, &a2);
 		if (a2) {
 			frame_b = a2->frame;
-			w((frame_b - frame_a)/parent->zoom);
+			w((frame_b - frame_a) / static_cast<gdActionEditor*>(window())->zoom);
 		}
 		else
 			gu_log("[geActionEditor] frame_b not found! [%d:???]\n", frame_a);
@@ -174,6 +173,9 @@ int geAction::handle(int e)
 
 void geAction::addAction()
 {
+	/* TODO action still not on screen, window() returns nullptr */
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	/* anatomy of an action
 	 * ____[#######]_____ (a) is the left margin, G_ACTION_KEYPRESS. (b) is
 	 *     a       b      the right margin, the G_ACTION_KEYREL. This is the
@@ -181,16 +183,16 @@ void geAction::addAction()
 	 * (b) is just a graphical and meaningless point. */
 
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
-		recorder::rec(parent->chan->index, G_ACTION_KEYPRESS, frame_a);
-		recorder::rec(parent->chan->index, G_ACTION_KEYREL, frame_a+4096);
+		recorder::rec(ae->chan->index, G_ACTION_KEYPRESS, frame_a);
+		recorder::rec(ae->chan->index, G_ACTION_KEYREL, frame_a+4096);
 		//gu_log("action added, [%d, %d]\n", frame_a, frame_a+4096);
 	}
 	else {
-		recorder::rec(parent->chan->index, parent->getActionType(), frame_a);
+		recorder::rec(ae->chan->index, ae->getActionType(), frame_a);
 		//gu_log("action added, [%d]\n", frame_a);
 	}
 
-  parent->chan->hasActions = true;
+  ae->chan->hasActions = true;
 
 	recorder::sortActions();
 
@@ -203,20 +205,22 @@ void geAction::addAction()
 
 void geAction::delAction()
 {
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	/* if SINGLE_PRESS you must delete both the keypress and the keyrelease
 	 * actions. */
 
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
-		recorder::deleteAction(parent->chan->index, frame_a, G_ACTION_KEYPRESS,
+		recorder::deleteAction(ae->chan->index, frame_a, G_ACTION_KEYPRESS,
       false, &mixer::mutex);
-		recorder::deleteAction(parent->chan->index, frame_b, G_ACTION_KEYREL,
+		recorder::deleteAction(ae->chan->index, frame_b, G_ACTION_KEYREL,
       false, &mixer::mutex);
 	}
 	else
-		recorder::deleteAction(parent->chan->index, frame_a, type, false,
+		recorder::deleteAction(ae->chan->index, frame_a, type, false,
       &mixer::mutex);
 
-  parent->chan->hasActions = recorder::hasActions(parent->chan->index);
+  ae->chan->hasActions = recorder::hasActions(ae->chan->index);
 
 
 	/* restore the initial cursor shape, in case you delete an action and
@@ -235,6 +239,8 @@ void geAction::moveAction(int frame_a)
 	 * SINGLE_PRESS requires two jobs. If frame_a is valid, use that frame
 	 * value. */
 
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	delAction();
 
 	if (frame_a != -1)
@@ -248,14 +254,14 @@ void geAction::moveAction(int frame_a)
 	if (this->frame_a % 2 != 0)
 		this->frame_a++;
 
-	recorder::rec(parent->chan->index, type, this->frame_a);
+	recorder::rec(ae->chan->index, type, this->frame_a);
 
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
 		frame_b = xToFrame_b();
-		recorder::rec(parent->chan->index, G_ACTION_KEYREL, frame_b);
+		recorder::rec(ae->chan->index, G_ACTION_KEYREL, frame_b);
 	}
 
-  parent->chan->hasActions = true;
+  ae->chan->hasActions = true;
 
 	recorder::sortActions();
 }
@@ -266,7 +272,7 @@ void geAction::moveAction(int frame_a)
 
 int geAction::absx()
 {
-	return x() - parent->ac->x();
+	return x() - static_cast<gdActionEditor*>(window())->ac->x();
 }
 
 
@@ -275,7 +281,7 @@ int geAction::absx()
 
 int geAction::xToFrame_a()
 {
-	return (absx()) * parent->zoom;
+	return (absx()) * static_cast<gdActionEditor*>(window())->zoom;
 }
 
 
@@ -284,5 +290,5 @@ int geAction::xToFrame_a()
 
 int geAction::xToFrame_b()
 {
-	return (absx() + w()) * parent->zoom;
+	return (absx() + w()) * static_cast<gdActionEditor*>(window())->zoom;
 }

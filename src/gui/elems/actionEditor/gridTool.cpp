@@ -39,8 +39,8 @@
 using namespace giada::m;
 
 
-geGridTool::geGridTool(int x, int y, gdActionEditor *parent)
-	:	Fl_Group(x, y, 80, 20), parent(parent)
+geGridTool::geGridTool(int x, int y)
+	:	Fl_Group(x, y, 80, 20)
 {
 	gridType = new geChoice(x, y, 40, 20);
 	gridType->add("1");
@@ -76,16 +76,16 @@ geGridTool::~geGridTool()
 /* -------------------------------------------------------------------------- */
 
 
-void geGridTool::cb_changeType(Fl_Widget *w, void *p)  { ((geGridTool*)p)->__cb_changeType(); }
+void geGridTool::cb_changeType(Fl_Widget *w, void *p)  { ((geGridTool*)p)->cb_changeType(); }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void geGridTool::__cb_changeType()
+void geGridTool::cb_changeType()
 {
 	calc();
-	parent->redraw();
+	window()->redraw();
 }
 
 
@@ -132,11 +132,13 @@ void geGridTool::calc()
 	 * that totalWidth = totalFrames / zoom. Then, for each pixel of totalwidth,
 	 * put a concentrate of each block (which is totalFrames / zoom) */
 
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	int  j   = 0;
 	int fpgc = floor(clock::getFramesInBeat() / getValue());  // frames per grid cell
 
-	for (int i=1; i<parent->totalWidth; i++) {   // if i=0, step=0 -> useless cycle
-		int step = parent->zoom*i;
+	for (int i=1; i<ae->totalWidth; i++) {   // if i=0, step=0 -> useless cycle
+		int step = ae->zoom*i;
 		while (j < step && j < clock::getFramesInLoop()) {
 			if (j % fpgc == 0) {
 				points.push_back(i);
@@ -147,7 +149,7 @@ void geGridTool::calc()
 			if (j % clock::getFramesInBar() == 0 && i != 1)
 				bars.push_back(i);
 			if (j == clock::getFramesInLoop() - 1)
-				parent->coverX = i;
+				ae->coverX = i;
 			j++;
 		}
 		j = step;
@@ -156,7 +158,7 @@ void geGridTool::calc()
 	/* fix coverX if == 0, which means G_Mixer.beats == G_MAX_BEATS */
 
 	if (clock::getBeats() == G_MAX_BEATS)
-		parent->coverX = parent->totalWidth;
+		ae->coverX = ae->totalWidth;
 }
 
 
@@ -187,7 +189,7 @@ int geGridTool::getSnapPoint(int v)
 
 int geGridTool::getSnapFrame(int v)
 {
-	v *= parent->zoom;  // transformation pixel -> frame
+	v *= static_cast<gdActionEditor*>(window())->zoom;  // transformation pixel -> frame
 
 	for (int i=0; i<(int)frames.size(); i++) {
 
@@ -216,5 +218,6 @@ int geGridTool::getSnapFrame(int v)
 
 int geGridTool::getCellSize()
 {
-	return (parent->coverX - parent->ac->x()) / clock::getBeats() / getValue();
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+	return (ae->coverX - ae->ac->x()) / clock::getBeats() / getValue();
 }

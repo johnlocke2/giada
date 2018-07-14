@@ -38,12 +38,13 @@
 using namespace giada::m;
 
 
-geNoteEditor::geNoteEditor(int x, int y, gdActionEditor *pParent)
-  : Fl_Scroll(x, y, 200, 422),
-    pParent  (pParent)
+geNoteEditor::geNoteEditor(int x, int y)
+  : Fl_Scroll(x, y, 200, 422)
 {
-	size(pParent->totalWidth, conf::pianoRollH);
-	pianoRoll = new gePianoRoll(x, y, pParent->totalWidth, pParent);
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
+	size(ae->totalWidth, conf::pianoRollH);
+	pianoRoll = new gePianoRoll(x, y, ae->totalWidth);
 }
 
 
@@ -86,5 +87,5 @@ void geNoteEditor::draw()
 
 	fl_color(G_COLOR_GREY_4);
 	fl_line_style(0);
-	fl_rect(x(), y(), pParent->totalWidth, h());
+	fl_rect(x(), y(), static_cast<gdActionEditor*>(window())->totalWidth, h());
 }

@@ -40,12 +40,11 @@ class geNoteEditor : public Fl_Scroll
 {
 private:
 
-	gdActionEditor *pParent;
-	gePianoRoll    *pianoRoll;
+	gePianoRoll* pianoRoll;
 
 public:
 
-	geNoteEditor(int x, int y, gdActionEditor *parent);
+	geNoteEditor(int x, int y);
 	~geNoteEditor();
 	void draw();
 	void updateActions();

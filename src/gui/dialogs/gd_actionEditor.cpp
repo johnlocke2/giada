@@ -73,7 +73,7 @@ gdActionEditor::gdActionEditor(Channel* chan)
 
 	if (chan->type == ChannelType::SAMPLE) {
 	  actionType = new geChoice(8, 8, 80, 20);
-	  gridTool   = new geGridTool(actionType->x()+actionType->w()+4, 8, this);
+	  gridTool   = new geGridTool(actionType->x()+actionType->w()+4, 8);
 		actionType->add("key press");
 		actionType->add("key release");
 		actionType->add("kill chan");
@@ -84,7 +84,7 @@ gdActionEditor::gdActionEditor(Channel* chan)
 		actionType->deactivate();
 	}
 	else {
-		gridTool = new geGridTool(8, 8, this);
+		gridTool = new geGridTool(8, 8);
 	}
 
 		geBox *b1   = new geBox(gridTool->x()+gridTool->w()+4, 8, 300, 20);    // padding actionType - zoomButtons
@@ -104,9 +104,9 @@ gdActionEditor::gdActionEditor(Channel* chan)
 
 		SampleChannel *ch = static_cast<SampleChannel*>(chan);
 
-		ac = new geActionEditor  (scroller->x(), upperArea->y()+upperArea->h()+8, this, ch);
-		mc = new geMuteEditor    (scroller->x(), ac->y()+ac->h()+8, this);
-		vc = new geEnvelopeEditor(scroller->x(), mc->y()+mc->h()+8, this, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
+		ac = new geActionEditor  (scroller->x(), upperArea->y()+upperArea->h()+8, ch);
+		mc = new geMuteEditor    (scroller->x(), ac->y()+ac->h()+8);
+		vc = new geEnvelopeEditor(scroller->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
 		scroller->add(ac);
 		//scroller->add(new geResizerBar(ac->x(), ac->y()+ac->h(), scroller->w(), 8));
 		scroller->add(mc);
@@ -125,7 +125,7 @@ gdActionEditor::gdActionEditor(Channel* chan)
 			ac->deactivate();
 	}
 	else {
-		pr = new geNoteEditor(scroller->x(), upperArea->y()+upperArea->h()+8, this);
+		pr = new geNoteEditor(scroller->x(), upperArea->y()+upperArea->h()+8);
 		scroller->add(pr);
 		/* TODO - avoid magic number 30 for minimum height */
 		scroller->add(new geResizerBar(pr->x(), pr->y()+pr->h(), scroller->w(), 30, 8));

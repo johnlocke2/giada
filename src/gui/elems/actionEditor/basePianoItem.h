@@ -40,14 +40,12 @@ class geBasePianoItem : public Fl_Box
 {
 protected:
 
-  geBasePianoItem(int x, int y, int w, gdActionEditor *pParent);
+  geBasePianoItem(int x, int y, int w);
 
   /* getY
 	 * from a note, return the y position on piano roll */
 
 	int getY(int note);
-
-  gdActionEditor *pParent;
 
   bool selected;
 

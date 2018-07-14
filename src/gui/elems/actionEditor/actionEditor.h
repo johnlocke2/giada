@@ -76,7 +76,7 @@ private:
 
 public:
 
-	geActionEditor(int x, int y, gdActionEditor *pParent, SampleChannel *ch);
+	geActionEditor(int x, int y, SampleChannel *ch);
 	void draw();
 	int  handle(int e);
 	void updateActions();

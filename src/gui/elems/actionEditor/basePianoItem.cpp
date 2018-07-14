@@ -29,9 +29,8 @@
 #include "basePianoItem.h"
 
 
-geBasePianoItem::geBasePianoItem(int x, int y, int w, gdActionEditor *pParent)
+geBasePianoItem::geBasePianoItem(int x, int y, int w)
   : Fl_Box  (x, y, w, gePianoRoll::CELL_H),
-    pParent (pParent),
     selected(false)
 {
 }

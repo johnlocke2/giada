@@ -48,7 +48,7 @@ public:
 
 	virtual void updateActions() = 0;
 
-	geBaseActionEditor(int x, int y, int w, int h, gdActionEditor *pParent);
+	geBaseActionEditor(int x, int y, int w, int h);
 	~geBaseActionEditor();
 };
 

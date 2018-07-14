@@ -41,13 +41,13 @@ using namespace giada::m;
 
 
 gePianoItemOrphaned::gePianoItemOrphaned(int x, int y, int xRel, int yRel,
-  recorder::action action, gdActionEditor* pParent)
-  : geBasePianoItem(x, y, WIDTH, pParent)
+  recorder::action action)
+  : geBasePianoItem(x, y, WIDTH)
 {
   note  = kernelMidi::getB2(action.iValue);
   frame = action.frame;
   event = action.iValue;
-  int newX = xRel + (frame / pParent->zoom);
+  int newX = xRel + (frame / static_cast<gdActionEditor*>(window())->zoom);
   int newY = yRel + getY(note);
   resize(newX, newY, w(), h());
 }
@@ -58,7 +58,7 @@ gePianoItemOrphaned::gePianoItemOrphaned(int x, int y, int xRel, int yRel,
 
 void gePianoItemOrphaned::reposition(int pianoRollX)
 {
-  int newX = pianoRollX + (frame / pParent->zoom);
+  int newX = pianoRollX + (frame / static_cast<gdActionEditor*>(window())->zoom);
   resize(newX, y(), WIDTH, h());
   redraw();
 }
@@ -83,7 +83,9 @@ int gePianoItemOrphaned::handle(int e)
 
 void gePianoItemOrphaned::remove()
 {
-  MidiChannel *ch = static_cast<MidiChannel*>(pParent->chan);
+  gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+  MidiChannel    *ch = static_cast<MidiChannel*>(ae->chan);
+
   recorder::deleteAction(ch->index, frame, G_ACTION_MIDI, true, &mixer::mutex, 
     event, 0.0);
   hide();   // for Windows

@@ -35,24 +35,21 @@
 
 class geChoice;
 class geCheck;
-class gdActionEditor;
 
 
 class geGridTool : public Fl_Group
 {
 private:
 
-  geChoice *gridType;
-	geCheck  *active;
+  geChoice* gridType;
+	geCheck*  active;
 
-	gdActionEditor *parent;
-
-	static void cb_changeType(Fl_Widget *w, void *p);
-	inline void __cb_changeType();
+	static void cb_changeType(Fl_Widget* w, void* p);
+	inline void cb_changeType();
 
 public:
 
-	geGridTool(int x, int y, gdActionEditor *parent);
+	geGridTool(int x, int y);
 	~geGridTool();
 
 	int  getValue();

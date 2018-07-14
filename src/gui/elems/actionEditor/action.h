@@ -40,16 +40,15 @@ class geAction : public Fl_Box
 {
 private:
 
-	bool            selected;
-	unsigned        index;
-  gdActionEditor *parent;   // pointer to parent (geActionEditor)
-	SampleChannel  *ch;
-  char            type;     // type of action
+	bool           selected;
+	unsigned       index;
+	SampleChannel* ch;
+  char           type;     // type of action
 
 public:
 
-	geAction(int x, int y, int h, int frame_a, unsigned index,
-		gdActionEditor *parent, SampleChannel *ch, bool record, char type);
+	geAction(int x, int y, int h, int frame_a, unsigned index, SampleChannel* ch, 
+		bool record, char type);
 	void draw();
 	int  handle(int e);
 	void addAction();

@@ -73,7 +73,7 @@ public:
 	static const int CELL_H      = 18;
 	static const int CELL_W      = 40;
 
-	gePianoRoll(int x, int y, int w, gdActionEditor* pParent);
+	gePianoRoll(int x, int y, int w);
 
 	void draw() override;
 	int  handle(int e) override;

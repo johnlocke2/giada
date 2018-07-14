@@ -88,7 +88,7 @@ private:
 
 public:
 
-	geMuteEditor(int x, int y, gdActionEditor *pParent);
+	geMuteEditor(int x, int y);
 	void draw();
 	int  handle(int e);
 

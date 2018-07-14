@@ -81,8 +81,7 @@ public:
 	static const int HANDLE_WIDTH = 5;
 
 	gePianoItem(int x, int y, int rel_x, int rel_y, 
-		struct giada::m::recorder::action a, struct giada::m::recorder::action b, 
-		gdActionEditor* pParent);
+		struct giada::m::recorder::action a, struct giada::m::recorder::action b);
  
 	void draw() override;
 	int handle(int e) override;

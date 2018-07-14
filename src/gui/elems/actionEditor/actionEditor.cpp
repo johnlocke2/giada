@@ -43,12 +43,14 @@ using namespace giada;
 using namespace giada::m;
 
 
-geActionEditor::geActionEditor(int x, int y, gdActionEditor *pParent, SampleChannel *ch)
-  : geBaseActionEditor(x, y, 200, 40, pParent),
+geActionEditor::geActionEditor(int x, int y, SampleChannel *ch)
+  : geBaseActionEditor(x, y, 200, 40),
     ch                (ch),
     selected          (nullptr)
 {
-	size(pParent->totalWidth, h());
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
+	size(ae->totalWidth, h());
 
 	/* add actions when the window opens. Their position is zoom-based;
 	 * each frame is / 2 because we don't care about stereo infos. */
@@ -59,7 +61,7 @@ geActionEditor::geActionEditor(int x, int y, gdActionEditor *pParent, SampleChan
 		  recorder::action *action = recorder::global.at(i).at(j);
 
       /* Don't show actions:
-      - that don't belong to the displayed channel (!= pParent->chan->index);
+      - that don't belong to the displayed channel (!= ae->chan->index);
       - that are covered by the grey area (> G_Mixer.totalFrames);
       - of type G_ACTION_KILL in a SINGLE_PRESS channel. They cannot be
         recorded in such mode, but they can exist if you change from another
@@ -68,7 +70,7 @@ geActionEditor::geActionEditor(int x, int y, gdActionEditor *pParent, SampleChan
         find the other piece (namely frame_b)
       - not of types G_ACTION_KEYPRESS | G_ACTION_KEYREL | G_ACTION_KILL */
 
-      if ((action->chan != pParent->chan->index)                          ||
+      if ((action->chan != ae->chan->index)                          ||
           (recorder::frames.at(i) > clock::getFramesInLoop())             ||
           (action->type == G_ACTION_KILL && ch->mode == ChannelMode::SINGLE_PRESS)     ||
           (action->type == G_ACTION_KEYREL && ch->mode == ChannelMode::SINGLE_PRESS)   ||
@@ -76,14 +78,13 @@ geActionEditor::geActionEditor(int x, int y, gdActionEditor *pParent, SampleChan
       )
         continue;
 
-			int ax = x + (action->frame / pParent->zoom);
+			int ax = x + (action->frame / ae->zoom);
 			geAction *a = new geAction(
 					ax,               // x
 					y + 4,            // y
 					h() - 8,          // h
 					action->frame,	  // frame_a
 					i,                // n. of recordings
-					pParent,          // pointer to the pParent window
 					ch,               // pointer to SampleChannel
 					false,            // record = false: don't record it, we are just displaying it!
 					action->type);    // type of action
@@ -118,14 +119,16 @@ void geActionEditor::updateActions()
 	 * function shifts the action by a zoom factor. Those singlepress are
 	 * stretched, as well */
 
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	geAction *a;
 	for (int i=0; i<children(); i++) {
 
 		a = (geAction*)child(i);
-		int newX = x() + (a->frame_a / pParent->zoom);
+		int newX = x() + (a->frame_a / ae->zoom);
 
 		if (ch->mode == ChannelMode::SINGLE_PRESS) {
-			int newW = ((a->frame_b - a->frame_a) / pParent->zoom);
+			int newW = ((a->frame_b - a->frame_a) / ae->zoom);
 			if (newW < geAction::MIN_WIDTH)
 				newW = geAction::MIN_WIDTH;
 			a->resize(newX, a->y(), newW, a->h());
@@ -164,6 +167,8 @@ void geActionEditor::draw()
 
 int geActionEditor::handle(int e)
 {
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	int ret = Fl_Group::handle(e);
 
 	/* do nothing if the widget is deactivated. It could happen for loopmode
@@ -197,8 +202,8 @@ int geActionEditor::handle(int e)
 					if (Fl::event_x() < selected->x()+geAction::MIN_WIDTH)
 						aw = geAction::MIN_WIDTH;
 					else
-					if (Fl::event_x() > pParent->coverX)
-						aw = pParent->coverX-selected->x();
+					if (Fl::event_x() > ae->coverX)
+						aw = ae->coverX-selected->x();
 
 					selected->size(aw, ah);
 				}
@@ -229,11 +234,11 @@ int geActionEditor::handle(int e)
 				if (real_x < x())                                  // don't go beyond the left border
 					selected->position(x(), selected->y());
 				else
-				if (real_x+selected->w() > pParent->coverX+x())         // don't go beyond the right border
-					selected->position(pParent->coverX+x()-selected->w(), selected->y());
+				if (real_x+selected->w() > ae->coverX+x())         // don't go beyond the right border
+					selected->position(ae->coverX+x()-selected->w(), selected->y());
 				else {
-					if (pParent->gridTool->isOn()) {
-						int snpx = pParent->gridTool->getSnapPoint(real_x-x()) + x() -1;
+					if (ae->gridTool->isOn()) {
+						int snpx = ae->gridTool->getSnapPoint(real_x-x()) + x() -1;
 						selected->position(snpx, selected->y());
 					}
 					else
@@ -259,7 +264,7 @@ int geActionEditor::handle(int e)
 
 					/* avoid click on grey area */
 
-					if (Fl::event_x() >= pParent->coverX) {
+					if (Fl::event_x() >= ae->coverX) {
 						ret = 1;
 						break;
 					}
@@ -267,10 +272,10 @@ int geActionEditor::handle(int e)
 					/* snap function, if enabled */
 
 					int ax = Fl::event_x();
-					int fx = (ax - x()) * pParent->zoom;
-					if (pParent->gridTool->isOn()) {
-						ax = pParent->gridTool->getSnapPoint(ax-x()) + x() -1;
-						fx = pParent->gridTool->getSnapFrame(ax-x());
+					int fx = (ax - x()) * ae->zoom;
+					if (ae->gridTool->isOn()) {
+						ax = ae->gridTool->getSnapPoint(ax-x()) + x() -1;
+						fx = ae->gridTool->getSnapFrame(ax-x());
 
 						/* with snap=on an action can fall onto another */
 
@@ -286,10 +291,9 @@ int geActionEditor::handle(int e)
 							h()-8,                                // h
 							fx,																		// frame_a
 							recorder::frames.size()-1,            // n. of actions recorded
-							pParent,                              // pParent window pointer
 							ch,                                   // pointer to SampleChannel
 							true,                                 // record = true: record it!
-							pParent->getActionType());            // type of action
+							ae->getActionType());            // type of action
 					add(a);
 					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)ch->guiChannel); // mainWindow update
 					redraw();
@@ -309,7 +313,7 @@ int geActionEditor::handle(int e)
 					a->delAction();
 					remove(a);
 					delete a;
-					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)pParent->chan->guiChannel);
+					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)ae->chan->guiChannel);
 					redraw();
 					ret = 1;
 				}
@@ -383,8 +387,8 @@ int geActionEditor::handle(int e)
 			 * the mouse button the dragging process ends. */
 
 			if (!overlap) {
-				if (pParent->gridTool->isOn()) {
-					int f = pParent->gridTool->getSnapFrame(selected->absx());
+				if (ae->gridTool->isOn()) {
+					int f = ae->gridTool->getSnapFrame(selected->absx());
 					selected->moveAction(f);
 				}
 				else

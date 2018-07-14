@@ -47,8 +47,8 @@ using std::vector;
 using namespace giada;
 
 
-gePianoRoll::gePianoRoll(int X, int Y, int W, gdActionEditor* pParent)
-	: geBaseActionEditor(X, Y, W, 40, pParent)
+gePianoRoll::gePianoRoll(int X, int Y, int W)
+	: geBaseActionEditor(X, Y, W, 40)
 {
 
 	resizable(nullptr);                   // don't resize children (i.e. pianoItem)
@@ -72,10 +72,12 @@ gePianoRoll::gePianoRoll(int X, int Y, int W, gdActionEditor* pParent)
 void gePianoRoll::build()
 {
 	using namespace m::recorder;
+
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 	
 	clear();
 
-	int channel   = pParent->chan->index;
+	int channel   = ae->chan->index;
 	int maxSample = m::clock::getFramesInLoop();
 
 	vector<Composite> actions = c::recorder::getMidiActions(channel, maxSample); 
@@ -90,9 +92,9 @@ void gePianoRoll::build()
 		);
 
 		if (composite.a2.frame != -1)
-			add(new gePianoItem(0, 0, x(), y(), composite.a1, composite.a2, pParent));
+			add(new gePianoItem(0, 0, x(), y(), composite.a1, composite.a2));
 		else
-			add(new gePianoItemOrphaned(0, 0, x(), y(), composite.a1, pParent));
+			add(new gePianoItemOrphaned(0, 0, x(), y(), composite.a1));
 	}
 
 	redraw();
@@ -219,13 +221,15 @@ void gePianoRoll::drawSurface2()
 
 void gePianoRoll::draw()
 {
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	fl_copy_offscreen(x(), y(), CELL_W, h(), surface1, 0, 0);
 
 #if defined(__APPLE__)
-	for (int i=36; i<pParent->totalWidth; i+=36) /// TODO: i < pParent->coverX is faster
+	for (int i=36; i<ae->totalWidth; i+=36) /// TODO: i < ae->coverX is faster
 		fl_copy_offscreen(x()+i, y(), CELL_W, h(), surface2, 1, 0);
 #else
-	for (int i=CELL_W; i<pParent->totalWidth; i+=CELL_W) /// TODO: i < pParent->coverX is faster
+	for (int i=CELL_W; i<ae->totalWidth; i+=CELL_W) /// TODO: i < ae->coverX is faster
 		fl_copy_offscreen(x()+i, y(), CELL_W, h(), surface2, 0, 0);
 #endif
 
@@ -239,13 +243,16 @@ void gePianoRoll::draw()
 
 int gePianoRoll::handle(int e)
 {
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	int ret = Fl_Group::handle(e);
+
 	switch (e) {
 		case FL_PUSH:	{
 
 			/* avoid click on grey area */
 
-			if (Fl::event_x() >= pParent->coverX) {
+			if (Fl::event_x() >= ae->coverX) {
 				ret = 1;
 				break;
 			}
@@ -268,7 +275,7 @@ int gePianoRoll::handle(int e)
 
 				gePianoItem* pianoItem = dynamic_cast<gePianoItem*>(Fl::belowmouse());
 				if (pianoItem == nullptr)
-					recordAction(yToNote(ay-y()), (ax-x()) * pParent->zoom);
+					recordAction(yToNote(ay-y()), (ax-x()) * ae->zoom);
 			}
 			ret = 1;
 			break;
@@ -307,8 +314,10 @@ int gePianoRoll::handle(int e)
 
 void gePianoRoll::recordAction(int note, int frame_a, int frame_b)
 {
-	c::recorder::recordMidiAction(pParent->chan->index, note, frame_a, frame_b);
-	pParent->chan->hasActions = true;
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
+	c::recorder::recordMidiAction(ae->chan->index, note, frame_a, frame_b);
+	ae->chan->hasActions = true;
 	build();
 }
 

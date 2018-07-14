@@ -33,9 +33,10 @@
 #include "baseActionEditor.h"
 
 
-geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h,
-	gdActionEditor *pParent)
-	:	Fl_Group(x, y, w, h), pParent(pParent) {}
+geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h)
+	:	Fl_Group(x, y, w, h) 
+{
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -47,7 +48,9 @@ geBaseActionEditor::~geBaseActionEditor() {}
 /* -------------------------------------------------------------------------- */
 
 
-void geBaseActionEditor::baseDraw(bool clear) {
+void geBaseActionEditor::baseDraw(bool clear)
+{
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	/* clear the screen */
 
@@ -61,13 +64,13 @@ void geBaseActionEditor::baseDraw(bool clear) {
 
 	/* grid drawing, if > 1 */
 
-	if (pParent->gridTool->getValue() > 1) {
+	if (ae->gridTool->getValue() > 1) {
 
 		fl_color(fl_rgb_color(54, 54, 54));
 		fl_line_style(FL_DASH, 0, nullptr);
 
-		for (int i=0; i<(int) pParent->gridTool->points.size(); i++) {
-			int px = pParent->gridTool->points.at(i)+x()-1;
+		for (int i=0; i<(int) ae->gridTool->points.size(); i++) {
+			int px = ae->gridTool->points.at(i)+x()-1;
 			fl_line(px, y()+1, px, y()+h()-2);
 		}
 		fl_line_style(0);
@@ -76,21 +79,21 @@ void geBaseActionEditor::baseDraw(bool clear) {
 	/* bars and beats drawing */
 
 	fl_color(G_COLOR_GREY_4);
-	for (int i=0; i<(int) pParent->gridTool->beats.size(); i++) {
-		int px = pParent->gridTool->beats.at(i)+x()-1;
+	for (int i=0; i<(int) ae->gridTool->beats.size(); i++) {
+		int px = ae->gridTool->beats.at(i)+x()-1;
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
 
 	fl_color(G_COLOR_LIGHT_1);
-	for (int i=0; i<(int) pParent->gridTool->bars.size(); i++) {
-		int px = pParent->gridTool->bars.at(i)+x()-1;
+	for (int i=0; i<(int) ae->gridTool->bars.size(); i++) {
+		int px = ae->gridTool->bars.at(i)+x()-1;
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
 
 	/* cover unused area. Avoid drawing cover if width == 0 (i.e. beats
 	 * are 32) */
 
-	int coverWidth = pParent->totalWidth-pParent->coverX;
+	int coverWidth = ae->totalWidth - ae->coverX;
 	if (coverWidth != 0)
-		fl_rectf(pParent->coverX+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
+		fl_rectf(ae->coverX+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
 }

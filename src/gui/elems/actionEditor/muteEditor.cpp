@@ -45,17 +45,17 @@ extern gdMainWindow *G_MainWin;
 using namespace giada::m;
 
 
-geMuteEditor::geMuteEditor(int x, int y, gdActionEditor *pParent)
- : geBaseActionEditor(x, y, 200, 80, pParent),
+geMuteEditor::geMuteEditor(int x, int y)
+ : geBaseActionEditor(x, y, 200, 80),
    draggedPoint      (-1),
    selectedPoint     (-1)
 {
-	size(pParent->totalWidth, h());
+	size(static_cast<gdActionEditor*>(window())->totalWidth, h());
 	extractPoints();
 }
 
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
 
 
 void geMuteEditor::draw()
@@ -116,27 +116,29 @@ void geMuteEditor::draw()
 	/* last section */
 
 	py = y()+h()-5;
-	fl_line(pxNew+3, py, pParent->coverX+x()-1, py);
+	fl_line(pxNew+3, py, static_cast<gdActionEditor*>(window())->coverX+x()-1, py);
 }
 
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
 
 
 void geMuteEditor::extractPoints()
 {
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	points.clear();
 
 	/* actions are already sorted by recorder::sortActions() */
 
 	for (unsigned i=0; i<recorder::frames.size(); i++) {
 		for (unsigned j=0; j<recorder::global.at(i).size(); j++) {
-			if (recorder::global.at(i).at(j)->chan == pParent->chan->index) {
+			if (recorder::global.at(i).at(j)->chan == ae->chan->index) {
 				if (recorder::global.at(i).at(j)->type & (G_ACTION_MUTEON | G_ACTION_MUTEOFF)) {
 					point p;
 					p.frame = recorder::frames.at(i);
 					p.type  = recorder::global.at(i).at(j)->type;
-					p.x     = p.frame / pParent->zoom;
+					p.x     = p.frame / ae->zoom;
 					points.push_back(p);
 					//gu_log("[geMuteEditor::extractPoints] point found, type=%d, frame=%d\n", p.type, p.frame);
 				}
@@ -146,19 +148,22 @@ void geMuteEditor::extractPoints()
 }
 
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
 
 
-void geMuteEditor::updateActions() {
+void geMuteEditor::updateActions() 
+{
 	for (unsigned i=0; i<points.size(); i++)
-		points.at(i).x = points.at(i).frame / pParent->zoom;
+		points.at(i).x = points.at(i).frame / static_cast<gdActionEditor*>(window())->zoom;
 }
 
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
 
 
-int geMuteEditor::handle(int e) {
+int geMuteEditor::handle(int e) 
+{
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	int ret = 0;
 	int mouseX = Fl::event_x()-x();
@@ -201,7 +206,7 @@ int geMuteEditor::handle(int e) {
 
 					/* click on the grey area leads to nowhere */
 
-					if (mouseX > pParent->coverX) {
+					if (mouseX > ae->coverX) {
 						ret = 1;
 						break;
 					}
@@ -221,12 +226,12 @@ int geMuteEditor::handle(int e) {
 					/* next point odd = mute_on [click here] mute_off
 					 * next point even = mute_off [click here] mute_on */
 
-					int frame_a = mouseX * pParent->zoom;
+					int frame_a = mouseX * ae->zoom;
 					int frame_b = frame_a+2048;
 
-					if (pParent->gridTool->isOn()) {
-						frame_a = pParent->gridTool->getSnapFrame(mouseX);
-						frame_b = pParent->gridTool->getSnapFrame(mouseX + pParent->gridTool->getCellSize());
+					if (ae->gridTool->isOn()) {
+						frame_a = ae->gridTool->getSnapFrame(mouseX);
+						frame_b = ae->gridTool->getSnapFrame(mouseX + ae->gridTool->getCellSize());
 
 						/* with snap=on a point can fall onto another */
 
@@ -250,17 +255,17 @@ int geMuteEditor::handle(int e) {
 					}
 
 					if (nextPoint % 2 != 0) {
-						recorder::rec(pParent->chan->index, G_ACTION_MUTEOFF, frame_a);
-						recorder::rec(pParent->chan->index, G_ACTION_MUTEON,  frame_b);
+						recorder::rec(ae->chan->index, G_ACTION_MUTEOFF, frame_a);
+						recorder::rec(ae->chan->index, G_ACTION_MUTEON,  frame_b);
 					}
 					else {
-						recorder::rec(pParent->chan->index, G_ACTION_MUTEON,  frame_a);
-						recorder::rec(pParent->chan->index, G_ACTION_MUTEOFF, frame_b);
+						recorder::rec(ae->chan->index, G_ACTION_MUTEON,  frame_a);
+						recorder::rec(ae->chan->index, G_ACTION_MUTEOFF, frame_b);
 					}
-          pParent->chan->hasActions = true;
+          ae->chan->hasActions = true;
 					recorder::sortActions();
 
-					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)pParent->chan->guiChannel); // update mainWindow
+					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)ae->chan->guiChannel); // update mainWindow
 					extractPoints();
 					redraw();
 				}
@@ -286,15 +291,15 @@ int geMuteEditor::handle(int e) {
 					//gu_log("selected: a=%d, b=%d >>> frame_a=%d, frame_b=%d\n",
 					//		a, b, points.at(a).frame, points.at(b).frame);
 
-					recorder::deleteAction(pParent->chan->index, points.at(a).frame,
+					recorder::deleteAction(ae->chan->index, points.at(a).frame,
           points.at(a).type, false, &mixer::mutex); // false = don't check vals
-					recorder::deleteAction(pParent->chan->index,	points.at(b).frame,
+					recorder::deleteAction(ae->chan->index,	points.at(b).frame,
           points.at(b).type, false, &mixer::mutex); // false = don't check vals
-          pParent->chan->hasActions = recorder::hasActions(pParent->chan->index);
+          ae->chan->hasActions = recorder::hasActions(ae->chan->index);
 
           recorder::sortActions();
 
-					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)pParent->chan->guiChannel); // update mainWindow
+					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)ae->chan->guiChannel); // update mainWindow
 					extractPoints();
 					redraw();
 				}
@@ -312,19 +317,19 @@ int geMuteEditor::handle(int e) {
 				}
 				else {
 
-					int newFrame = points.at(draggedPoint).x * pParent->zoom;
+					int newFrame = points.at(draggedPoint).x * ae->zoom;
 
-					recorder::deleteAction(pParent->chan->index,
+					recorder::deleteAction(ae->chan->index,
             points.at(draggedPoint).frame, points.at(draggedPoint).type, false,
             &mixer::mutex);  // don't check values
-          pParent->chan->hasActions = recorder::hasActions(pParent->chan->index);
+          ae->chan->hasActions = recorder::hasActions(ae->chan->index);
 
 					recorder::rec(
-							pParent->chan->index,
+							ae->chan->index,
 							points.at(draggedPoint).type,
 							newFrame);
 
-          pParent->chan->hasActions = true;
+          ae->chan->hasActions = true;
 					recorder::sortActions();
 
 					points.at(draggedPoint).frame = newFrame;
@@ -350,22 +355,22 @@ int geMuteEditor::handle(int e) {
 				if (draggedPoint == 0) {
 					prevPoint = 0;
 					nextPoint = points.at(draggedPoint+1).x - 1;
-					if (pParent->gridTool->isOn())
-						nextPoint -= pParent->gridTool->getCellSize();
+					if (ae->gridTool->isOn())
+						nextPoint -= ae->gridTool->getCellSize();
 				}
 				else
 				if ((unsigned) draggedPoint == points.size()-1) {
 					prevPoint = points.at(draggedPoint-1).x + 1;
-					nextPoint = pParent->coverX-x();
-					if (pParent->gridTool->isOn())
-						prevPoint += pParent->gridTool->getCellSize();
+					nextPoint = ae->coverX-x();
+					if (ae->gridTool->isOn())
+						prevPoint += ae->gridTool->getCellSize();
 				}
 				else {
 					prevPoint = points.at(draggedPoint-1).x + 1;
 					nextPoint = points.at(draggedPoint+1).x - 1;
-					if (pParent->gridTool->isOn()) {
-						prevPoint += pParent->gridTool->getCellSize();
-						nextPoint -= pParent->gridTool->getCellSize();
+					if (ae->gridTool->isOn()) {
+						prevPoint += ae->gridTool->getCellSize();
+						nextPoint -= ae->gridTool->getCellSize();
 					}
 				}
 
@@ -375,8 +380,8 @@ int geMuteEditor::handle(int e) {
 				if (mouseX >= nextPoint)
 					points.at(draggedPoint).x = nextPoint;
 				else
-				if (pParent->gridTool->isOn())
-					points.at(draggedPoint).x = pParent->gridTool->getSnapPoint(mouseX)-1;
+				if (ae->gridTool->isOn())
+					points.at(draggedPoint).x = ae->gridTool->getSnapPoint(mouseX)-1;
 				else
 					points.at(draggedPoint).x = mouseX;
 
@@ -392,10 +397,11 @@ int geMuteEditor::handle(int e) {
 }
 
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
 
 
-bool geMuteEditor::pointCollides(int frame) {
+bool geMuteEditor::pointCollides(int frame) 
+{
 	for (unsigned i=0; i<points.size(); i++)
 		if (frame == points.at(i).frame)
 			return true;
@@ -403,7 +409,7 @@ bool geMuteEditor::pointCollides(int frame) {
 }
 
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
 
 
 int geMuteEditor::getSelectedPoint() {

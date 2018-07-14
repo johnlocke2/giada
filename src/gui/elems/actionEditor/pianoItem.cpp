@@ -42,15 +42,17 @@ using namespace giada::m;
 
 
 gePianoItem::gePianoItem(int X, int Y, int rel_x, int rel_y, recorder::action a,
-	recorder::action b, gdActionEditor* pParent)
-	: geBasePianoItem(X, Y, MIN_WIDTH, pParent),
+	recorder::action b)
+	: geBasePianoItem(X, Y, MIN_WIDTH),
 		a              (a),
 		b              (b),
 		changed        (false)
 {
-	int newX = rel_x + (a.frame / pParent->zoom);
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
+	int newX = rel_x + (a.frame / ae->zoom);
 	int newY = rel_y + getY(kernelMidi::getB2(a.iValue));
-	int newW = (b.frame - a.frame) / pParent->zoom;
+	int newW = (b.frame - a.frame) / ae->zoom;
 	resize(newX, newY, newW, h());
 }
 
@@ -60,8 +62,10 @@ gePianoItem::gePianoItem(int X, int Y, int rel_x, int rel_y, recorder::action a,
 
 void gePianoItem::reposition(int pianoRollX)
 {
-	int newX = pianoRollX + (a.frame / pParent->zoom);
-	int newW = ((b.frame - a.frame) / pParent->zoom);
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
+	int newX = pianoRollX + (a.frame / ae->zoom);
+	int newW = ((b.frame - a.frame) / ae->zoom);
 	if (newW < MIN_WIDTH)
 		newW = MIN_WIDTH;
 	resize(newX, y(), newW, h());
@@ -115,7 +119,9 @@ void gePianoItem::draw()
 
 void gePianoItem::removeAction()
 {
-	MidiChannel* ch = static_cast<MidiChannel*>(pParent->chan);
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+	MidiChannel*    ch = static_cast<MidiChannel*>(ae->chan);
+
 	recorder::deleteAction(ch->index, a.frame, G_ACTION_MIDI, true,
 		&mixer::mutex, a.iValue, 0.0);
 	recorder::deleteAction(ch->index, b.frame, G_ACTION_MIDI, true,
@@ -134,6 +140,8 @@ void gePianoItem::removeAction()
 
 int gePianoItem::handle(int e)
 {
+	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+
 	int ret = 0;
 
 	switch (e) {
@@ -194,7 +202,7 @@ int gePianoItem::handle(int e)
 			changed = true;
 
 			geNoteEditor *pr = static_cast<geNoteEditor*>(parent());
-			int coverX     = pParent->coverX + pr->x(); // relative coverX
+			int coverX     = ae->coverX + pr->x(); // relative coverX
 			int nx, ny, nw;
 
 			if (onLeftEdge) {
@@ -232,8 +240,8 @@ int gePianoItem::handle(int e)
 
 				/* snapping */
 
-				if (pParent->gridTool->isOn())
-					nx = pParent->gridTool->getSnapPoint(nx-pr->x()) + pr->x() - 1;
+				if (ae->gridTool->isOn())
+					nx = ae->gridTool->getSnapPoint(nx-pr->x()) + pr->x() - 1;
 
 				position(nx, y());
 			}
@@ -262,8 +270,8 @@ int gePianoItem::handle(int e)
 			if (changed) {
 				removeAction();
 				int note    = pianoRoll->yToNote(getRelY());
-				int frame_a = getRelX() * pParent->zoom;
-				int frame_b = (getRelX()+w()) * pParent->zoom;
+				int frame_a = getRelX() * ae->zoom;
+				int frame_b = (getRelX()+w()) * ae->zoom;
 				pianoRoll->recordAction(note, frame_a, frame_b);
 				changed = false;
 			}

@@ -92,8 +92,7 @@ class geEnvelopeEditor : public geBaseActionEditor
 
 public:
 
-	geEnvelopeEditor(int x, int y, gdActionEditor *pParent, int type, int range,
-    const char *l);
+	geEnvelopeEditor(int x, int y, int type, int range, const char* l);
 	~geEnvelopeEditor();
 
 	/* addPoint
