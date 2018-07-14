@@ -117,8 +117,10 @@ sourcesCore =                            \
 	src/gui/dialogs/gd_actionEditor.cpp    \
 	src/gui/dialogs/pluginChooser.h        \
 	src/gui/dialogs/pluginChooser.cpp      \
-	src/gui/dialogs/actionEditor/baseActionEditor.h   \
-	src/gui/dialogs/actionEditor/baseActionEditor.cpp \
+	src/gui/dialogs/actionEditor/baseActionEditor.h     \
+	src/gui/dialogs/actionEditor/baseActionEditor.cpp   \
+	src/gui/dialogs/actionEditor/sampleActionEditor.h   \
+	src/gui/dialogs/actionEditor/sampleActionEditor.cpp \
 	src/gui/dialogs/browser/browserBase.h            \
 	src/gui/dialogs/browser/browserBase.cpp          \
 	src/gui/dialogs/browser/browserDir.h             \
@@ -189,6 +191,8 @@ sourcesCore =                            \
 	src/gui/elems/actionEditor/action.cpp               \
 	src/gui/elems/actionEditor/gridTool.h               \
 	src/gui/elems/actionEditor/gridTool.cpp             \
+	src/gui/elems/actionEditor/gridTool_NEW.h               \
+	src/gui/elems/actionEditor/gridTool_NEW.cpp             \
 	src/gui/elems/mainWindow/mainIO.h          \
 	src/gui/elems/mainWindow/mainIO.cpp        \
 	src/gui/elems/mainWindow/mainMenu.h        \

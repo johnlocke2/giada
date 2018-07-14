@@ -47,7 +47,6 @@
 
 
 using std::string;
-using namespace giada::m;
 
 
 namespace giada
@@ -58,6 +57,8 @@ gdBaseActionEditor::gdBaseActionEditor(Channel* ch)
 		zoom     (100),
 		usedWidth(0)
 {
+	using namespace giada::m;
+
 	if (conf::actionEditorW) {
 		resize(conf::actionEditorX, conf::actionEditorY, conf::actionEditorW, conf::actionEditorH);
 		zoom = conf::actionEditorZoom;
@@ -72,6 +73,8 @@ gdBaseActionEditor::gdBaseActionEditor(Channel* ch)
 
 gdBaseActionEditor::~gdBaseActionEditor()
 {
+	using namespace giada::m;
+
 	conf::actionEditorX = x();
 	conf::actionEditorY = y();
 	conf::actionEditorW = w();
@@ -94,6 +97,8 @@ void gdBaseActionEditor::cb_zoomOut(Fl_Widget *w, void *p) { ((gdBaseActionEdito
 
 void gdBaseActionEditor::update()
 {
+	using namespace giada::m;
+
 	totalWidth = (int) ceilf(clock::getFramesInSeq() / (float) zoom);
 	if (totalWidth < viewport->w()) {
 		totalWidth = viewport->w();

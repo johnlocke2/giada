@@ -34,13 +34,12 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Scroll.H>
 #include "../../../core/types.h"
-#include "../../../core/range.h"
 #include "../window.h"
 
 
 class Channel;
 class geChoice;
-class geGridTool;
+class geGridTool_NEW;
 class geButton;
 class geButton;
 class geScroll;
@@ -54,7 +53,9 @@ namespace giada
 {
 class gdBaseActionEditor : public gdWindow
 {
-private:
+protected:
+
+	gdBaseActionEditor(Channel* ch);
 
 	static void cb_zoomIn(Fl_Widget* w, void* p);
 	static void cb_zoomOut(Fl_Widget* w, void* p);
@@ -64,10 +65,6 @@ private:
 
 	void update();
 
-protected:
-
-	gdBaseActionEditor(Channel* ch);
-	
 public:
 
 	virtual ~gdBaseActionEditor();
@@ -78,7 +75,7 @@ public:
 	int handle(int e) override;
 
 	geChoice*   actionType;
-	geGridTool* gridTool;
+	geGridTool_NEW* gridTool;
 	geButton*   zoomIn;
 	geButton*   zoomOut;
 	geScroll*   viewport;       // widget container
