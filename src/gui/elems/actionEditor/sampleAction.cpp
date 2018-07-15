@@ -30,11 +30,12 @@
 #include "../../../core/mixer.h"
 #include "../../../core/sampleChannel.h"
 #include "../../../utils/log.h"
-#include "../../dialogs/gd_actionEditor.h"
+#include "../../dialogs/actionEditor/baseActionEditor.h"
 #include "sampleActionEditor.h"
 #include "sampleAction.h"
 
 
+using std::vector;
 using namespace giada;
 using namespace giada::m;
 
@@ -42,49 +43,19 @@ using namespace giada::m;
 /** TODO - index is useless?
  *  TODO - pass a record::action pointer and let geSampleAction compute values */
 
-geSampleAction::geSampleAction(int X, int Y, int H, int frame_a, unsigned index, 
-	SampleChannel *ch, bool record, char type)
-: Fl_Box     (X, Y, MIN_WIDTH, H),
+geSampleAction::geSampleAction(int X, int Y, int W, int H, const SampleChannel* ch)
+: Fl_Box     (X, Y, W, H),
   selected   (false),
-  index      (index),
   ch         (ch),
-  type       (type),
-  frame_a    (frame_a),
   onRightEdge(false),
   onLeftEdge (false)
 {
-	/* bool 'record' defines how to understand the action.
-	 * record = false: don't record it, just show it. It happens when you
-	 * open the editor with some actions to be shown.
-	 *
-	 * record = true: record it AND show it. It happens when you click on
-	 * an empty area in order to add a new actions. First you record it
-	 * (addAction()) then you show it (FLTK::Draw()) */
-
-	if (record)
-		addAction();
-
-	/* in order to show a singlepress action we must compute the frame_b. We
-	 * do that after the possible recording, otherwise we don't know which
-	 * key_release is associated. */
-
-	if (ch->mode == ChannelMode::SINGLE_PRESS && type == G_ACTION_KEYPRESS) {
-		recorder::action *a2 = nullptr;
-		recorder::getNextAction(ch->index, G_ACTION_KEYREL, frame_a, &a2);
-		if (a2) {
-			frame_b = a2->frame;
-			w((frame_b - frame_a) / static_cast<gdActionEditor*>(window())->zoom);
-		}
-		else
-			gu_log("[geActionEditor] frame_b not found! [%d:???]\n", frame_a);
-
-	/* a singlepress action narrower than 8 pixel is useless. So check it.
-	 * Warning: if an action is 8 px narrow, it has no body space to drag
-	 * it. It's up to the user to zoom in and drag it. */
+		/* A singlepress action narrower than 8 pixel is useless. So check it. 
+		Warning: if an action is 8 px narrow, it has no body space to drag it. It's 
+		up to the user to zoom in and drag it. */
 
 		if (w() < MIN_WIDTH)
 			size(MIN_WIDTH, h());
-	}
 }
 
 
@@ -173,6 +144,7 @@ int geSampleAction::handle(int e)
 
 void geSampleAction::addAction()
 {
+#if 0
 	/* TODO action still not on screen, window() returns nullptr */
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
@@ -197,6 +169,7 @@ void geSampleAction::addAction()
 	recorder::sortActions();
 
 	index++; // important!
+#endif
 }
 
 
@@ -205,6 +178,7 @@ void geSampleAction::addAction()
 
 void geSampleAction::delAction()
 {
+#if 0
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	/* if SINGLE_PRESS you must delete both the keypress and the keyrelease
@@ -227,6 +201,7 @@ void geSampleAction::delAction()
 	 * the double arrow (for resizing) is displayed */
 
 	fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK);
+#endif
 }
 
 
@@ -235,6 +210,7 @@ void geSampleAction::delAction()
 
 void geSampleAction::moveAction(int frame_a)
 {
+#if 0
 	/* easy one: delete previous action and record the new ones. As usual,
 	 * SINGLE_PRESS requires two jobs. If frame_a is valid, use that frame
 	 * value. */
@@ -264,6 +240,7 @@ void geSampleAction::moveAction(int frame_a)
   ae->chan->hasActions = true;
 
 	recorder::sortActions();
+#endif
 }
 
 
@@ -272,7 +249,7 @@ void geSampleAction::moveAction(int frame_a)
 
 int geSampleAction::absx()
 {
-	return x() - static_cast<gdActionEditor*>(window())->ac->x();
+	//return x() - static_cast<gdActionEditor*>(window())->ac->x();
 }
 
 
@@ -281,7 +258,7 @@ int geSampleAction::absx()
 
 int geSampleAction::xToFrame_a()
 {
-	return (absx()) * static_cast<gdActionEditor*>(window())->zoom;
+	//return (absx()) * static_cast<gdActionEditor*>(window())->zoom;
 }
 
 
@@ -290,5 +267,5 @@ int geSampleAction::xToFrame_a()
 
 int geSampleAction::xToFrame_b()
 {
-	return (absx() + w()) * static_cast<gdActionEditor*>(window())->zoom;
+	//return (absx() + w()) * static_cast<gdActionEditor*>(window())->zoom;
 }

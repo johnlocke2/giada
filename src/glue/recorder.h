@@ -33,6 +33,7 @@
 #include "../core/recorder.h"
 
 
+class SampleChannel;
 class geChannel;
 
 
@@ -51,12 +52,21 @@ size. This function is designed for the Piano Roll (not for live recording). */
 
 void recordMidiAction(int chan, int note, int frame_a, int frame_b=0);
 
+void recordSampleAction(const SampleChannel* ch, int type, int frame);
+
 /* getMidiActions
 Returns a list of Composite actions, ready to be displayed in a MIDI note
 editor as pairs of NoteOn+NoteOff. */
 
-std::vector<giada::m::recorder::Composite> getMidiActions(int channel, 
+std::vector<m::recorder::Composite> getMidiActions(int channel, 
 	int frameLimit);
+
+/* getSampleActions
+Returns a list of Composite actions, ready to be displayed in a Sample Action
+Editor. If actions are not keypress+keyrelease combos, the second action in
+the Composite struct if left empty (with action2.frame = -1). */
+
+std::vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch);
 
 }}} // giada::c::recorder::
 

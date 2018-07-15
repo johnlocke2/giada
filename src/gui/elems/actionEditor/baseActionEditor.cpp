@@ -26,11 +26,13 @@
 
 
 #include <FL/fl_draw.H>
-#include "../../../core/mixer.h"
 #include "../../../core/const.h"
-#include "../../dialogs/gd_actionEditor.h"
+#include "../../dialogs/actionEditor/baseActionEditor.h"
 #include "gridTool.h"
 #include "baseActionEditor.h"
+
+
+using namespace giada;
 
 
 geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h)
@@ -42,27 +44,21 @@ geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h)
 /* -------------------------------------------------------------------------- */
 
 
-geBaseActionEditor::~geBaseActionEditor() {}
-
-
-/* -------------------------------------------------------------------------- */
-
-
 void geBaseActionEditor::baseDraw(bool clear)
 {
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	/* clear the screen */
+	/* Clear the screen. */
 
 	if (clear)
 		fl_rectf(x(), y(), w(), h(), G_COLOR_GREY_1);
 
-	/* draw the container */
+	/* Draw the outer container. */
 
 	fl_color(G_COLOR_GREY_4);
 	fl_rect(x(), y(), w(), h());
 
-	/* grid drawing, if > 1 */
+	/* Grid drawing, if > 1. */
 
 	if (ae->gridTool->getValue() > 1) {
 
@@ -76,7 +72,7 @@ void geBaseActionEditor::baseDraw(bool clear)
 		fl_line_style(0);
 	}
 
-	/* bars and beats drawing */
+	/* Bars and beats drawing. */
 
 	fl_color(G_COLOR_GREY_4);
 	for (int i=0; i<(int) ae->gridTool->beats.size(); i++) {
@@ -90,10 +86,9 @@ void geBaseActionEditor::baseDraw(bool clear)
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
 
-	/* cover unused area. Avoid drawing cover if width == 0 (i.e. beats
-	 * are 32) */
+	/* Cover unused area. Avoid drawing cover if width == 0 (i.e. beats are 32). */
 
-	int coverWidth = ae->totalWidth - ae->coverX;
+	int coverWidth = ae->fullWidth - ae->loopWidth;
 	if (coverWidth != 0)
-		fl_rectf(ae->coverX+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
+		fl_rectf(ae->loopWidth+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
 }

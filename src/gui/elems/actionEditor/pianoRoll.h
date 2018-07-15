@@ -78,13 +78,9 @@ public:
 	void draw() override;
 	int  handle(int e) override;
 
-  /* updateActions
-  Repositions existing actions after a zoom gesture. */
-  
-	void updateActions() override;
+	void rebuild() override;
 
 	void recordAction(int note, int frame_a, int frame_b=0);
-
 	int yToNote(int y);
 };
 

@@ -122,6 +122,7 @@ int geGridTool::getValue()
 
 void geGridTool::calc()
 {
+#if 0
 	points.clear();
 	frames.clear();
 	bars.clear();
@@ -159,6 +160,7 @@ void geGridTool::calc()
 
 	if (clock::getBeats() == G_MAX_BEATS)
 		ae->coverX = ae->totalWidth;
+#endif
 }
 
 

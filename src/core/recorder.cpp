@@ -670,6 +670,7 @@ vector<action*> getActionsOnFrame(int frame)
 
 void forEachAction(std::function<void(const action*)> f)
 {
+
 	for (const vector<action*> actions : recorder::global)
 		for (const action* action : actions)
 			f(action);

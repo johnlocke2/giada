@@ -33,23 +33,20 @@
 #include <FL/Fl_Group.H>
 
 
-class gdActionEditor;
-
-
 class geBaseActionEditor : public Fl_Group
 {
 protected:
-
-	gdActionEditor *pParent;
 
   void baseDraw(bool clear=true);
 
 public:
 
-	virtual void updateActions() = 0;
-
 	geBaseActionEditor(int x, int y, int w, int h);
-	~geBaseActionEditor();
+
+  /* updateActions
+  Rebuild the actions widgets from scratch. */
+  
+	virtual void rebuild() = 0;
 };
 
 #endif

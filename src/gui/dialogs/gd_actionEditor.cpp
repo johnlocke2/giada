@@ -179,6 +179,7 @@ void gdActionEditor::cb_zoomOut(Fl_Widget *w, void *p) { ((gdActionEditor*)p)->_
 
 void gdActionEditor::__cb_zoomIn()
 {
+#if 0
 	/* zoom 50: empirical value, to avoid a totalWidth > 16 bit signed
 	 * (32767 max), unsupported by FLTK 1.3.x */
 
@@ -211,6 +212,7 @@ void gdActionEditor::__cb_zoomIn()
 
 	gridTool->calc();
 	scroller->redraw();
+#endif
 }
 
 
@@ -219,6 +221,7 @@ void gdActionEditor::__cb_zoomIn()
 
 void gdActionEditor::__cb_zoomOut()
 {
+#if 0
 	zoom *= 2;
 
 	update();
@@ -247,6 +250,7 @@ void gdActionEditor::__cb_zoomOut()
 
 	gridTool->calc();
 	scroller->redraw();
+#endif
 }
 
 

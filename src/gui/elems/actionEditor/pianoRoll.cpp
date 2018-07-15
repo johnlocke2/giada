@@ -333,8 +333,9 @@ int gePianoRoll::yToNote(int y)
 /* -------------------------------------------------------------------------- */
 
 
-void gePianoRoll::updateActions()
+void gePianoRoll::rebuild()
 {
+	/* TODO wrong, call build */
 	for (int k=0; k<children(); k++)
 		static_cast<geBasePianoItem*>(child(k))->reposition(x());
 }

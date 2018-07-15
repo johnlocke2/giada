@@ -28,30 +28,37 @@
 #include <FL/fl_draw.H>
 #include "../../../core/clock.h"
 #include "../../../core/sampleChannel.h"
+#include "../../../glue/recorder.h"
 #include "../../dialogs/gd_mainWindow.h"
-#include "../../dialogs/gd_actionEditor.h"
+#include "../../dialogs/actionEditor/baseActionEditor.h"
 #include "../mainWindow/keyboard/keyboard.h"
 #include "gridTool.h"
 #include "sampleAction.h"
 #include "sampleActionEditor.h"
 
 
-extern gdMainWindow *G_MainWin;
+extern gdMainWindow* G_MainWin;
 
 
+using std::vector;
 using namespace giada;
 using namespace giada::m;
 
 
-geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel *ch)
+geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
   : geBaseActionEditor(x, y, 200, 40),
     ch                (ch),
     selected          (nullptr)
 {
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+	rebuild();
 
-	size(ae->totalWidth, h());
+	/* If channel is LOOP_ANY, deactivate it: a loop mode channel cannot hold 
+	keypress/keyrelease actions. */
+	
+	if (ch->isAnyLoopMode())
+		deactivate();
 
+#if 0
 	/* add actions when the window opens. Their position is zoom-based;
 	 * each frame is / 2 because we don't care about stereo infos. */
 
@@ -92,6 +99,7 @@ geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel *ch)
 		}
 	}
 	end(); // mandatory when you add widgets to a fl_group, otherwise mega malfunctions
+#endif
 }
 
 
@@ -113,29 +121,33 @@ geSampleAction *geSampleActionEditor::getSelectedAction()
 /* -------------------------------------------------------------------------- */
 
 
-void geSampleActionEditor::updateActions()
+void geSampleActionEditor::rebuild()
 {
-	/* when zooming, don't delete and re-add actions, just MOVE them. This
-	 * function shifts the action by a zoom factor. Those singlepress are
-	 * stretched, as well */
+	namespace mr = m::recorder;
+	namespace cr = c::recorder;
 
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	geSampleAction *a;
-	for (int i=0; i<children(); i++) {
+	/* Remove all existing actions and set a new width, according to the current
+	zoom level. */
 
-		a = (geSampleAction*)child(i);
-		int newX = x() + (a->frame_a / ae->zoom);
+	clear();
+	size(ae->fullWidth, h());
 
-		if (ch->mode == ChannelMode::SINGLE_PRESS) {
-			int newW = ((a->frame_b - a->frame_a) / ae->zoom);
-			if (newW < geSampleAction::MIN_WIDTH)
-				newW = geSampleAction::MIN_WIDTH;
-			a->resize(newX, a->y(), newW, a->h());
-		}
-		else
-			a->resize(newX, a->y(), geSampleAction::MIN_WIDTH, a->h());
+	vector<mr::Composite> comps = cr::getSampleActions(ch);
+
+	for (mr::Composite comp : comps) {
+printf("Action [%d, %d)\n", comp.a1.frame, comp.a2.frame);
+		Pixel px = ae->frameToPixel(comp.a1.frame);
+		Pixel py = y() + 4;
+		Pixel pw = 0;
+		Pixel ph = h() - 8;
+		if (comp.a2.frame != -1)
+				pw = ae->frameToPixel(comp.a2.frame - comp.a1.frame);
+		add(new geSampleAction(px, py, pw, ph, ch));
 	}
+
+	redraw();
 }
 
 
@@ -144,19 +156,19 @@ void geSampleActionEditor::updateActions()
 
 void geSampleActionEditor::draw()
 {
-	/* draw basic boundaries (+ beat bars) and hide the unused area. Then
-	 * draw the children (the actions) */
+	/* Draw basic boundaries (+ beat bars) and hide the unused area. Then draw 
+	children (the actions). */
 
 	baseDraw();
 
-	/* print label */
+	/* Print label. */
 
 	fl_color(G_COLOR_GREY_4);
 	fl_font(FL_HELVETICA, 12);
 	if (active())
-		fl_draw("start/stop", x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT | FL_ALIGN_CENTER));  /// FIXME h() is too much!
+		fl_draw("start/stop", x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT | FL_ALIGN_CENTER));
 	else
-		fl_draw("start/stop (disabled)", x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT | FL_ALIGN_CENTER));  /// FIXME h() is too much!
+		fl_draw("start/stop (disabled)", x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT | FL_ALIGN_CENTER));
 
 	draw_children();
 }
@@ -167,6 +179,27 @@ void geSampleActionEditor::draw()
 
 int geSampleActionEditor::handle(int e)
 {
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+
+	switch (e) {
+		case FL_PUSH: {
+			if (Fl::event_button1()) {  // Left
+				Frame f = ae->pixelToFrame(Fl::event_x() - x());
+				c::recorder::recordSampleAction(ch, ae->getActionType(), f);
+				rebuild();
+			}
+			else
+			if (Fl::event_button3()) {  // Right
+			}
+			return 1;
+		}
+
+		default:
+			return Fl_Widget::handle(e);
+	}
+
+
+#if 0
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	int ret = Fl_Group::handle(e);
@@ -399,8 +432,9 @@ int geSampleActionEditor::handle(int e)
 			break;
 		}
 	}
-
 	return ret;
+#endif
+
 }
 
 

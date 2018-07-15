@@ -38,7 +38,6 @@ class SampleChannel;
 
 class geSampleActionEditor : public geBaseActionEditor
 {
-
 private:
 
 	SampleChannel* ch;
@@ -76,10 +75,12 @@ private:
 
 public:
 
-	geSampleActionEditor(int x, int y, SampleChannel *ch);
-	void draw();
-	int  handle(int e);
-	void updateActions();
+	geSampleActionEditor(int x, int y, SampleChannel* ch);
+
+	void draw() override;
+	int  handle(int e) override;
+
+	void rebuild() override;
 };
 
 

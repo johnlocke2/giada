@@ -96,7 +96,7 @@ public:
 	 * calculates new points affected by the zoom. Call this one after
 	 * each zoom update. */
 
-	void updateActions();
+	void rebuild();
 };
 
 #endif

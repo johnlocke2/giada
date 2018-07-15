@@ -25,6 +25,7 @@
  * -------------------------------------------------------------------------- */
 
 
+#include <cassert>
 #include "../gui/dialogs/gd_warnings.h"
 #include "../gui/elems/mainWindow/keyboard/channel.h"
 #include "../gui/elems/mainWindow/keyboard/sampleChannel.h"
@@ -33,6 +34,7 @@
 #include "../core/kernelMidi.h"
 #include "../core/channel.h"
 #include "../core/recorder.h"
+#include "../core/sampleChannel.h"
 #include "../utils/gui.h"
 #include "../utils/log.h"
 #include "recorder.h"
@@ -143,6 +145,65 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 
 	m::recorder::rec(chan, G_ACTION_MIDI, frame_a, event_a.getRaw());
 	m::recorder::rec(chan, G_ACTION_MIDI, frame_b, event_b.getRaw());		
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void recordSampleAction(const SampleChannel* ch, int type, int frame)
+{
+	if (ch->mode == ChannelMode::SINGLE_PRESS) {
+		m::recorder::rec(ch->index, G_ACTION_KEYPRESS, frame);
+		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame + 4096);
+	}
+	else {
+		m::recorder::rec(ch->index, type, frame);
+	}	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch)
+{
+	namespace mr = m::recorder;
+
+	vector<mr::Composite> out;
+
+	mr::sortActions();
+	mr::forEachAction([&](const mr::action* a1)
+	{
+		/* Exclude:
+		- actions beyond clock::getFramesInLoop();
+		- actions that don't belong to channel ch;
+		- actions != G_ACTION_KEYPRESS or G_ACTION_KILL. */
+
+		if (a1->frame > m::clock::getFramesInLoop() || 
+			  a1->chan != ch->index                   || 
+			  a1->type & ~(G_ACTION_KEYPRESS | G_ACTION_KILL))
+			return;
+
+		mr::Composite cmp; 
+		cmp.a1 = *a1;
+
+		/* If SINGLE_PRESS mode and the current action is G_ACTION_KEYPRESS, let's
+		fetch the corresponding G_ACTION_KEYREL. */
+
+		if (ch->mode == ChannelMode::SINGLE_PRESS && a1->type == G_ACTION_KEYPRESS) {
+			m::recorder::action* a2 = nullptr;
+			mr::getNextAction(ch->index, G_ACTION_KEYREL, a1->frame, &a2);
+			assert(a2 != nullptr);
+			cmp.a2 = *a2;
+		}
+		else
+			cmp.a2.frame = -1;
+
+		out.push_back(cmp);
+	});
+
+	return out;
 }
 
 

@@ -47,7 +47,7 @@ public:
 	geNoteEditor(int x, int y);
 	~geNoteEditor();
 	void draw();
-	void updateActions();
+	void rebuild();
 };
 
 

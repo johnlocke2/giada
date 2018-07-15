@@ -44,6 +44,8 @@ public:
 
 	gdSampleActionEditor(SampleChannel* ch);
 
+	void zoomIn() override;
+	void zoomOut() override;
 };
 } // giada::
 

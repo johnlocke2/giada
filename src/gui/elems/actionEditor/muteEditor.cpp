@@ -151,7 +151,7 @@ void geMuteEditor::extractPoints()
 /* -------------------------------------------------------------------------- */
 
 
-void geMuteEditor::updateActions() 
+void geMuteEditor::rebuild() 
 {
 	for (unsigned i=0; i<points.size(); i++)
 		points.at(i).x = points.at(i).frame / static_cast<gdActionEditor*>(window())->zoom;

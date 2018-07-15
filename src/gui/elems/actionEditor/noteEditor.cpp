@@ -62,9 +62,9 @@ geNoteEditor::~geNoteEditor()
 /* -------------------------------------------------------------------------- */
 
 
-void geNoteEditor::updateActions()
+void geNoteEditor::rebuild()
 {
-	pianoRoll->updateActions();
+	pianoRoll->rebuild();
 }
 
 

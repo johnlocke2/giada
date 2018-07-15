@@ -42,13 +42,13 @@ private:
 
 	bool           selected;
 	unsigned       index;
-	SampleChannel* ch;
+	const SampleChannel* ch;
   char           type;     // type of action
 
 public:
 
-	geSampleAction(int x, int y, int h, int frame_a, unsigned index, SampleChannel* ch, 
-		bool record, char type);
+	geSampleAction(int x, int y, int w, int h, const SampleChannel* ch);
+
 	void draw();
 	int  handle(int e);
 	void addAction();

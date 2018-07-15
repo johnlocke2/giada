@@ -87,7 +87,7 @@ void geEnvelopeEditor::addPoint(int frame, int iValue, float fValue, int px, int
 /* -------------------------------------------------------------------------- */
 
 
-void geEnvelopeEditor::updateActions() 
+void geEnvelopeEditor::rebuild() 
 {
 	for (unsigned i=0; i<points.size(); i++)
 		points.at(i).x = points.at(i).frame / static_cast<gdActionEditor*>(window())->zoom;

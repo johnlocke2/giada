@@ -60,24 +60,28 @@ protected:
 	static void cb_zoomIn(Fl_Widget* w, void* p);
 	static void cb_zoomOut(Fl_Widget* w, void* p);
 	
-	/* update
+	/* computeWidth
   Computes total width, in pixel. */
 
-	void update();
+	void computeWidth();
 
 public:
 
 	virtual ~gdBaseActionEditor();
 
-	virtual void cb_zoomIn()   = 0;
-	virtual void cb_zoomOut()  = 0;
+	virtual void zoomIn();
+	virtual void zoomOut();
 
 	int handle(int e) override;
 
+	Pixel frameToPixel(Frame f) const;
+	Frame pixelToFrame(Pixel p) const;
+	int getActionType() const;
+
 	geChoice*   actionType;
 	geGridTool* gridTool;
-	geButton*   zoomIn;
-	geButton*   zoomOut;
+	geButton*   zoomInBtn;
+	geButton*   zoomOutBtn;
 	geScroll*   viewport;       // widget container
 
 	geSampleActionEditor* ac;
@@ -87,9 +91,9 @@ public:
 
 	Channel* ch;
 
-	int zoom;
-	Pixel totalWidth;  // full width of the widget
-	Pixel usedWidth; 	 // width of the used area
+	float ratio;
+	Pixel fullWidth;   // Full widgets width, i.e. scaled-down full sequencer
+	Pixel loopWidth; 	 // Loop width, i.e. scaled-down sequencer range
 };
 } // giada::
 

@@ -25,8 +25,11 @@
  * -------------------------------------------------------------------------- */
 
 
+#include "../../../core/const.h"
 #include "../../../core/graphics.h"
 #include "../../../core/sampleChannel.h"
+#include "../../../utils/gui.h"
+#include "../../../utils/string.h"
 #include "../../elems/basics/scroll.h"
 #include "../../elems/basics/button.h"
 #include "../../elems/basics/resizerBar.h"
@@ -40,21 +43,25 @@
 #include "sampleActionEditor.h"
 
 
+using std::string;
+
+
 namespace giada
 {
 gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 	: gdBaseActionEditor(ch)
 {
-#if 0
-	/* container with zoom buttons and the action type selector. Scheme of
-	 * the resizable boxes: |[--b1--][actionType][--b2--][+][-]| */
+	computeWidth();
 
-	Fl_Group *upperArea = new Fl_Group(8, 8, w()-16, 20);
+	/* Container with zoom buttons and the action type selector. Scheme of the 
+	resizable boxes: |[--b1--][actionType][--b2--][+][-]| */
+
+	Fl_Group* upperArea = new Fl_Group(8, 8, w()-16, 20);
 
 	upperArea->begin();
 
 	  actionType = new geChoice(8, 8, 80, 20);
-	  gridTool   = new geGridTool_NEW(actionType->x()+actionType->w()+4, 8);
+	  gridTool   = new geGridTool(actionType->x()+actionType->w()+4, 8);
 		actionType->add("key press");
 		actionType->add("key release");
 		actionType->add("kill chan");
@@ -63,54 +70,71 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 		if (ch->mode == ChannelMode::SINGLE_PRESS || ch->isAnyLoopMode())
 		actionType->deactivate();
 
-		geBox *b1  = new geBox(gridTool->x()+gridTool->w()+4, 8, 300, 20);    // padding actionType - zoomButtons
-		zoomIn     = new geButton(w()-8-40-4, 8, 20, 20, "", zoomInOff_xpm, zoomInOn_xpm);
-		zoomOut    = new geButton(w()-8-20,   8, 20, 20, "", zoomOutOff_xpm, zoomOutOn_xpm);
+		geBox* b1  = new geBox(gridTool->x()+gridTool->w()+4, 8, 300, 20);    // padding actionType - zoomButtons
+		zoomInBtn  = new geButton(w()-8-40-4, 8, 20, 20, "", zoomInOff_xpm, zoomInOn_xpm);
+		zoomOutBtn = new geButton(w()-8-20,   8, 20, 20, "", zoomOutOff_xpm, zoomOutOn_xpm);
 
 	upperArea->end();
 	upperArea->resizable(b1);
 
-	zoomIn->callback(cb_zoomIn, (void*)this);
-	zoomOut->callback(cb_zoomOut, (void*)this);
+	zoomInBtn->callback(cb_zoomIn, (void*)this);
+	zoomOutBtn->callback(cb_zoomOut, (void*)this);
 
-	/* main scroller: contains all widgets */
+	/* Main viewport: contains all widgets. */
 
 	viewport = new geScroll(8, 36, w()-16, h()-44);
 
-	ac = new geActionEditor  (viewport->x(), upperArea->y()+upperArea->h()+8, this, ch);
-	mc = new geMuteEditor    (viewport->x(), ac->y()+ac->h()+8, this);
-	vc = new geEnvelopeEditor(viewport->x(), mc->y()+mc->h()+8, this, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
+	ac = new geSampleActionEditor(viewport->x(), upperArea->y()+upperArea->h()+8, ch);
+	//mc = new geMuteEditor        (viewport->x(), ac->y()+ac->h()+8);
+	//vc = new geEnvelopeEditor    (viewport->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
 	viewport->add(ac);
-	viewport->add(mc);
-	viewport->add(vc);
+	//viewport->add(mc);
+	//viewport->add(vc);
 
 	/* fill volume envelope with actions from recorder */
-	/* TODO - move this to envelope constructor*/
-	vc->fill();
-
-	/* if channel is LOOP_ANY, deactivate it: a loop mode channel cannot
-	 * hold keypress/keyrelease actions */
-
-	if (ch->isAnyLoopMode())
-		ac->deactivate();
+	/* TODO - move this to geEnvelopeEditor constructor*/
+	//vc->fill();
 
 	end();
 
-	/* compute values */
+	/* Compute values. */
 
-	update();
 	gridTool->calc();
 
 	gu_setFavicon(this);
 
-	string buf = "Edit Actions in Channel " + gu_iToString(chan->index + 1);
-	label(buf.c_str());
+	label(string("Edit Actions in Channel " + gu_iToString(ch->index + 1)).c_str());
 
 	set_non_modal();
 	size_range(640, 284);
 	resizable(viewport);
 
 	show();
-#endif
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdSampleActionEditor::zoomIn()
+{
+	gdBaseActionEditor::zoomIn();
+
+	ac->rebuild();
+	//mc->rebuild();
+	//vc->rebuild();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdSampleActionEditor::zoomOut()
+{
+	gdBaseActionEditor::zoomOut();
+
+	ac->rebuild();	
+	//mc->rebuild();
+	//vc->rebuild();
 }
 } // giada::

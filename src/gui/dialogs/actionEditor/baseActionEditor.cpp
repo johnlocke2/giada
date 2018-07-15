@@ -25,7 +25,7 @@
  * -------------------------------------------------------------------------- */
 
 
-#include <cmath>
+#include <cassert>
 #include "../../../utils/gui.h"
 #include "../../../utils/string.h"
 #include "../../../core/graphics.h"
@@ -49,17 +49,14 @@ namespace giada
 gdBaseActionEditor::gdBaseActionEditor(Channel* ch)
 	:	gdWindow (640, 284),
 		ch       (ch),
-		zoom     (100),
-		usedWidth(0)
+		ratio    (G_DEFAULT_ZOOM_RATIO)
 {
 	using namespace giada::m;
 
 	if (conf::actionEditorW) {
 		resize(conf::actionEditorX, conf::actionEditorY, conf::actionEditorW, conf::actionEditorH);
-		zoom = conf::actionEditorZoom;
+		ratio = conf::actionEditorZoom;
 	}
-
-	totalWidth = std::ceil(clock::getFramesInSeq() / (float) zoom);
 }
 
 
@@ -74,7 +71,7 @@ gdBaseActionEditor::~gdBaseActionEditor()
 	conf::actionEditorY = y();
 	conf::actionEditorW = w();
 	conf::actionEditorH = h();
-	conf::actionEditorZoom = zoom;
+	conf::actionEditorZoom = ratio;
 
 	/** CHECKME - missing clear() ? */
 }
@@ -83,23 +80,73 @@ gdBaseActionEditor::~gdBaseActionEditor()
 /* -------------------------------------------------------------------------- */
 
 
-void gdBaseActionEditor::cb_zoomIn(Fl_Widget *w, void *p)  { ((gdBaseActionEditor*)p)->cb_zoomIn(); }
-void gdBaseActionEditor::cb_zoomOut(Fl_Widget *w, void *p) { ((gdBaseActionEditor*)p)->cb_zoomOut(); }
+void gdBaseActionEditor::cb_zoomIn(Fl_Widget *w, void *p)  { ((gdBaseActionEditor*)p)->zoomIn(); }
+void gdBaseActionEditor::cb_zoomOut(Fl_Widget *w, void *p) { ((gdBaseActionEditor*)p)->zoomOut(); }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void gdBaseActionEditor::update()
+void gdBaseActionEditor::computeWidth()
 {
-	using namespace giada::m;
+	fullWidth = frameToPixel(m::clock::getFramesInSeq());
+	loopWidth = frameToPixel(m::clock::getFramesInLoop());
+}
 
-	totalWidth = (int) ceilf(clock::getFramesInSeq() / (float) zoom);
-	if (totalWidth < viewport->w()) {
-		totalWidth = viewport->w();
-		zoom = (int) ceilf(clock::getFramesInSeq() / (float) totalWidth);
-		viewport->scroll_to(0, viewport->yposition());
-	}
+
+/* -------------------------------------------------------------------------- */
+
+
+Pixel gdBaseActionEditor::frameToPixel(Frame f) const
+{
+	return f / ratio;
+}
+
+
+Frame gdBaseActionEditor::pixelToFrame(Pixel p) const
+{
+	return p * ratio;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdBaseActionEditor::zoomIn()
+{
+	ratio /= 2;
+	computeWidth();
+	redraw();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdBaseActionEditor::zoomOut()
+{
+	ratio *= 2;
+	computeWidth();
+	redraw();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int gdBaseActionEditor::getActionType() const
+{
+	if (actionType->value() == 0)
+		return G_ACTION_KEYPRESS;
+	else
+	if (actionType->value() == 1)
+		return G_ACTION_KEYREL;
+	else
+	if (actionType->value() == 2)
+		return G_ACTION_KILL;
+
+	assert(false);
+	return -1;
 }
 
 
@@ -108,14 +155,13 @@ void gdBaseActionEditor::update()
 
 int gdBaseActionEditor::handle(int e)
 {
-	int ret = Fl_Group::handle(e);
 	switch (e) {
-		case FL_MOUSEWHEEL: {
-			Fl::event_dy() == -1 ? cb_zoomIn() : cb_zoomOut();
-			ret = 1;
-			break;
-		}
+		case FL_MOUSEWHEEL:
+			Fl::event_dy() == -1 ? zoomIn() : zoomOut();
+			return 1;
+
+		default:
+			return Fl_Group::handle(e);
 	}
-	return ret;
 }
 } // giada::
