@@ -185,10 +185,10 @@ sourcesCore =                            \
 	src/gui/elems/actionEditor/pianoItemOrphaned.cpp    \
 	src/gui/elems/actionEditor/muteEditor.h             \
 	src/gui/elems/actionEditor/muteEditor.cpp           \
-	src/gui/elems/actionEditor/actionEditor.h           \
-	src/gui/elems/actionEditor/actionEditor.cpp         \
-	src/gui/elems/actionEditor/action.h                 \
-	src/gui/elems/actionEditor/action.cpp               \
+	src/gui/elems/actionEditor/sampleActionEditor.h           \
+	src/gui/elems/actionEditor/sampleActionEditor.cpp         \
+	src/gui/elems/actionEditor/sampleAction.h                 \
+	src/gui/elems/actionEditor/sampleAction.cpp               \
 	src/gui/elems/actionEditor/gridTool.h               \
 	src/gui/elems/actionEditor/gridTool.cpp             \
 	src/gui/elems/mainWindow/mainIO.h          \

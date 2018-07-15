@@ -42,7 +42,7 @@ class geGridTool;
 class geButton;
 class geButton;
 class geScroll;
-class geActionEditor;
+class geSampleActionEditor;
 class geMuteEditor;
 class geEnvelopeEditor;
 class geNoteEditor;
@@ -82,7 +82,7 @@ public:
 	geButton   *zoomOut;
 	geScroll   *scroller;       // widget container
 
-	geActionEditor   *ac;
+	geSampleActionEditor   *ac;
 	geMuteEditor     *mc;
 	geEnvelopeEditor *vc;
 	geNoteEditor     *pr;

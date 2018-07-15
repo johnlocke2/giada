@@ -39,11 +39,11 @@
 
 class Channel;
 class geChoice;
-class geGridTool_NEW;
+class geGridTool;
 class geButton;
 class geButton;
 class geScroll;
-class geActionEditor;
+class geSampleActionEditor;
 class geMuteEditor;
 class geEnvelopeEditor;
 class geNoteEditor;
@@ -75,15 +75,15 @@ public:
 	int handle(int e) override;
 
 	geChoice*   actionType;
-	geGridTool_NEW* gridTool;
+	geGridTool* gridTool;
 	geButton*   zoomIn;
 	geButton*   zoomOut;
 	geScroll*   viewport;       // widget container
 
-	geActionEditor*   ac;
-	geMuteEditor*     mc;
-	geEnvelopeEditor* vc;
-	geNoteEditor*     pr;
+	geSampleActionEditor* ac;
+	geMuteEditor*         mc;
+	geEnvelopeEditor*     vc;
+	geNoteEditor*         pr;
 
 	Channel* ch;
 

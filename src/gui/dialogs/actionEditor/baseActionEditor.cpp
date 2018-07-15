@@ -38,11 +38,6 @@
 #include "../../elems/basics/resizerBar.h"
 #include "../../elems/basics/choice.h"
 #include "../../elems/basics/box.h"
-#include "../../elems/actionEditor/actionEditor.h"
-#include "../../elems/actionEditor/envelopeEditor.h"
-#include "../../elems/actionEditor/muteEditor.h"
-#include "../../elems/actionEditor/noteEditor.h"
-#include "../../elems/actionEditor/gridTool.h"
 #include "baseActionEditor.h"
 
 

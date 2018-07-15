@@ -32,7 +32,7 @@
 #include "../../dialogs/gd_actionEditor.h"
 #include "../basics/choice.h"
 #include "../basics/check.h"
-#include "actionEditor.h"
+#include "sampleActionEditor.h"
 #include "gridTool.h"
 
 
