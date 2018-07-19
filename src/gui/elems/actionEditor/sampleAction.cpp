@@ -41,7 +41,7 @@ using namespace giada::m;
 
 
 geSampleAction::geSampleAction(int X, int Y, int W, int H, const SampleChannel* ch,
-	const recorder::action* a1, const recorder::action* a2)
+	const recorder::action a1, const recorder::action a2)
 : Fl_Box     (X, Y, W, H),
   ch         (ch),
   onRightEdge(false),

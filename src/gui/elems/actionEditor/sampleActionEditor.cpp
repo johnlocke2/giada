@@ -105,13 +105,13 @@ void geSampleActionEditor::rebuild()
 
 	for (mr::Composite comp : comps) {
 printf("Action [%d, %d)\n", comp.a1.frame, comp.a2.frame);
-		Pixel px = ae->frameToPixel(comp.a1.frame);
+		Pixel px = x() + ae->frameToPixel(comp.a1.frame);
 		Pixel py = y() + 4;
 		Pixel pw = 0;
 		Pixel ph = h() - 8;
 		if (comp.a2.frame != -1)
 				pw = ae->frameToPixel(comp.a2.frame - comp.a1.frame);
-		add(new geSampleAction(px, py, pw, ph, ch, &comp.a1, &comp.a2));
+		add(new geSampleAction(px, py, pw, ph, ch, comp.a1, comp.a2));
 	}
 
 	redraw();
@@ -177,13 +177,10 @@ int geSampleActionEditor::onDrag()
 {
 	if (action == nullptr)
 		return 0;
-
-	if (action->isOnEdges()) {
+	if (action->isOnEdges())
 		puts("drag edges");
-	}
 	else
 		moveAction();
-
 	return 1;
 }
 
@@ -223,7 +220,12 @@ int geSampleActionEditor::onRelease()
 	if (action == nullptr)
 		return 0;
 
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+
+	Frame f1 = ae->pixelToFrame(action->x() - x());
+	Frame f2 = ae->pixelToFrame(action->x() + action->w() - x());
 	c::recorder::deleteSampleAction(ch, action->a1, action->a2);
+	c::recorder::recordSampleAction(ch, ae->getActionType(), f1, f2);
 	action = nullptr;
 
 	rebuild();

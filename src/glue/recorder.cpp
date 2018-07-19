@@ -152,14 +152,14 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 /* -------------------------------------------------------------------------- */
 
 
-void recordSampleAction(const SampleChannel* ch, int type, int frame)
+void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b)
 {
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
-		m::recorder::rec(ch->index, G_ACTION_KEYPRESS, frame);
-		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame + 4096);
+		m::recorder::rec(ch->index, G_ACTION_KEYPRESS, frame_a);
+		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame_b == -1 ? frame_a + 4096 : frame_b);
 	}
 	else {
-		m::recorder::rec(ch->index, type, frame);
+		m::recorder::rec(ch->index, type, frame_a);
 	}	
 }
 
@@ -167,20 +167,19 @@ void recordSampleAction(const SampleChannel* ch, int type, int frame)
 /* -------------------------------------------------------------------------- */
 
 
-void deleteSampleAction(SampleChannel* ch, const m::recorder::action* a1, 
-	const m::recorder::action* a2)
+void deleteSampleAction(SampleChannel* ch, const m::recorder::action a1, 
+	const m::recorder::action a2)
 {
 	namespace mr = m::recorder;
 
 	/* if SINGLE_PRESS delete both the keypress and the keyrelease pair. */
 
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
-		assert(a2 != nullptr);
-		mr::deleteAction(ch->index, a1->frame, G_ACTION_KEYPRESS, false, &m::mixer::mutex);
-		mr::deleteAction(ch->index, a2->frame, G_ACTION_KEYREL, false, &m::mixer::mutex);
+		mr::deleteAction(ch->index, a1.frame, G_ACTION_KEYPRESS, false, &m::mixer::mutex);
+		mr::deleteAction(ch->index, a2.frame, G_ACTION_KEYREL, false, &m::mixer::mutex);
 	}
 	else
-		mr::deleteAction(ch->index, a1->frame, a1->type, false, &m::mixer::mutex);
+		mr::deleteAction(ch->index, a1.frame, a1.type, false, &m::mixer::mutex);
 
   ch->hasActions = mr::hasActions(ch->index);
 }

@@ -55,7 +55,8 @@ size. This function is designed for the Piano Roll (not for live recording). */
 
 void recordMidiAction(int chan, int note, int frame_a, int frame_b=0);
 
-void recordSampleAction(const SampleChannel* ch, int type, int frame);
+void recordSampleAction(const SampleChannel* ch, int type, int frame_a, 
+	int frame_b=-1);
 
 /* getMidiActions
 Returns a list of Composite actions, ready to be displayed in a MIDI note
@@ -71,8 +72,8 @@ the Composite struct if left empty (with action2.frame = -1). */
 
 std::vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch);
 
-void deleteSampleAction(SampleChannel* ch, const m::recorder::action* a1, 
-	const m::recorder::action* a2);
+void deleteSampleAction(SampleChannel* ch, const m::recorder::action a1, 
+	const m::recorder::action a2);
 }}} // giada::c::recorder::
 
 #endif
