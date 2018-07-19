@@ -30,6 +30,7 @@
 
 
 #include <FL/Fl_Box.H>
+#include "../../../core/recorder.h"
 
 
 class gdActionEditor;
@@ -40,17 +41,24 @@ class geSampleAction : public Fl_Box
 {
 private:
 
-	bool           selected;
 	unsigned       index;
 	const SampleChannel* ch;
   char           type;     // type of action
 
 public:
 
-	geSampleAction(int x, int y, int w, int h, const SampleChannel* ch);
+	static const int MIN_WIDTH    = 12;
+	static const int HANDLE_WIDTH = 6;
 
-	void draw();
-	int  handle(int e);
+	geSampleAction(int x, int y, int w, int h, const SampleChannel* ch,
+		const giada::m::recorder::action* a1, const giada::m::recorder::action* a2);
+
+	void draw() override;
+	int  handle(int e) override;
+
+	bool isOnEdges() const;
+
+
 	void addAction();
 	void delAction();
 
@@ -75,10 +83,14 @@ public:
 	int frame_a;  // initial frame (KEYPRESS for singlemode.press)
 	int frame_b;  // terminal frame (KEYREL for singlemode.press, null for others)
 
-	bool onRightEdge;
-	bool onLeftEdge;
+	bool  onRightEdge;
+	bool  onLeftEdge;
+	bool  selected;
+	bool  hovered;
+	int   pick;
 
-	static const int MIN_WIDTH = 8;
+	const giada::m::recorder::action* a1;
+	const giada::m::recorder::action* a2;
 };
 
 

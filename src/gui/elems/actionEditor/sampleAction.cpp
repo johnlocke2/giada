@@ -40,15 +40,17 @@ using namespace giada;
 using namespace giada::m;
 
 
-/** TODO - index is useless?
- *  TODO - pass a record::action pointer and let geSampleAction compute values */
-
-geSampleAction::geSampleAction(int X, int Y, int W, int H, const SampleChannel* ch)
+geSampleAction::geSampleAction(int X, int Y, int W, int H, const SampleChannel* ch,
+	const recorder::action* a1, const recorder::action* a2)
 : Fl_Box     (X, Y, W, H),
-  selected   (false),
   ch         (ch),
   onRightEdge(false),
-  onLeftEdge (false)
+  onLeftEdge (false),
+  selected   (false),
+  hovered    (false),
+  pick       (0),
+  a1         (a1),
+  a2         (a2)
 {
 		/* A singlepress action narrower than 8 pixel is useless. So check it. 
 		Warning: if an action is 8 px narrow, it has no body space to drag it. It's 
@@ -65,7 +67,7 @@ geSampleAction::geSampleAction(int X, int Y, int W, int H, const SampleChannel* 
 void geSampleAction::draw()
 {
 	int color;
-	if (selected)  /// && geActionEditor !disabled
+	if (hovered)  /// && geActionEditor !disabled
 		color = G_COLOR_LIGHT_2;
 	else
 		color = G_COLOR_LIGHT_1;
@@ -94,48 +96,50 @@ void geSampleAction::draw()
 
 int geSampleAction::handle(int e)
 {
-	/* ret = 0 sends the event to the parent window. */
-
-	int ret = 0;
-
 	switch (e) {
-
 		case FL_ENTER: {
-			selected = true;
-			ret = 1;
+			hovered = true;
 			redraw();
-			break;
+			return 1;
 		}
 		case FL_LEAVE: {
 			fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK);
-			selected = false;
-			ret = 1;
+			hovered = false;
 			redraw();
-			break;
+			return 1;
 		}
 		case FL_MOVE: {
-
 			/* handling of the two margins, left & right. 4 pixels are good enough */
-
 			if (ch->mode == ChannelMode::SINGLE_PRESS) {
 				onLeftEdge  = false;
 				onRightEdge = false;
-				if (Fl::event_x() >= x() && Fl::event_x() < x()+4) {
+				if (Fl::event_x() >= x() && Fl::event_x() < x() + HANDLE_WIDTH) {
 					onLeftEdge = true;
 					fl_cursor(FL_CURSOR_WE, FL_WHITE, FL_BLACK);
 				}
 				else
-				if (Fl::event_x() >= x()+w()-4 && Fl::event_x() <= x()+w()) {
+				if (Fl::event_x() >= x() + w() - HANDLE_WIDTH && 
+					  Fl::event_x() <= x() + w()) {
 					onRightEdge = true;
 					fl_cursor(FL_CURSOR_WE, FL_WHITE, FL_BLACK);
 				}
 				else
 					fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK);
 			}
+			return 1;
 		}
+		default:
+			return Fl_Widget::handle(e);
 	}
+}
 
-	return ret;
+
+/* -------------------------------------------------------------------------- */
+
+
+bool geSampleAction::isOnEdges() const
+{
+	return onLeftEdge || onRightEdge;
 }
 
 

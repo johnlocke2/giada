@@ -48,7 +48,7 @@ using namespace giada::m;
 geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
   : geBaseActionEditor(x, y, 200, 40),
     ch                (ch),
-    selected          (nullptr)
+    action            (nullptr)
 {
 	rebuild();
 
@@ -57,62 +57,29 @@ geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
 	
 	if (ch->isAnyLoopMode())
 		deactivate();
-
-#if 0
-	/* add actions when the window opens. Their position is zoom-based;
-	 * each frame is / 2 because we don't care about stereo infos. */
-
-	for (unsigned i=0; i<recorder::frames.size(); i++) {
-		for (unsigned j=0; j<recorder::global.at(i).size(); j++) {
-
-		  recorder::action *action = recorder::global.at(i).at(j);
-
-      /* Don't show actions:
-      - that don't belong to the displayed channel (!= ae->chan->index);
-      - that are covered by the grey area (> G_Mixer.totalFrames);
-      - of type G_ACTION_KILL in a SINGLE_PRESS channel. They cannot be
-        recorded in such mode, but they can exist if you change from another
-        mode to singlepress;
-      - of type G_ACTION_KEYREL in a SINGLE_PRESS channel. It's up to geSampleAction to
-        find the other piece (namely frame_b)
-      - not of types G_ACTION_KEYPRESS | G_ACTION_KEYREL | G_ACTION_KILL */
-
-      if ((action->chan != ae->chan->index)                          ||
-          (recorder::frames.at(i) > clock::getFramesInLoop())             ||
-          (action->type == G_ACTION_KILL && ch->mode == ChannelMode::SINGLE_PRESS)     ||
-          (action->type == G_ACTION_KEYREL && ch->mode == ChannelMode::SINGLE_PRESS)   ||
-          (action->type & ~(G_ACTION_KEYPRESS | G_ACTION_KEYREL | G_ACTION_KILL))
-      )
-        continue;
-
-			int ax = x + (action->frame / ae->zoom);
-			geSampleAction *a = new geSampleAction(
-					ax,               // x
-					y + 4,            // y
-					h() - 8,          // h
-					action->frame,	  // frame_a
-					i,                // n. of recordings
-					ch,               // pointer to SampleChannel
-					false,            // record = false: don't record it, we are just displaying it!
-					action->type);    // type of action
-			add(a);
-		}
-	}
-	end(); // mandatory when you add widgets to a fl_group, otherwise mega malfunctions
-#endif
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-geSampleAction *geSampleActionEditor::getSelectedAction()
+geSampleAction* geSampleActionEditor::getSelectedAction()
 {
 	for (int i=0; i<children(); i++) {
-		int action_x  = ((geSampleAction*)child(i))->x();
-		int action_w  = ((geSampleAction*)child(i))->w();
-		if (Fl::event_x() >= action_x && Fl::event_x() <= action_x + action_w)
-			return (geSampleAction*)child(i);
+		geSampleAction* a = static_cast<geSampleAction*>(child(i));
+		if (a->selected)
+			return a;
+	}
+	return nullptr;
+}
+
+
+geSampleAction* geSampleActionEditor::getActionAtCursor()
+{
+	for (int i=0; i<children(); i++) {
+		geSampleAction* a = static_cast<geSampleAction*>(child(i));
+		if (a->hovered)
+			return a;
 	}
 	return nullptr;
 }
@@ -144,7 +111,7 @@ printf("Action [%d, %d)\n", comp.a1.frame, comp.a2.frame);
 		Pixel ph = h() - 8;
 		if (comp.a2.frame != -1)
 				pw = ae->frameToPixel(comp.a2.frame - comp.a1.frame);
-		add(new geSampleAction(px, py, pw, ph, ch));
+		add(new geSampleAction(px, py, pw, ph, ch, &comp.a1, &comp.a2));
 	}
 
 	redraw();
@@ -177,25 +144,108 @@ void geSampleActionEditor::draw()
 /* -------------------------------------------------------------------------- */
 
 
-int geSampleActionEditor::handle(int e)
+int geSampleActionEditor::onPush()
+{
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+	
+	action = getActionAtCursor();
+
+	if (Fl::event_button1()) {  // Left button
+		if (action == nullptr) {  // No action under cursor: add a new one
+			Frame f = ae->pixelToFrame(Fl::event_x() - x());
+			c::recorder::recordSampleAction(ch, ae->getActionType(), f);
+			rebuild();
+		}
+		else {                     // Action under cursor: get ready for move/resize
+			action->pick = Fl::event_x() - action->x();
+		}
+	}
+	else
+	if (Fl::event_button3()) {  // Right button
+		if (action != nullptr)
+			puts("DELETE ACTION - TODO");
+	}
+
+	return 1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geSampleActionEditor::onDrag()
+{
+	if (action == nullptr)
+		return 0;
+
+	if (action->isOnEdges()) {
+		puts("drag edges");
+	}
+	else
+		moveAction();
+
+	return 1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geSampleActionEditor::moveAction()
 {
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	switch (e) {
-		case FL_PUSH: {
-			if (Fl::event_button1()) {  // Left
-				Frame f = ae->pixelToFrame(Fl::event_x() - x());
-				c::recorder::recordSampleAction(ch, ae->getActionType(), f);
-				rebuild();
-			}
-			else
-			if (Fl::event_button3()) {  // Right
-			}
-			return 1;
+	Pixel ax = Fl::event_x() - action->pick;
+	if (ax < x())                                // Don't go beyond the left border
+		action->position(x(), action->y());
+	else
+	if (ax + action->w() > ae->loopWidth + x())  // Don't go beyond the right border
+		action->position(ae->loopWidth + x() - action->w(), action->y());
+	else {
+		/*
+		if (ae->gridTool->isOn()) {
+			int snpx = ae->gridTool->getSnapPoint(ax-x()) + x() -1;
+			action->position(snpx, action->y());
 		}
+		else
+		*/
+			action->position(ax, action->y());
+	}	
+	redraw();
+}
 
+
+/* -------------------------------------------------------------------------- */
+
+
+int geSampleActionEditor::onRelease()
+{
+	if (action == nullptr)
+		return 0;
+
+	c::recorder::deleteSampleAction(ch, action->a1, action->a2);
+	action = nullptr;
+
+	rebuild();
+	
+	return 1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geSampleActionEditor::handle(int e)
+{
+	switch (e) {
+		case FL_PUSH:
+			return onPush();
+		case FL_DRAG:
+			return onDrag();
+		case FL_RELEASE:
+			return onRelease();
 		default:
-			return Fl_Widget::handle(e);
+			return Fl_Group::handle(e);
 	}
 
 

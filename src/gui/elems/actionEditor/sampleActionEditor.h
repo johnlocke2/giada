@@ -42,15 +42,10 @@ private:
 
 	SampleChannel* ch;
 
-	/* getSelectedAction
-	 * get the action under the mouse. nullptr if nothing found. */
+	/* action
+	Pointer to the selected action. Used when dragging action around. */
 
-	geSampleAction* getSelectedAction();
-
-	/* selected
-	 * pointer to the selected action. Useful when dragging around. */
-
-	geSampleAction* selected;
+	geSampleAction* action;
 
 	/* actionOriginalX, actionOriginalW
 	 * x and w of the action, when moved. Useful for checking if the action
@@ -66,12 +61,24 @@ private:
 
 	int actionPickPoint;
 
+	void moveAction();
+	void resizeAction();
 
 	/* actionCollides
 	 * true if an action collides with another. Used while adding new points
 	 * with snap active.*/
 
 	bool actionCollides(int frame);
+
+	/* getActionAtCursor
+	Returns the action under the mouse. nullptr if nothing found. */
+
+	geSampleAction* getActionAtCursor();
+	geSampleAction* getSelectedAction();
+
+	int onPush();
+	int onDrag();
+	int onRelease();
 
 public:
 

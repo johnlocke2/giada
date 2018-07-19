@@ -34,6 +34,7 @@
 #include "../core/kernelMidi.h"
 #include "../core/channel.h"
 #include "../core/recorder.h"
+#include "../core/mixer.h"
 #include "../core/sampleChannel.h"
 #include "../utils/gui.h"
 #include "../utils/log.h"
@@ -160,6 +161,28 @@ void recordSampleAction(const SampleChannel* ch, int type, int frame)
 	else {
 		m::recorder::rec(ch->index, type, frame);
 	}	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void deleteSampleAction(SampleChannel* ch, const m::recorder::action* a1, 
+	const m::recorder::action* a2)
+{
+	namespace mr = m::recorder;
+
+	/* if SINGLE_PRESS delete both the keypress and the keyrelease pair. */
+
+	if (ch->mode == ChannelMode::SINGLE_PRESS) {
+		assert(a2 != nullptr);
+		mr::deleteAction(ch->index, a1->frame, G_ACTION_KEYPRESS, false, &m::mixer::mutex);
+		mr::deleteAction(ch->index, a2->frame, G_ACTION_KEYREL, false, &m::mixer::mutex);
+	}
+	else
+		mr::deleteAction(ch->index, a1->frame, a1->type, false, &m::mixer::mutex);
+
+  ch->hasActions = mr::hasActions(ch->index);
 }
 
 

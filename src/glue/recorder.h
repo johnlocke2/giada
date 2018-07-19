@@ -46,6 +46,9 @@ void clearMuteActions(geChannel* gch);
 void clearVolumeActions(geChannel* gch);
 void clearStartStopActions(geChannel* gch);
 
+
+
+/* MOVE ALL THESE FUNCTIONS TO c::actionEditor*/
 /* recordMidiAction
 Records a new MIDI action at frame_a. If frame_b == 0, uses the default action
 size. This function is designed for the Piano Roll (not for live recording). */
@@ -68,6 +71,8 @@ the Composite struct if left empty (with action2.frame = -1). */
 
 std::vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch);
 
+void deleteSampleAction(SampleChannel* ch, const m::recorder::action* a1, 
+	const m::recorder::action* a2);
 }}} // giada::c::recorder::
 
 #endif
