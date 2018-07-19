@@ -44,7 +44,7 @@ geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h)
 /* -------------------------------------------------------------------------- */
 
 
-void geBaseActionEditor::baseDraw(bool clear)
+void geBaseActionEditor::baseDraw(bool clear) const
 {
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 

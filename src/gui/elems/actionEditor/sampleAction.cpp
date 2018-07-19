@@ -51,12 +51,12 @@ geSampleAction::geSampleAction(int X, int Y, int W, int H, const SampleChannel* 
   a1         (a1),
   a2         (a2)
 {
-		/* A singlepress action narrower than 8 pixel is useless. So check it. 
-		Warning: if an action is 8 px narrow, it has no body space to drag it. It's 
-		up to the user to zoom in and drag it. */
+	/* A singlepress action narrower than MIN_WIDTH pixel is useless. So check it. 
+	Warning: if an action is MIN_WIDTH px narrow, it has no body space to drag it. 
+	It's up to the user to zoom in and drag it. */
 
-		if (w() < MIN_WIDTH)
-			size(MIN_WIDTH, h());
+	if (w() < MIN_WIDTH)
+		size(MIN_WIDTH, h());
 }
 
 

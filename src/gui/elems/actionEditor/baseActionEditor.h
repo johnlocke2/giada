@@ -37,7 +37,7 @@ class geBaseActionEditor : public Fl_Group
 {
 protected:
 
-  void baseDraw(bool clear=true);
+  void baseDraw(bool clear=true) const;
 
 public:
 
