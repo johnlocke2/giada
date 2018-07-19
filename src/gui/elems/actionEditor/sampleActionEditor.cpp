@@ -63,17 +63,6 @@ geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-geSampleAction* geSampleActionEditor::getSelectedAction()
-{
-	for (int i=0; i<children(); i++) {
-		geSampleAction* a = static_cast<geSampleAction*>(child(i));
-		if (a->selected)
-			return a;
-	}
-	return nullptr;
-}
-
-
 geSampleAction* geSampleActionEditor::getActionAtCursor()
 {
 	for (int i=0; i<children(); i++) {
@@ -152,6 +141,8 @@ int geSampleActionEditor::onPush()
 
 	if (Fl::event_button1()) {  // Left button
 		if (action == nullptr) {  // No action under cursor: add a new one
+			if (Fl::event_x() >= ae->loopWidth) // Avoid click on grey area
+				return 0;
 			Frame f = ae->pixelToFrame(Fl::event_x() - x());
 			c::recorder::recordSampleAction(ch, ae->getActionType(), f);
 			rebuild();
@@ -162,8 +153,11 @@ int geSampleActionEditor::onPush()
 	}
 	else
 	if (Fl::event_button3()) {  // Right button
-		if (action != nullptr)
-			puts("DELETE ACTION - TODO");
+		if (action != nullptr) {
+			c::recorder::deleteSampleAction(ch, action->a1, action->a2);
+			action = nullptr;
+			rebuild();	
+		}
 	}
 
 	return 1;
@@ -219,6 +213,8 @@ int geSampleActionEditor::onRelease()
 {
 	if (action == nullptr)
 		return 0;
+
+	/* TODO - do this only if the action has been really altered */
 
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
@@ -487,30 +483,4 @@ int geSampleActionEditor::handle(int e)
 	return ret;
 #endif
 
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-bool geSampleActionEditor::actionCollides(int frame)
-{
-	/* if SINGLE_PRESS we check that the tail (frame_b) of the action doesn't
-	 * overlap the head (frame) of the new one. First the general case, yet. */
-
-	bool collision = false;
-
-	for (int i=0; i<children() && !collision; i++)
-		if (((geSampleAction*) child(i))->frame_a == frame)
-			collision = true;
-
-	if (ch->mode == ChannelMode::SINGLE_PRESS) {
-		for (int i=0; i<children() && !collision; i++) {
-			geSampleAction *c = ((geSampleAction*) child(i));
-			if (frame <= c->frame_b && frame >= c->frame_a)
-				collision = true;
-		}
-	}
-
-	return collision;
 }

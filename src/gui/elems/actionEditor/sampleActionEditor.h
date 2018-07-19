@@ -47,34 +47,13 @@ private:
 
 	geSampleAction* action;
 
-	/* actionOriginalX, actionOriginalW
-	 * x and w of the action, when moved. Useful for checking if the action
-	 * overlaps another one: in that case the moved action returns to
-	 * actionOriginalX (and to actionOriginalW if resized). */
-
-	int actionOriginalX;
-	int actionOriginalW;
-
-	/* actionPickPoint
-	 * the precise x point in which the action has been picked with the mouse,
-	 * before a dragging action. */
-
-	int actionPickPoint;
-
 	void moveAction();
 	void resizeAction();
-
-	/* actionCollides
-	 * true if an action collides with another. Used while adding new points
-	 * with snap active.*/
-
-	bool actionCollides(int frame);
 
 	/* getActionAtCursor
 	Returns the action under the mouse. nullptr if nothing found. */
 
 	geSampleAction* getActionAtCursor();
-	geSampleAction* getSelectedAction();
 
 	int onPush();
 	int onDrag();
