@@ -40,6 +40,11 @@ namespace giada
 {
 class gdSampleActionEditor : public gdBaseActionEditor
 {
+private:
+
+	static const int RESIZER_BAR_H = 30;
+	static const int MIN_WIDGET_H  = 10;
+
 public:
 
 	gdSampleActionEditor(SampleChannel* ch);

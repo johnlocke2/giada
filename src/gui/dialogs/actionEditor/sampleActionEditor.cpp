@@ -88,6 +88,7 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 	//mc = new geMuteEditor        (viewport->x(), ac->y()+ac->h()+8);
 	//vc = new geEnvelopeEditor    (viewport->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
 	viewport->add(ac);
+	viewport->add(new geResizerBar(ac->x(), ac->y()+ac->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
 	//viewport->add(mc);
 	//viewport->add(vc);
 

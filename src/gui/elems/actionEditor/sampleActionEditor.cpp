@@ -28,6 +28,7 @@
 #include <FL/fl_draw.H>
 #include "../../../core/clock.h"
 #include "../../../core/sampleChannel.h"
+#include "../../../utils/log.h"
 #include "../../../glue/recorder.h"
 #include "../../dialogs/gd_mainWindow.h"
 #include "../../dialogs/actionEditor/baseActionEditor.h"
@@ -93,14 +94,17 @@ void geSampleActionEditor::rebuild()
 	vector<mr::Composite> comps = cr::getSampleActions(ch);
 
 	for (mr::Composite comp : comps) {
-printf("Action [%d, %d)\n", comp.a1.frame, comp.a2.frame);
+		gu_log("Action [%d, %d)\n", comp.a1.frame, comp.a2.frame);
 		Pixel px = x() + ae->frameToPixel(comp.a1.frame);
 		Pixel py = y() + 4;
 		Pixel pw = 0;
 		Pixel ph = h() - 8;
 		if (comp.a2.frame != -1)
 				pw = ae->frameToPixel(comp.a2.frame - comp.a1.frame);
-		add(new geSampleAction(px, py, pw, ph, ch, comp.a1, comp.a2));
+
+		geSampleAction* a = new geSampleAction(px, py, pw, ph, ch, comp.a1, comp.a2);
+		add(a);
+		resizable(a);
 	}
 
 	redraw();
