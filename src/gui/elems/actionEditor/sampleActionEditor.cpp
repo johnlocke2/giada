@@ -172,7 +172,7 @@ int geSampleActionEditor::onDrag()
 	if (action == nullptr)
 		return 0;
 	if (action->isOnEdges())
-		puts("drag edges");
+		resizeAction();
 	else
 		moveAction();
 	return 1;
@@ -202,6 +202,21 @@ void geSampleActionEditor::moveAction()
 		*/
 			action->position(ax, action->y());
 	}	
+	redraw();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geSampleActionEditor::resizeAction()
+{
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+
+	if (action->onRightEdge)
+		action->setRightEdge(Fl::event_x() - action->x());
+	else
+		action->setLeftEdge(Fl::event_x());
 	redraw();
 }
 

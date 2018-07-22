@@ -56,6 +56,12 @@ public:
 
 	bool isOnEdges() const;
 
+	/* setLeftEdge/setRightEdge
+	Set new left/right edges position, relative range. */
+
+	void setLeftEdge(int p);
+	void setRightEdge(int p);
+
 	bool  onRightEdge;
 	bool  onLeftEdge;
 	bool  hovered;

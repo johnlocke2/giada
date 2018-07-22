@@ -131,6 +131,28 @@ int geSampleAction::handle(int e)
 /* -------------------------------------------------------------------------- */
 
 
+void geSampleAction::setLeftEdge(int p)
+{
+	resize(p, y(), x() - p + w(), h());
+	if (w() < MIN_WIDTH)
+		size(MIN_WIDTH, h());
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geSampleAction::setRightEdge(int p)
+{
+	size(p, h());
+	if (w() < MIN_WIDTH)
+		size(MIN_WIDTH, h());
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 bool geSampleAction::isOnEdges() const
 {
 	return onLeftEdge || onRightEdge;
