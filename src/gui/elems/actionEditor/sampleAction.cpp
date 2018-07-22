@@ -153,6 +153,15 @@ void geSampleAction::setRightEdge(int p)
 /* -------------------------------------------------------------------------- */
 
 
+void geSampleAction::setPosition(int p)
+{
+	position(p, y());
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 bool geSampleAction::isOnEdges() const
 {
 	return onLeftEdge || onRightEdge;

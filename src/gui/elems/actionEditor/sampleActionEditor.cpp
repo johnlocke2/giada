@@ -186,22 +186,11 @@ void geSampleActionEditor::moveAction()
 {
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	Pixel ax = Fl::event_x() - action->pick;
-	if (ax < x())                                // Don't go beyond the left border
-		action->position(x(), action->y());
-	else
-	if (ax + action->w() > ae->loopWidth + x())  // Don't go beyond the right border
-		action->position(ae->loopWidth + x() - action->w(), action->y());
-	else {
-		/*
-		if (ae->gridTool->isOn()) {
-			int snpx = ae->gridTool->getSnapPoint(ax-x()) + x() -1;
-			action->position(snpx, action->y());
-		}
-		else
-		*/
-			action->position(ax, action->y());
-	}	
+	Pixel ex = Fl::event_x() - action->pick;
+	if      (ex < x()) ex = x();
+	else if (ex + action->w() > ae->loopWidth + x()) ex = ae->loopWidth + x() - action->w();
+
+	action->setPosition(ex);
 	redraw();
 }
 
@@ -213,10 +202,14 @@ void geSampleActionEditor::resizeAction()
 {
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	if (action->onRightEdge)
-		action->setRightEdge(Fl::event_x() - action->x());
+	Pixel ex = Fl::event_x();
+	if      (ex < x()) ex = x();
+	else if (ex > ae->loopWidth + x()) ex = ae->loopWidth + x();
+
+	if (action->onRightEdge) 
+		action->setRightEdge(ex - action->x());
 	else
-		action->setLeftEdge(Fl::event_x());
+		action->setLeftEdge(ex);
 	redraw();
 }
 
@@ -240,6 +233,7 @@ int geSampleActionEditor::onRelease()
 	action = nullptr;
 
 	rebuild();
+
 	
 	return 1;
 }
@@ -256,246 +250,9 @@ int geSampleActionEditor::handle(int e)
 		case FL_DRAG:
 			return onDrag();
 		case FL_RELEASE:
+			fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK); // Make sure cursor returns normal
 			return onRelease();
 		default:
 			return Fl_Group::handle(e);
 	}
-
-
-#if 0
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
-
-	int ret = Fl_Group::handle(e);
-
-	/* do nothing if the widget is deactivated. It could happen for loopmode
-	 * channels */
-
-	if (!active())
-		return 1;
-
-	switch (e) {
-
-		case FL_DRAG: {
-
-      if (selected == nullptr) {  // if you drag an empty area
-        ret = 1;
-        break;
-      }
-
-			/* if onLeftEdge o onRightEdge are true it means that you're resizing
-			 * an action. Otherwise move the widget. */
-
-			if (selected->onLeftEdge || selected->onRightEdge) {
-
-				/* some checks: a) cannot resize an action < N pixels, b) no beyond zero,
-				 * c) no beyond bar maxwidth. Checks for overlap are done in FL_RELEASE */
-
-				if (selected->onRightEdge) {
-
-					int aw = Fl::event_x()-selected->x();
-					int ah = selected->h();
-
-					if (Fl::event_x() < selected->x()+geSampleAction::MIN_WIDTH)
-						aw = geSampleAction::MIN_WIDTH;
-					else
-					if (Fl::event_x() > ae->coverX)
-						aw = ae->coverX-selected->x();
-
-					selected->size(aw, ah);
-				}
-				else {
-
-					int ax = Fl::event_x();
-					int ay = selected->y();
-					int aw = selected->x()-Fl::event_x()+selected->w();
-					int ah = selected->h();
-
-					if (Fl::event_x() < x()) {
-						ax = x();
-						aw = selected->w()+selected->x()-x();
-					}
-					else
-					if (Fl::event_x() > selected->x()+selected->w()-geSampleAction::MIN_WIDTH) {
-						ax = selected->x()+selected->w()-geSampleAction::MIN_WIDTH;
-						aw = geSampleAction::MIN_WIDTH;
-					}
-					selected->resize(ax, ay, aw, ah);
-				}
-			}
-
-      /* move the widget around */
-
-			else {
-				int real_x = Fl::event_x() - actionPickPoint;
-				if (real_x < x())                                  // don't go beyond the left border
-					selected->position(x(), selected->y());
-				else
-				if (real_x+selected->w() > ae->coverX+x())         // don't go beyond the right border
-					selected->position(ae->coverX+x()-selected->w(), selected->y());
-				else {
-					if (ae->gridTool->isOn()) {
-						int snpx = ae->gridTool->getSnapPoint(real_x-x()) + x() -1;
-						selected->position(snpx, selected->y());
-					}
-					else
-						selected->position(real_x, selected->y());
-				}
-			}
-			redraw();
-			ret = 1;
-			break;
-		}
-
-		case FL_PUSH:	{
-
-			if (Fl::event_button1()) {
-
-				/* avoid at all costs two overlapping actions. We use 'selected' because
-				 * the selected action can be reused in FL_DRAG, in case you want to move
-				 * it. */
-
-				selected = getSelectedAction();
-
-				if (selected == nullptr) {
-
-					/* avoid click on grey area */
-
-					if (Fl::event_x() >= ae->coverX) {
-						ret = 1;
-						break;
-					}
-
-					/* snap function, if enabled */
-
-					int ax = Fl::event_x();
-					int fx = (ax - x()) * ae->zoom;
-					if (ae->gridTool->isOn()) {
-						ax = ae->gridTool->getSnapPoint(ax-x()) + x() -1;
-						fx = ae->gridTool->getSnapFrame(ax-x());
-
-						/* with snap=on an action can fall onto another */
-
-						if (actionCollides(fx)) {
-							ret = 1;
-							break;
-						}
-					}
-
-					geSampleAction *a = new geSampleAction(
-							ax,                                   // x
-							y()+4,                                // y
-							h()-8,                                // h
-							fx,																		// frame_a
-							recorder::frames.size()-1,            // n. of actions recorded
-							ch,                                   // pointer to SampleChannel
-							true,                                 // record = true: record it!
-							ae->getActionType());            // type of action
-					add(a);
-					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)ch->guiChannel); // mainWindow update
-					redraw();
-					ret = 1;
-				}
-				else {
-					actionOriginalX = selected->x();
-					actionOriginalW = selected->w();
-					actionPickPoint = Fl::event_x() - selected->x();
-					ret = 1;   // for dragging
-				}
-			}
-			else
-			if (Fl::event_button3()) {
-				geSampleAction *a = getSelectedAction();
-				if (a != nullptr) {
-					a->delAction();
-					remove(a);
-					delete a;
-					G_MainWin->keyboard->setChannelWithActions((geSampleChannel*)ae->chan->guiChannel);
-					redraw();
-					ret = 1;
-				}
-			}
-			break;
-		}
-		case FL_RELEASE: {
-
-			if (selected == nullptr) {
-				ret = 1;
-				break;
-			}
-
-			/* noChanges = true when you click on an action without doing anything
-			 * (dragging or moving it). */
-
-			bool noChanges = false;
-			if (actionOriginalX == selected->x())
-				noChanges = true;
-			if (ch->mode == ChannelMode::SINGLE_PRESS &&
-					actionOriginalX+actionOriginalW != selected->x()+selected->w())
-				noChanges = false;
-
-			if (noChanges) {
-				ret = 1;
-				selected = nullptr;
-				break;
-			}
-
-			/* step 1: check if the action doesn't overlap with another one.
-			 * In case of overlap the moved action returns to the original X
-			 * value ("actionOriginalX"). */
-
-			bool overlap = false;
-			for (int i=0; i<children() && !overlap; i++) {
-
-				/* never check against itself. */
-
-				if ((geSampleAction*)child(i) == selected)
-					continue;
-
-				int action_x  = ((geSampleAction*)child(i))->x();
-				int action_w  = ((geSampleAction*)child(i))->w();
-				if (ch->mode == ChannelMode::SINGLE_PRESS) {
-
-					/* when 2 segments overlap?
-					 * start = the highest value between the two starting points
-					 * end   = the lowest value between the two ending points
-					 * if start < end then there's an overlap of end-start pixels. */
-
-					 int start = action_x >= selected->x() ? action_x : selected->x();
-					 int end   = action_x+action_w < selected->x()+selected->w() ? action_x+action_w : selected->x()+selected->w();
-					 if (start < end) {
-						selected->resize(actionOriginalX, selected->y(), actionOriginalW, selected->h());
-						redraw();
-						overlap = true;   // one overlap: stop checking
-					}
-				}
-				else {
-					if (selected->x() == action_x) {
-						selected->position(actionOriginalX, selected->y());
-						redraw();
-						overlap = true;   // one overlap: stop checking
-					}
-				}
-			}
-
-			/* step 2: no overlap? then update the coordinates of the action, ie
-			 * delete the previous rec and create a new one.
-			 * Anyway the selected action becomes nullptr, because when you release
-			 * the mouse button the dragging process ends. */
-
-			if (!overlap) {
-				if (ae->gridTool->isOn()) {
-					int f = ae->gridTool->getSnapFrame(selected->absx());
-					selected->moveAction(f);
-				}
-				else
-					selected->moveAction();
-			}
-			selected = nullptr;
-			ret = 1;
-			break;
-		}
-	}
-	return ret;
-#endif
-
 }

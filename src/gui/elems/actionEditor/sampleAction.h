@@ -62,6 +62,8 @@ public:
 	void setLeftEdge(int p);
 	void setRightEdge(int p);
 
+	void setPosition(int p);
+
 	bool  onRightEdge;
 	bool  onLeftEdge;
 	bool  hovered;
