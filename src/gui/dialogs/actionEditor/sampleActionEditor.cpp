@@ -117,13 +117,21 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
+void gdSampleActionEditor::rebuild()
+{
+	ac->rebuild();
+	//mc->rebuild();
+	//vc->rebuild();	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void gdSampleActionEditor::zoomIn()
 {
 	gdBaseActionEditor::zoomIn();
-
-	ac->rebuild();
-	//mc->rebuild();
-	//vc->rebuild();
+	rebuild();
 }
 
 
@@ -133,9 +141,6 @@ void gdSampleActionEditor::zoomIn()
 void gdSampleActionEditor::zoomOut()
 {
 	gdBaseActionEditor::zoomOut();
-
-	ac->rebuild();	
-	//mc->rebuild();
-	//vc->rebuild();
+	rebuild();
 }
 } // giada::

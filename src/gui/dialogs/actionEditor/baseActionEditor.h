@@ -69,6 +69,12 @@ public:
 
 	virtual ~gdBaseActionEditor();
 
+	/* rebuild
+	Forces all internal widgets to rebuild themselves. Used when refreshing the
+	whole Action Editor window. */
+	
+	virtual void rebuild() = 0;
+	
 	virtual void zoomIn();
 	virtual void zoomOut();
 

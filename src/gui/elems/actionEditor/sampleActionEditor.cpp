@@ -52,12 +52,6 @@ geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
     action            (nullptr)
 {
 	rebuild();
-
-	/* If channel is LOOP_ANY, deactivate it: a loop mode channel cannot hold 
-	keypress/keyrelease actions. */
-	
-	if (ch->isAnyLoopMode())
-		deactivate();
 }
 
 
@@ -106,6 +100,11 @@ void geSampleActionEditor::rebuild()
 		add(a);
 		resizable(a);
 	}
+
+	/* If channel is LOOP_ANY, deactivate it: a loop mode channel cannot hold 
+	keypress/keyrelease actions. */
+	
+	ch->isAnyLoopMode() ? deactivate() : activate();
 
 	redraw();
 }

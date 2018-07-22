@@ -42,7 +42,7 @@
 #include "../core/graphics.h"
 #include "../gui/dialogs/gd_warnings.h"
 #include "../gui/dialogs/gd_mainWindow.h"
-#include "../gui/dialogs/gd_actionEditor.h"
+#include "../gui/dialogs/actionEditor/baseActionEditor.h"
 #include "../gui/dialogs/window.h"
 #include "../gui/dialogs/sampleEditor.h"
 #include "../gui/elems/mainWindow/mainIO.h"
@@ -57,10 +57,11 @@
 #include "gui.h"
 
 
-extern gdMainWindow *G_MainWin;
+extern gdMainWindow* G_MainWin;
 
 
 using std::string;
+using namespace giada;
 using namespace giada::m;
 
 
@@ -180,21 +181,16 @@ void gu_openSubWindow(gdWindow* parent, gdWindow* child, int id)
 
 void gu_refreshActionEditor()
 {
-	/** TODO - why don't we simply call WID_ACTION_EDITOR->redraw()? */
-
-	gdActionEditor* aeditor = (gdActionEditor*) G_MainWin->getChild(WID_ACTION_EDITOR);
-	if (aeditor) {
-		Channel *chan = aeditor->chan;
-		G_MainWin->delSubWindow(WID_ACTION_EDITOR);
-		gu_openSubWindow(G_MainWin, new gdActionEditor(chan), WID_ACTION_EDITOR);
-	}
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(G_MainWin->getChild(WID_ACTION_EDITOR));
+	if (ae != nullptr)
+		ae->rebuild();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-gdWindow *gu_getSubwindow(gdWindow *parent, int id)
+gdWindow* gu_getSubwindow(gdWindow* parent, int id)
 {
 	if (parent->hasWindow(id))
 		return parent->getChild(id);
@@ -221,19 +217,19 @@ void gu_closeAllSubwindows()
 /* -------------------------------------------------------------------------- */
 
 
-int gu_getStringWidth(const std::string &s)
+int gu_getStringWidth(const std::string& s)
 {
-  int w = 0;
-  int h = 0;
-  fl_measure(s.c_str(), w, h);
-  return w;
+	int w = 0;
+	int h = 0;
+	fl_measure(s.c_str(), w, h);
+	return w;
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-string gu_removeFltkChars(const string &s)
+string gu_removeFltkChars(const string& s)
 {
 	string out = gu_replace(s, "/", "-");
 	out = gu_replace(out, "|", "-");

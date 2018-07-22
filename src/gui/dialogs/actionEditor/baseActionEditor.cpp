@@ -159,7 +159,6 @@ int gdBaseActionEditor::handle(int e)
 		case FL_MOUSEWHEEL:
 			Fl::event_dy() == -1 ? zoomIn() : zoomOut();
 			return 1;
-
 		default:
 			return Fl_Group::handle(e);
 	}
