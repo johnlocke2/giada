@@ -33,7 +33,6 @@
 #include "../../../core/recorder.h"
 
 
-class gdActionEditor;
 class SampleChannel;
 
 

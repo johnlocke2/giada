@@ -82,6 +82,7 @@ public:
 
 	Pixel frameToPixel(Frame f) const;
 	Frame pixelToFrame(Pixel p) const;
+	Pixel valueToPixel(float f, Pixel range) const;
 	int getActionType() const;
 
 	geChoice*   actionType;

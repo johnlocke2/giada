@@ -48,8 +48,8 @@ using namespace giada::m;
 
 geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
   : geBaseActionEditor(x, y, 200, 40),
-    ch                (ch),
-    action            (nullptr)
+    m_ch              (ch),
+    m_action          (nullptr)
 {
 	rebuild();
 }
@@ -85,10 +85,11 @@ void geSampleActionEditor::rebuild()
 	clear();
 	size(ae->fullWidth, h());
 
-	vector<mr::Composite> comps = cr::getSampleActions(ch);
+	vector<mr::Composite> comps = cr::getSampleActions(m_ch);
 
 	for (mr::Composite comp : comps) {
-		gu_log("Action [%d, %d)\n", comp.a1.frame, comp.a2.frame);
+		gu_log("[geSampleActionEditor::rebuild] Action [%d, %d)\n", 
+			comp.a1.frame, comp.a2.frame);
 		Pixel px = x() + ae->frameToPixel(comp.a1.frame);
 		Pixel py = y() + 4;
 		Pixel pw = 0;
@@ -96,7 +97,7 @@ void geSampleActionEditor::rebuild()
 		if (comp.a2.frame != -1)
 				pw = ae->frameToPixel(comp.a2.frame - comp.a1.frame);
 
-		geSampleAction* a = new geSampleAction(px, py, pw, ph, ch, comp.a1, comp.a2);
+		geSampleAction* a = new geSampleAction(px, py, pw, ph, m_ch, comp.a1, comp.a2);
 		add(a);
 		resizable(a);
 	}
@@ -104,7 +105,7 @@ void geSampleActionEditor::rebuild()
 	/* If channel is LOOP_ANY, deactivate it: a loop mode channel cannot hold 
 	keypress/keyrelease actions. */
 	
-	ch->isAnyLoopMode() ? deactivate() : activate();
+	m_ch->isAnyLoopMode() ? deactivate() : activate();
 
 	redraw();
 }
@@ -123,7 +124,7 @@ void geSampleActionEditor::draw()
 	/* Print label. */
 
 	fl_color(G_COLOR_GREY_4);
-	fl_font(FL_HELVETICA, 12);
+	fl_font(FL_HELVETICA, G_GUI_FONT_SIZE_BASE);
 	if (active())
 		fl_draw("start/stop", x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT | FL_ALIGN_CENTER));
 	else
@@ -140,25 +141,25 @@ int geSampleActionEditor::onPush()
 {
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 	
-	action = getActionAtCursor();
+	m_action = getActionAtCursor();
 
-	if (Fl::event_button1()) {  // Left button
-		if (action == nullptr) {  // No action under cursor: add a new one
+	if (Fl::event_button1()) {    // Left button
+		if (m_action == nullptr) {  // No action under cursor: add a new one
 			if (Fl::event_x() >= ae->loopWidth) // Avoid click on grey area
 				return 0;
 			Frame f = ae->pixelToFrame(Fl::event_x() - x());
-			c::recorder::recordSampleAction(ch, ae->getActionType(), f);
+			c::recorder::recordSampleAction(m_ch, ae->getActionType(), f);
 			rebuild();
 		}
 		else {                     // Action under cursor: get ready for move/resize
-			action->pick = Fl::event_x() - action->x();
+			m_action->pick = Fl::event_x() - m_action->x();
 		}
 	}
 	else
 	if (Fl::event_button3()) {  // Right button
-		if (action != nullptr) {
-			c::recorder::deleteSampleAction(ch, action->a1, action->a2);
-			action = nullptr;
+		if (m_action != nullptr) {
+			c::recorder::deleteSampleAction(m_ch, m_action->a1, m_action->a2);
+			m_action = nullptr;
 			rebuild();	
 		}
 	}
@@ -172,9 +173,9 @@ int geSampleActionEditor::onPush()
 
 int geSampleActionEditor::onDrag()
 {
-	if (action == nullptr)
+	if (m_action == nullptr)
 		return 0;
-	if (action->isOnEdges())
+	if (m_action->isOnEdges())
 		resizeAction();
 	else
 		moveAction();
@@ -189,11 +190,11 @@ void geSampleActionEditor::moveAction()
 {
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	Pixel ex = Fl::event_x() - action->pick;
+	Pixel ex = Fl::event_x() - m_action->pick;
 	if      (ex < x()) ex = x();
-	else if (ex + action->w() > ae->loopWidth + x()) ex = ae->loopWidth + x() - action->w();
+	else if (ex + m_action->w() > ae->loopWidth + x()) ex = ae->loopWidth + x() - m_action->w();
 
-	action->setPosition(ex);
+	m_action->setPosition(ex);
 	redraw();
 }
 
@@ -209,10 +210,10 @@ void geSampleActionEditor::resizeAction()
 	if      (ex < x()) ex = x();
 	else if (ex > ae->loopWidth + x()) ex = ae->loopWidth + x();
 
-	if (action->onRightEdge) 
-		action->setRightEdge(ex - action->x());
+	if (m_action->onRightEdge) 
+		m_action->setRightEdge(ex - m_action->x());
 	else
-		action->setLeftEdge(ex);
+		m_action->setLeftEdge(ex);
 	redraw();
 }
 
@@ -222,18 +223,18 @@ void geSampleActionEditor::resizeAction()
 
 int geSampleActionEditor::onRelease()
 {
-	if (action == nullptr)
+	if (m_action == nullptr)
 		return 0;
 
 	/* TODO - do this only if the action has been really altered */
 
 	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
 
-	Frame f1 = ae->pixelToFrame(action->x() - x());
-	Frame f2 = ae->pixelToFrame(action->x() + action->w() - x());
-	c::recorder::deleteSampleAction(ch, action->a1, action->a2);
-	c::recorder::recordSampleAction(ch, ae->getActionType(), f1, f2);
-	action = nullptr;
+	Frame f1 = ae->pixelToFrame(m_action->x() - x());
+	Frame f2 = ae->pixelToFrame(m_action->x() + m_action->w() - x());
+	c::recorder::deleteSampleAction(m_ch, m_action->a1, m_action->a2);
+	c::recorder::recordSampleAction(m_ch, ae->getActionType(), f1, f2);
+	m_action = nullptr;
 
 	rebuild();
 

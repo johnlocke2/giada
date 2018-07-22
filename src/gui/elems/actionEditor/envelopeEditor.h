@@ -1,11 +1,8 @@
-/* ---------------------------------------------------------------------
+/* -----------------------------------------------------------------------------
  *
  * Giada - Your Hardcore Loopmachine
  *
- * parent class of any envelope controller, from volume to VST parameter
- * automations.
- *
- * ---------------------------------------------------------------------
+ * -----------------------------------------------------------------------------
  *
  * Copyright (C) 2010-2018 Giovanni A. Zuliani | Monocasual
  *
@@ -25,12 +22,37 @@
  * along with Giada - Your Hardcore Loopmachine. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * ------------------------------------------------------------------ */
+ * -------------------------------------------------------------------------- */
+
 
 #ifndef GE_ENVELOPE_EDITOR_H
 #define GE_ENVELOPE_EDITOR_H
 
 
+#include "baseActionEditor.h"
+
+
+class geEnvelopeEditor : public geBaseActionEditor
+{
+private:
+
+	std::vector<const giada::m::recorder::action*> m_actions;
+
+public:
+
+	geEnvelopeEditor(int x, int y, int type, int range, const char* l);
+
+	void draw() override;
+	int handle(int e) override;
+
+	void rebuild() override;
+
+	void fill(std::vector<const giada::m::recorder::action*> actions);
+};
+
+
+
+#if 0
 #include <vector>
 #include "baseActionEditor.h"
 
@@ -110,5 +132,8 @@ public:
 
 	inline void clearPoints() { points.clear(); }
 };
+
+#endif
+
 
 #endif

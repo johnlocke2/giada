@@ -65,6 +65,9 @@ editor as pairs of NoteOn+NoteOff. */
 std::vector<m::recorder::Composite> getMidiActions(int channel, 
 	int frameLimit);
 
+std::vector<const m::recorder::action*> getEnvelopeActions(const SampleChannel* ch,
+	int type);
+
 /* getSampleActions
 Returns a list of Composite actions, ready to be displayed in a Sample Action
 Editor. If actions are not keypress+keyrelease combos, the second action in

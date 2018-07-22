@@ -25,48 +25,30 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef GE_SAMPLE_ACTION_EDITOR_H
-#define GE_SAMPLE_ACTION_EDITOR_H
+#ifndef GE_ENVELOPE_POINT_H
+#define GE_ENVELOPE_POINT_H
 
 
-#include "baseActionEditor.h"
+#include <FL/Fl_Box.H>
+#include "../../../core/recorder.h"
 
 
-class geSampleAction;
-class SampleChannel;
-
-
-class geSampleActionEditor : public geBaseActionEditor
+class geEnvelopePoint : public Fl_Box
 {
 private:
 
-	SampleChannel* m_ch;
-
-	/* action
-	Pointer to the selected action. Used when dragging action around. */
-
-	geSampleAction* m_action;
-
-	void moveAction();
-	void resizeAction();
-
-	/* getActionAtCursor
-	Returns the action under the mouse. nullptr if nothing found. */
-
-	geSampleAction* getActionAtCursor();
-
-	int onPush();
-	int onDrag();
-	int onRelease();
+	const giada::m::recorder::action* m_action;
 
 public:
 
-	geSampleActionEditor(int x, int y, SampleChannel* ch);
+	static const int SIDE = 12;
+
+	geEnvelopePoint(int x, int y, const giada::m::recorder::action* a);
 
 	void draw() override;
 	int  handle(int e) override;
 
-	void rebuild() override;
+	bool hovered;
 };
 
 

@@ -28,6 +28,7 @@
 #include "../../../core/const.h"
 #include "../../../core/graphics.h"
 #include "../../../core/sampleChannel.h"
+#include "../../../glue/recorder.h"
 #include "../../../utils/gui.h"
 #include "../../../utils/string.h"
 #include "../../elems/basics/scroll.h"
@@ -84,19 +85,20 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 
 	viewport = new geScroll(8, 36, w()-16, h()-44);
 
-	ac = new geSampleActionEditor(viewport->x(), upperArea->y()+upperArea->h()+8, ch);
-	//mc = new geMuteEditor        (viewport->x(), ac->y()+ac->h()+8);
-	//vc = new geEnvelopeEditor    (viewport->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
+	ac = new geSampleActionEditor(viewport->x(), viewport->y(), ch);
 	viewport->add(ac);
 	viewport->add(new geResizerBar(ac->x(), ac->y()+ac->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
+	
+	vc = new geEnvelopeEditor(viewport->x(), ac->y()+ac->h()+RESIZER_BAR_H, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume");
+	viewport->add(vc);
+	viewport->add(new geResizerBar(vc->x(), vc->y()+vc->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
+	
+	//mc = new geMuteEditor        (viewport->x(), ac->y()+ac->h()+8);
 	//viewport->add(mc);
-	//viewport->add(vc);
-
-	/* fill volume envelope with actions from recorder */
-	/* TODO - move this to geEnvelopeEditor constructor*/
-	//vc->fill();
-
+	
 	end();
+
+	vc->fill(c::recorder::getEnvelopeActions(ch, G_ACTION_VOLUME));
 
 	/* Compute values. */
 
@@ -121,7 +123,7 @@ void gdSampleActionEditor::rebuild()
 {
 	ac->rebuild();
 	//mc->rebuild();
-	//vc->rebuild();	
+	vc->rebuild();	
 }
 
 

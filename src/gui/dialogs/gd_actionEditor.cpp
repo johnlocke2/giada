@@ -116,7 +116,7 @@ gdActionEditor::gdActionEditor(Channel* chan)
 
 		/* fill volume envelope with actions from recorder */
 
-		vc->fill();
+		//vc->fill();
 
 		/* if channel is LOOP_ANY, deactivate it: a loop mode channel cannot
 		 * hold keypress/keyrelease actions */

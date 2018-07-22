@@ -2,11 +2,6 @@
  *
  * Giada - Your Hardcore Loopmachine
  *
- * envelopeEditor
- *
- * Parent class of any envelope controller, from volume to VST parameter
- * automations.
- *
  * -----------------------------------------------------------------------------
  *
  * Copyright (C) 2010-2018 Giovanni A. Zuliani | Monocasual
@@ -31,17 +26,106 @@
 
 
 #include <FL/fl_draw.H>
-#include "../../../core/channel.h"
+#include "../../../utils/log.h"
 #include "../../../core/recorder.h"
-#include "../../../core/mixer.h"
-#include "../../../core/clock.h"
-#include "../../dialogs/gd_actionEditor.h"
-#include "../../dialogs/gd_mainWindow.h"
-#include "../mainWindow/keyboard/keyboard.h"
-#include "gridTool.h"
+#include "../../../core/const.h"
+#include "../../dialogs/actionEditor/baseActionEditor.h"
+#include "envelopePoint.h"
 #include "envelopeEditor.h"
 
 
+using namespace giada;
+
+
+geEnvelopeEditor::geEnvelopeEditor(int x, int y, int type, int range, const char* l)
+	:	geBaseActionEditor(x, y, 200, 40)
+		/*type              (type),
+		range             (range),
+		selectedPoint     (-1),
+		draggedPoint      (-1)*/
+{
+	copy_label(l);
+	rebuild();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geEnvelopeEditor::draw() 
+{
+	baseDraw();
+
+	/* Print label. */
+
+	fl_color(G_COLOR_GREY_4);
+	fl_font(FL_HELVETICA, G_GUI_FONT_SIZE_BASE);
+	fl_draw(label(), x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT));
+
+	draw_children();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geEnvelopeEditor::handle(int e)
+{
+	switch (e) {
+		case FL_PUSH:
+			//return onPush();
+		case FL_DRAG:
+			//return onDrag();
+		case FL_RELEASE:
+			//return onRelease();
+		default:
+			return Fl_Group::handle(e);
+	}
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geEnvelopeEditor::rebuild()
+{
+	namespace mr = m::recorder;
+
+	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+
+	/* Remove all existing actions and set a new width, according to the current
+	zoom level. */
+
+	clear();
+	size(ae->fullWidth, h());
+
+	Pixel pd = geEnvelopePoint::SIDE / 2;
+	for (const mr::action* a : m_actions) {
+		gu_log("[geEnvelopeEditor::rebuild] Action %d\n", a->frame);
+		Pixel px = x() + ae->frameToPixel(a->frame) - pd;
+		Pixel py = y() + ae->valueToPixel(a->fValue, h()) - pd;
+
+		add(new geEnvelopePoint(px, py, a)); 		
+	}
+
+	resizable(nullptr);
+
+	redraw();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geEnvelopeEditor::fill(std::vector<const m::recorder::action*> actions)
+{
+	m_actions = actions;
+	rebuild();
+}
+
+
+
+#if 0
 extern gdMainWindow *G_MainWin;
 
 
@@ -423,3 +507,5 @@ void geEnvelopeEditor::fill()
 		}
 
 }
+
+#endif

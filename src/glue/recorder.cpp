@@ -232,6 +232,36 @@ vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
+vector<const m::recorder::action*> getEnvelopeActions(const SampleChannel* ch,
+	int type)
+{
+	namespace mr = m::recorder;
+
+	vector<const mr::action*> out;
+
+	mr::sortActions();
+	mr::forEachAction([&](const mr::action* a)
+	{
+		/* Exclude:
+		- actions beyond clock::getFramesInLoop();
+		- actions that don't belong to channel ch;
+		- actions with wrong type. */
+
+		if (a->frame > m::clock::getFramesInLoop() || 
+			  a->chan != ch->index                   || 
+			  a->type != type)
+			return;
+
+		out.push_back(a);
+	});
+
+	return out;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 vector<m::recorder::Composite> getMidiActions(int chan, int frameLimit)
 {
 	vector<m::recorder::Composite> out;

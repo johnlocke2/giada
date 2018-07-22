@@ -25,49 +25,47 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef GE_SAMPLE_ACTION_EDITOR_H
-#define GE_SAMPLE_ACTION_EDITOR_H
+#include <FL/fl_draw.H>
+#include "../../../core/const.h"
+#include "envelopePoint.h"
 
 
-#include "baseActionEditor.h"
+using namespace giada;
 
 
-class geSampleAction;
-class SampleChannel;
-
-
-class geSampleActionEditor : public geBaseActionEditor
+geEnvelopePoint::geEnvelopePoint(int X, int Y, const m::recorder::action* a)
+	: Fl_Box     (X, Y, SIDE, SIDE),
+	  m_action   (a),
+	  hovered    (false)
 {
-private:
-
-	SampleChannel* m_ch;
-
-	/* action
-	Pointer to the selected action. Used when dragging action around. */
-
-	geSampleAction* m_action;
-
-	void moveAction();
-	void resizeAction();
-
-	/* getActionAtCursor
-	Returns the action under the mouse. nullptr if nothing found. */
-
-	geSampleAction* getActionAtCursor();
-
-	int onPush();
-	int onDrag();
-	int onRelease();
-
-public:
-
-	geSampleActionEditor(int x, int y, SampleChannel* ch);
-
-	void draw() override;
-	int  handle(int e) override;
-
-	void rebuild() override;
-};
+}
 
 
-#endif
+/* -------------------------------------------------------------------------- */
+
+
+int geEnvelopePoint::handle(int e)
+{
+	switch (e) {
+		case FL_ENTER:
+			hovered = true;
+			redraw();
+			return 1;
+		case FL_LEAVE:
+			hovered = false;
+			redraw();
+			return 1;
+		default:
+			return Fl_Widget::handle(e);
+	}
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geEnvelopePoint::draw()
+{
+	int color = hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1; 
+	fl_rectf(x(), y(), w(), h(), (Fl_Color) color);
+}

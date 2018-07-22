@@ -35,7 +35,6 @@
 #include "sampleAction.h"
 
 
-using std::vector;
 using namespace giada;
 using namespace giada::m;
 
