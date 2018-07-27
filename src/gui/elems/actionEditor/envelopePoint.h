@@ -35,10 +35,6 @@
 
 class geEnvelopePoint : public Fl_Box
 {
-private:
-
-	const giada::m::recorder::action* m_action;
-
 public:
 
 	static const int SIDE = 12;
@@ -48,6 +44,7 @@ public:
 	void draw() override;
 	int  handle(int e) override;
 
+	const giada::m::recorder::action* action;
 	bool hovered;
 };
 

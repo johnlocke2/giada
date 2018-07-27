@@ -31,17 +31,25 @@
 
 
 #include <FL/Fl_Group.H>
+#include "../../dialogs/actionEditor/baseActionEditor.h"
+
+
+class SampleChannel;
 
 
 class geBaseActionEditor : public Fl_Group
 {
 protected:
 
+	SampleChannel* m_ch;
+
+	giada::gdBaseActionEditor* m_base;
+
   void baseDraw(bool clear=true) const;
 
 public:
 
-	geBaseActionEditor(int x, int y, int w, int h);
+	geBaseActionEditor(int x, int y, int w, int h, SampleChannel* ch);
 
   /* updateActions
   Rebuild the actions widgets from scratch. */

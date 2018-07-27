@@ -27,7 +27,6 @@
 
 #include <FL/fl_draw.H>
 #include "../../../core/const.h"
-#include "../../dialogs/actionEditor/baseActionEditor.h"
 #include "gridTool.h"
 #include "baseActionEditor.h"
 
@@ -35,8 +34,11 @@
 using namespace giada;
 
 
-geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h)
-	:	Fl_Group(x, y, w, h) 
+geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h, SampleChannel* ch)
+	:	Fl_Group(x, y, w, h),
+	  m_ch    (ch),
+	  m_base  (static_cast<gdBaseActionEditor*>(window()))
+
 {
 }
 
@@ -46,8 +48,6 @@ geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h)
 
 void geBaseActionEditor::baseDraw(bool clear) const
 {
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
-
 	/* Clear the screen. */
 
 	if (clear)
@@ -60,13 +60,13 @@ void geBaseActionEditor::baseDraw(bool clear) const
 
 	/* Grid drawing, if > 1. */
 
-	if (ae->gridTool->getValue() > 1) {
+	if (m_base->gridTool->getValue() > 1) {
 
 		fl_color(fl_rgb_color(54, 54, 54));
 		fl_line_style(FL_DASH, 0, nullptr);
 
-		for (int i=0; i<(int) ae->gridTool->points.size(); i++) {
-			int px = ae->gridTool->points.at(i)+x()-1;
+		for (int i=0; i<(int) m_base->gridTool->points.size(); i++) {
+			int px = m_base->gridTool->points.at(i)+x()-1;
 			fl_line(px, y()+1, px, y()+h()-2);
 		}
 		fl_line_style(0);
@@ -75,20 +75,20 @@ void geBaseActionEditor::baseDraw(bool clear) const
 	/* Bars and beats drawing. */
 
 	fl_color(G_COLOR_GREY_4);
-	for (int i=0; i<(int) ae->gridTool->beats.size(); i++) {
-		int px = ae->gridTool->beats.at(i)+x()-1;
+	for (int i=0; i<(int) m_base->gridTool->beats.size(); i++) {
+		int px = m_base->gridTool->beats.at(i)+x()-1;
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
 
 	fl_color(G_COLOR_LIGHT_1);
-	for (int i=0; i<(int) ae->gridTool->bars.size(); i++) {
-		int px = ae->gridTool->bars.at(i)+x()-1;
+	for (int i=0; i<(int) m_base->gridTool->bars.size(); i++) {
+		int px = m_base->gridTool->bars.at(i)+x()-1;
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
 
 	/* Cover unused area. Avoid drawing cover if width == 0 (i.e. beats are 32). */
 
-	int coverWidth = ae->fullWidth - ae->loopWidth;
+	int coverWidth = m_base->fullWidth - m_base->loopWidth;
 	if (coverWidth != 0)
-		fl_rectf(ae->loopWidth+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
+		fl_rectf(m_base->loopWidth+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
 }

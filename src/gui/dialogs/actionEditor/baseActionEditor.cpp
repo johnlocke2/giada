@@ -111,10 +111,16 @@ Frame gdBaseActionEditor::pixelToFrame(Pixel p) const
 
 Pixel gdBaseActionEditor::valueToPixel(float f, Pixel range) const
 {
-	/* Using the equation of a line between two points: y = (b-a)x + a */
+	/* Equation of a line between two points: y = (b-a)x + a */
 	return ((1 - range) * f) + range;
 }
 
+
+float gdBaseActionEditor::pixelToValue(Pixel p, Pixel range) const
+{
+	/* Equation of a line between two points: y = (x-a) / (1-a) */
+	return (p - range) / (float) (1 - range);
+}
 
 
 /* -------------------------------------------------------------------------- */

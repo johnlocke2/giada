@@ -48,7 +48,7 @@ using namespace giada;
 
 
 gePianoRoll::gePianoRoll(int X, int Y, int W)
-	: geBaseActionEditor(X, Y, W, 40)
+	: geBaseActionEditor(X, Y, W, 40, nullptr)
 {
 
 	resizable(nullptr);                   // don't resize children (i.e. pianoItem)

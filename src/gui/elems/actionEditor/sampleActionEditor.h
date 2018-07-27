@@ -40,8 +40,6 @@ class geSampleActionEditor : public geBaseActionEditor
 {
 private:
 
-	SampleChannel* m_ch;
-
 	/* action
 	Pointer to the selected action. Used when dragging action around. */
 

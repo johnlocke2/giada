@@ -34,9 +34,9 @@ using namespace giada;
 
 
 geEnvelopePoint::geEnvelopePoint(int X, int Y, const m::recorder::action* a)
-	: Fl_Box     (X, Y, SIDE, SIDE),
-	  m_action   (a),
-	  hovered    (false)
+	: Fl_Box (X, Y, SIDE, SIDE),
+	  action (a),
+	  hovered(false)
 {
 }
 

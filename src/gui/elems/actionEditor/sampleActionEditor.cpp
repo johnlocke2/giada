@@ -47,8 +47,7 @@ using namespace giada::m;
 
 
 geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
-  : geBaseActionEditor(x, y, 200, 40),
-    m_ch              (ch),
+  : geBaseActionEditor(x, y, 200, 40, ch),
     m_action          (nullptr)
 {
 	rebuild();

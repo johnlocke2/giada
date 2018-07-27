@@ -154,13 +154,32 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 
 void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b)
 {
+	/* TODO - use G_DEFAULT_MIDI_ACTION_SIZE (and change it to G_DEFAULT_ACTION_SIZE) */
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
 		m::recorder::rec(ch->index, G_ACTION_KEYPRESS, frame_a);
-		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame_b == -1 ? frame_a + 4096 : frame_b);
+		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame_b == 0 ? frame_a + 4096 : frame_b);
 	}
-	else {
+	else
 		m::recorder::rec(ch->index, type, frame_a);
-	}	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+
+void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fValue)
+{
+	m::recorder::rec(ch->index, type, frame, 0, fValue);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a)
+{
+	m::recorder::deleteAction(ch->index, a->frame, a->type, false, &m::mixer::mutex);
 }
 
 

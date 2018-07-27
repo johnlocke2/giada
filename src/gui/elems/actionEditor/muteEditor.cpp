@@ -46,7 +46,7 @@ using namespace giada::m;
 
 
 geMuteEditor::geMuteEditor(int x, int y)
- : geBaseActionEditor(x, y, 200, 80),
+ : geBaseActionEditor(x, y, 200, 80, nullptr),
    draggedPoint      (-1),
    selectedPoint     (-1)
 {

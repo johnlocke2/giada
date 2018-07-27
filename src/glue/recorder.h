@@ -55,8 +55,11 @@ size. This function is designed for the Piano Roll (not for live recording). */
 
 void recordMidiAction(int chan, int note, int frame_a, int frame_b=0);
 
-void recordSampleAction(const SampleChannel* ch, int type, int frame_a, 
-	int frame_b=-1);
+void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b=0);
+
+void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fValue);
+
+void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a);
 
 /* getMidiActions
 Returns a list of Composite actions, ready to be displayed in a MIDI note

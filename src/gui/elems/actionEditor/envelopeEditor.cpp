@@ -29,17 +29,21 @@
 #include "../../../utils/log.h"
 #include "../../../core/recorder.h"
 #include "../../../core/const.h"
+#include "../../../glue/recorder.h"
 #include "../../dialogs/actionEditor/baseActionEditor.h"
 #include "envelopePoint.h"
 #include "envelopeEditor.h"
 
 
+using std::vector;
 using namespace giada;
 
 
-geEnvelopeEditor::geEnvelopeEditor(int x, int y, int type, int range, const char* l)
-	:	geBaseActionEditor(x, y, 200, 40)
-		/*type              (type),
+geEnvelopeEditor::geEnvelopeEditor(int x, int y, int actionType, int range, 
+	const char* l, SampleChannel* ch)
+	:	geBaseActionEditor(x, y, 200, 40, ch),	
+	  m_point           (nullptr),
+	  m_actionType      (actionType)/*
 		range             (range),
 		selectedPoint     (-1),
 		draggedPoint      (-1)*/
@@ -62,7 +66,96 @@ void geEnvelopeEditor::draw()
 	fl_font(FL_HELVETICA, G_GUI_FONT_SIZE_BASE);
 	fl_draw(label(), x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT));
 
+	/* Reposition points on y axis, only if there's no point selected (dragged
+	around). */
+
+	if (m_point == nullptr) {
+		for (int i=0; i<children(); i++) {
+			geEnvelopePoint* p = static_cast<geEnvelopePoint*>(child(i));
+			p->position(p->x(), calcPointY(p->action->fValue));
+		}
+	}
+
 	draw_children();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geEnvelopeEditor::onPush()
+{
+	m_point = getPointAtCursor();
+
+	if (Fl::event_button1()) {    // Left button
+		if (m_point == nullptr) {   // No action under cursor: add a new one
+			if (Fl::event_x() >= m_base->loopWidth) // Avoid click on grey area
+				return 0;
+			Frame f = m_base->pixelToFrame(Fl::event_x() - x());
+			float v = m_base->pixelToValue(Fl::event_y() - y(), h());
+			c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
+			rebuild();
+		}
+	}
+	else
+	if (Fl::event_button3()) {    // Right button
+		if (m_point != nullptr) {
+			c::recorder::deleteEnvelopeAction(m_ch, m_point->action);
+			m_point = nullptr;
+			rebuild();	
+		}
+	}
+	return 1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geEnvelopeEditor::onDrag()
+{
+	if (m_point == nullptr)
+		return 0;
+
+	Pixel side = geEnvelopePoint::SIDE / 2;
+	Pixel ex   = Fl::event_x() - side;
+	Pixel ey   = Fl::event_y() - side;
+
+	Pixel x1 = x() - side;
+	Pixel x2 = m_base->loopWidth + x() - side;
+	Pixel y1 = y() - side;
+	Pixel y2 = y() + h() - side;
+
+	if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
+	if (ey < y1) ey = y1; else if (ey > y2) ey = y2;
+
+	m_point->position(ex, ey);
+	redraw();
+
+	return 1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geEnvelopeEditor::onRelease()
+{
+	if (m_point == nullptr)
+		return 0;
+
+	/* TODO - do this only if the action has been really altered */
+
+	Frame f = m_base->pixelToFrame((m_point->x() - x()) + geEnvelopePoint::SIDE / 2);
+	float v = m_base->pixelToValue((m_point->y() - y()) + geEnvelopePoint::SIDE / 2, h());
+	c::recorder::deleteEnvelopeAction(m_ch, m_point->action);
+	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
+
+	m_point = nullptr;
+
+	rebuild();
+
+	return 1;
 }
 
 
@@ -73,11 +166,11 @@ int geEnvelopeEditor::handle(int e)
 {
 	switch (e) {
 		case FL_PUSH:
-			//return onPush();
+			return onPush();
 		case FL_DRAG:
-			//return onDrag();
+			return onDrag();
 		case FL_RELEASE:
-			//return onRelease();
+			return onRelease();
 		default:
 			return Fl_Group::handle(e);
 	}
@@ -87,25 +180,36 @@ int geEnvelopeEditor::handle(int e)
 /* -------------------------------------------------------------------------- */
 
 
+geEnvelopePoint* geEnvelopeEditor::getPointAtCursor() const
+{
+	for (int i=0; i<children(); i++) {
+		geEnvelopePoint* p = static_cast<geEnvelopePoint*>(child(i));
+		if (p->hovered)
+			return p;
+	}
+	return nullptr;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void geEnvelopeEditor::rebuild()
 {
 	namespace mr = m::recorder;
-
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+	namespace cr = c::recorder;
 
 	/* Remove all existing actions and set a new width, according to the current
 	zoom level. */
 
 	clear();
-	size(ae->fullWidth, h());
+	size(m_base->fullWidth, h());
 
-	Pixel pd = geEnvelopePoint::SIDE / 2;
-	for (const mr::action* a : m_actions) {
+	vector<const mr::action*> actions = cr::getEnvelopeActions(m_ch, m_actionType);
+
+	for (const mr::action* a : actions) {
 		gu_log("[geEnvelopeEditor::rebuild] Action %d\n", a->frame);
-		Pixel px = x() + ae->frameToPixel(a->frame) - pd;
-		Pixel py = y() + ae->valueToPixel(a->fValue, h()) - pd;
-
-		add(new geEnvelopePoint(px, py, a)); 		
+		add(new geEnvelopePoint(calcPointX(a->frame), calcPointY(a->fValue), a)); 		
 	}
 
 	resizable(nullptr);
@@ -117,12 +221,16 @@ void geEnvelopeEditor::rebuild()
 /* -------------------------------------------------------------------------- */
 
 
-void geEnvelopeEditor::fill(std::vector<const m::recorder::action*> actions)
+int geEnvelopeEditor::calcPointX(int frame) const
 {
-	m_actions = actions;
-	rebuild();
+	return x() + m_base->frameToPixel(frame) - (geEnvelopePoint::SIDE / 2);
 }
 
+
+int geEnvelopeEditor::calcPointY(float value) const
+{
+	return y() + m_base->valueToPixel(value, h()) - (geEnvelopePoint::SIDE / 2);
+}
 
 
 #if 0

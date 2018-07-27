@@ -32,22 +32,42 @@
 #include "baseActionEditor.h"
 
 
+class SampleChannel;
+class geEnvelopePoint;
+
+
 class geEnvelopeEditor : public geBaseActionEditor
 {
 private:
 
-	std::vector<const giada::m::recorder::action*> m_actions;
+	/* m_point
+	Pointer to the selected point. Used when dragging things around. */
+
+	geEnvelopePoint* m_point;
+
+	/* m_actionType
+	What type of action this envelope editor is dealing with. */
+	
+	int m_actionType;
+
+	int calcPointX(int frame) const;
+	int calcPointY(float value) const;
+
+	geEnvelopePoint* getPointAtCursor() const;
+
+	int onPush();
+	int onDrag();
+	int onRelease();
 
 public:
 
-	geEnvelopeEditor(int x, int y, int type, int range, const char* l);
+	geEnvelopeEditor(int x, int y, int actionType, int range, const char* l, 
+		SampleChannel* ch);
 
 	void draw() override;
 	int handle(int e) override;
 
 	void rebuild() override;
-
-	void fill(std::vector<const giada::m::recorder::action*> actions);
 };
 
 
