@@ -95,13 +95,9 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 
 	end();
 
-	/* Compute values. */
-
-	gridTool->calc();
-
 	gu_setFavicon(this);
 
-	label(string("Edit Actions in Channel " + gu_iToString(ch->index + 1)).c_str());
+	copy_label(string("Edit Actions in Channel " + gu_iToString(ch->index + 1)).c_str());
 
 	set_non_modal();
 	size_range(640, 284);

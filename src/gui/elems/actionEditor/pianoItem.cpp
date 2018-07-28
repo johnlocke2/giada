@@ -240,8 +240,8 @@ int gePianoItem::handle(int e)
 
 				/* snapping */
 
-				if (ae->gridTool->isOn())
-					nx = ae->gridTool->getSnapPoint(nx-pr->x()) + pr->x() - 1;
+				//if (ae->gridTool->isOn())
+				//	nx = ae->gridTool->getSnapPoint(nx-pr->x()) + pr->x() - 1;
 
 				position(nx, y());
 			}

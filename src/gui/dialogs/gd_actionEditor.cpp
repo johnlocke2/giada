@@ -136,7 +136,7 @@ gdActionEditor::gdActionEditor(Channel* chan)
 	/* compute values */
 
 	update();
-	gridTool->calc();
+	//gridTool->calc();
 
 	gu_setFavicon(this);
 

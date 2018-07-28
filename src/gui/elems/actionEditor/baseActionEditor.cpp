@@ -27,6 +27,7 @@
 
 #include <FL/fl_draw.H>
 #include "../../../core/const.h"
+#include "../../../core/clock.h"
 #include "gridTool.h"
 #include "baseActionEditor.h"
 
@@ -58,24 +59,21 @@ void geBaseActionEditor::baseDraw(bool clear) const
 	fl_color(G_COLOR_GREY_4);
 	fl_rect(x(), y(), w(), h());
 
-	/* Grid drawing, if > 1. */
+	/* Grid drawing. */
 
-	if (m_base->gridTool->getValue() > 1) {
+	fl_color(fl_rgb_color(54, 54, 54));
+	fl_line_style(FL_DASH, 0, nullptr);
 
-		fl_color(fl_rgb_color(54, 54, 54));
-		fl_line_style(FL_DASH, 0, nullptr);
-
-		for (int i=0; i<(int) m_base->gridTool->points.size(); i++) {
-			int px = m_base->gridTool->points.at(i)+x()-1;
-			fl_line(px, y()+1, px, y()+h()-2);
-		}
-		fl_line_style(0);
+	for (Frame i=0; i<m::clock::getFramesInLoop(); i+=m_base->gridTool->getCellSize()) {
+		Pixel p = m_base->frameToPixel(i) + x();
+		fl_line(p, y()+1, p, y()+h()-2);
 	}
+	fl_line_style(0);
 
 	/* Bars and beats drawing. */
 
 	fl_color(G_COLOR_GREY_4);
-	for (int i=0; i<(int) m_base->gridTool->beats.size(); i++) {
+/*	for (int i=0; i<(int) m_base->gridTool->beats.size(); i++) {
 		int px = m_base->gridTool->beats.at(i)+x()-1;
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
@@ -85,7 +83,7 @@ void geBaseActionEditor::baseDraw(bool clear) const
 		int px = m_base->gridTool->bars.at(i)+x()-1;
 		fl_line(px, y()+1, px, y()+h()-2);
 	}
-
+*/
 	/* Cover unused area. Avoid drawing cover if width == 0 (i.e. beats are 32). */
 
 	int coverWidth = m_base->fullWidth - m_base->loopWidth;

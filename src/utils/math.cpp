@@ -42,6 +42,17 @@ float linearToDB(float f)
 /* -------------------------------------------------------------------------- */
 
 
+Frame quantize(Frame x, Frame step)
+{
+	/* Source:
+	https://en.wikipedia.org/wiki/Quantization_(signal_processing)#Rounding_example */
+	return step * floor((x / (float) step) + 0.5f);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 float dBtoLinear(float f)
 {
 	return std::pow(10, f/20.0f); 

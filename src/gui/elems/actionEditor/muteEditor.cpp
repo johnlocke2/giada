@@ -379,9 +379,9 @@ int geMuteEditor::handle(int e)
 				else
 				if (mouseX >= nextPoint)
 					points.at(draggedPoint).x = nextPoint;
-				else
-				if (ae->gridTool->isOn())
-					points.at(draggedPoint).x = ae->gridTool->getSnapPoint(mouseX)-1;
+				//else
+				//if (ae->gridTool->isOn())
+				//	points.at(draggedPoint).x = ae->gridTool->getSnapPoint(mouseX)-1;
 				else
 					points.at(draggedPoint).x = mouseX;
 

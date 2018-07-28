@@ -33,6 +33,7 @@
 #include "../../../core/const.h"
 #include "../../../core/clock.h"
 #include "../../../core/sampleChannel.h"
+#include "../../elems/actionEditor/gridTool.h"
 #include "../../elems/basics/scroll.h"
 #include "../../elems/basics/button.h"
 #include "../../elems/basics/resizerBar.h"
@@ -105,7 +106,7 @@ Pixel gdBaseActionEditor::frameToPixel(Frame f) const
 
 Frame gdBaseActionEditor::pixelToFrame(Pixel p) const
 {
-	return p * ratio;
+	return gridTool->getSnapFrame(p * ratio);
 }
 
 

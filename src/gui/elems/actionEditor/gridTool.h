@@ -52,27 +52,16 @@ public:
 	geGridTool(int x, int y);
 	~geGridTool();
 
-	int  getValue();
-	bool isOn();
-	void calc();
+	int  getValue() const;
+	bool isOn() const;
 
-	/* getSnapPoint
-	 * given a cursor position in input, return the x coordinates of the
-	 * nearest snap point (in pixel, clean, ie. not x()-shifted) */
-
-	int getSnapPoint(int v);
-	int getSnapFrame(int v);
+	int getSnapFrame(int f) const;
 
 	/* getCellSize
-	 * return the size in pixel of a single cell of the grid. */
+	 * return the size in frames of a single cell of the grid. */
 
-	int getCellSize();
+	int getCellSize() const;
 
-	std::vector<int> points;   // points of the grid
-	std::vector<int> frames;   // frames of the grid
-
-	std::vector<int> bars;
-	std::vector<int> beats;
 };
 
 
