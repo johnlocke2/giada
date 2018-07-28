@@ -25,6 +25,7 @@
  * -------------------------------------------------------------------------- */
 
 
+#include <cassert>
 #include "const.h"
 #include "conf.h"
 #include "clock.h"
@@ -90,8 +91,8 @@ void calcVolumeEnv_(SampleChannel* ch, int globalFrame)
 	 * is not found. */
 
 	res = recorder::getAction(ch->index, G_ACTION_VOLUME, globalFrame, &a0);
-	if (res == 0)
-		return;
+
+	assert(res != 0);
 
 	/* get the action next to this one.
 	 * res == -1: a1 not found, this is the last one. Rewind the search
@@ -99,9 +100,10 @@ void calcVolumeEnv_(SampleChannel* ch, int globalFrame)
 	 * res == -2 G_ACTION_VOLUME not found. This should never happen */
 
 	res = recorder::getNextAction(ch->index, G_ACTION_VOLUME, globalFrame, &a1);
-
 	if (res == -1)
 		res = recorder::getAction(ch->index, G_ACTION_VOLUME, 0, &a1);
+
+	assert(res != -2);
 
 	ch->volume_i = a0->fValue;
 	ch->volume_d = ((a1->fValue - a0->fValue) / (a1->frame - a0->frame)) * 1.003f;

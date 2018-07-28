@@ -66,13 +66,31 @@ void geEnvelopeEditor::draw()
 	fl_font(FL_HELVETICA, G_GUI_FONT_SIZE_BASE);
 	fl_draw(label(), x()+4, y(), w(), h(), (Fl_Align) (FL_ALIGN_LEFT));
 
-	/* Reposition points on y axis, only if there's no point selected (dragged
-	around). */
+	if (children() == 0)
+		return;
 
-	if (m_point == nullptr) {
-		for (int i=0; i<children(); i++) {
-			geEnvelopePoint* p = static_cast<geEnvelopePoint*>(child(i));
+	Pixel side = geEnvelopePoint::SIDE / 2;
+
+	int x1 = child(0)->x() + side;
+	int y1 = child(0)->y() + side;
+	int x2 = 0;
+	int y2 = 0;
+
+	/* For each point: 
+		- paint the connecting line with the next one;
+		- reposition it on the y axis, only if there's no point selected (dragged
+	    around). */
+
+	for (int i=0; i<children(); i++) {
+		geEnvelopePoint* p = static_cast<geEnvelopePoint*>(child(i));
+		if (m_point == nullptr)
 			p->position(p->x(), calcPointY(p->action->fValue));
+		if (i > 0) {
+			x2 = p->x() + side;
+			y2 = p->y() + side;
+			fl_line(x1, y1, x2, y2);
+			x1 = x2;
+			y1 = y2;
 		}
 	}
 
@@ -126,7 +144,11 @@ int geEnvelopeEditor::onDrag()
 	Pixel y1 = y() - side;
 	Pixel y2 = y() + h() - side;
 
-	if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
+	/* x-axis constraints. */
+	if      (isFirstPoint() || ex < x1) ex = x1; 
+	else if (isLastPoint()  || ex > x2) ex = x2;
+
+	/* y-axis constraints. */
 	if (ey < y1) ey = y1; else if (ey > y2) ey = y2;
 
 	m_point->position(ex, ey);
@@ -215,6 +237,21 @@ void geEnvelopeEditor::rebuild()
 	resizable(nullptr);
 
 	redraw();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+bool geEnvelopeEditor::isFirstPoint() const
+{
+	return find(m_point) == 0;
+}
+
+
+bool geEnvelopeEditor::isLastPoint() const
+{
+	return find(m_point) == children() - 1;
 }
 
 

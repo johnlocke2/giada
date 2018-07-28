@@ -50,10 +50,12 @@ private:
 	
 	int m_actionType;
 
+	geEnvelopePoint* getPointAtCursor() const;
+
 	int calcPointX(int frame) const;
 	int calcPointY(float value) const;
-
-	geEnvelopePoint* getPointAtCursor() const;
+	bool isFirstPoint() const;
+	bool isLastPoint() const;
 
 	int onPush();
 	int onDrag();

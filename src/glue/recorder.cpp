@@ -170,7 +170,13 @@ void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int fram
 
 void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fValue)
 {
-	m::recorder::rec(ch->index, type, frame, 0, fValue);
+	namespace mr = m::recorder;
+
+	if (!mr::hasActions(ch->index, type)) {  // First action ever? Add actions at boundaries.
+		mr::rec(ch->index, type, 0, 0, 1.0);	
+		mr::rec(ch->index, type, m::clock::getFramesInLoop(), 0, 1.0);	
+	}
+	mr::rec(ch->index, type, frame, 0, fValue);
 }
 
 
