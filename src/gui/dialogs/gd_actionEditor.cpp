@@ -106,7 +106,7 @@ gdActionEditor::gdActionEditor(Channel* chan)
 
 		ac = new geSampleActionEditor  (scroller->x(), upperArea->y()+upperArea->h()+8, ch);
 		mc = new geMuteEditor    (scroller->x(), ac->y()+ac->h()+8);
-		vc = new geEnvelopeEditor(scroller->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, G_RANGE_FLOAT, "volume", ch);
+		vc = new geEnvelopeEditor(scroller->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, "volume", ch);
 		scroller->add(ac);
 		//scroller->add(new geResizerBar(ac->x(), ac->y()+ac->h(), scroller->w(), 8));
 		scroller->add(mc);

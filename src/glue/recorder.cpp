@@ -183,9 +183,18 @@ void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fV
 /* -------------------------------------------------------------------------- */
 
 
-void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a)
+void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a,
+	bool moved)
 {
-	m::recorder::deleteAction(ch->index, a->frame, a->type, false, &m::mixer::mutex);
+	namespace mr = m::recorder;
+
+	/* Deleting first or last action: clear everything. Otherwise delete the 
+	selected action only. */
+
+	if (!moved && (a->frame == 0 || a->frame == m::clock::getFramesInLoop()))
+		mr::clearAction(ch->index, a->type);
+	else
+		mr::deleteAction(ch->index, a->frame, a->type, false, &m::mixer::mutex);
 }
 
 

@@ -59,7 +59,8 @@ void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int fram
 
 void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fValue);
 
-void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a);
+void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a, 
+	bool moved);
 
 /* getMidiActions
 Returns a list of Composite actions, ready to be displayed in a MIDI note

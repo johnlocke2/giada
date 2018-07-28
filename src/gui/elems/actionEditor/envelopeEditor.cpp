@@ -39,14 +39,11 @@ using std::vector;
 using namespace giada;
 
 
-geEnvelopeEditor::geEnvelopeEditor(int x, int y, int actionType, int range, 
-	const char* l, SampleChannel* ch)
-	:	geBaseActionEditor(x, y, 200, 40, ch),	
-	  m_point           (nullptr),
-	  m_actionType      (actionType)/*
-		range             (range),
-		selectedPoint     (-1),
-		draggedPoint      (-1)*/
+geEnvelopeEditor::geEnvelopeEditor(int x, int y, int actionType, const char* l, 
+	SampleChannel* ch)
+:	geBaseActionEditor(x, y, 200, 40, ch),	
+  m_point           (nullptr),
+  m_actionType      (actionType)
 {
 	copy_label(l);
 	rebuild();
@@ -118,7 +115,7 @@ int geEnvelopeEditor::onPush()
 	else
 	if (Fl::event_button3()) {    // Right button
 		if (m_point != nullptr) {
-			c::recorder::deleteEnvelopeAction(m_ch, m_point->action);
+			c::recorder::deleteEnvelopeAction(m_ch, m_point->action, /*moved=*/false);
 			m_point = nullptr;
 			rebuild();	
 		}
@@ -170,7 +167,7 @@ int geEnvelopeEditor::onRelease()
 
 	Frame f = m_base->pixelToFrame((m_point->x() - x()) + geEnvelopePoint::SIDE / 2);
 	float v = m_base->pixelToValue((m_point->y() - y()) + geEnvelopePoint::SIDE / 2, h());
-	c::recorder::deleteEnvelopeAction(m_ch, m_point->action);
+	c::recorder::deleteEnvelopeAction(m_ch, m_point->action, /*moved=*/true);
 	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
 
 	m_point = nullptr;
