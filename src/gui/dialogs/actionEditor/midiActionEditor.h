@@ -25,33 +25,27 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef GE_NOTE_EDITOR_H
-#define GE_NOTE_EDITOR_H
+#ifndef GD_MIDI_ACTION_EDITOR_H
+#define GD_MIDI_ACTION_EDITOR_H
 
 
-#include <FL/Fl_Scroll.H>
-#include "../../dialogs/actionEditor/midiActionEditor.h"
+#include "baseActionEditor.h"
 
 
-class gePianoRoll;
+class MidiChannel;
 
 
-class geNoteEditor : public Fl_Scroll
+namespace giada
 {
-private:
-
-	giada::gdMidiActionEditor* m_base;
-	gePianoRoll* m_pianoRoll;
-
+class gdMidiActionEditor : public gdBaseActionEditor
+{
 public:
 
-	geNoteEditor(int x, int y, giada::gdMidiActionEditor* base);
-	~geNoteEditor();
+	gdMidiActionEditor(MidiChannel* ch);
 
-	void draw() override;
-	
-	void rebuild();
+	void rebuild() override;
 };
+} // giada::
 
 
 #endif

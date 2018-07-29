@@ -55,8 +55,13 @@ class gdBaseActionEditor : public gdWindow
 {
 protected:
 
+	static const int RESIZER_BAR_H = 20;
+	static const int MIN_WIDGET_H  = 10;
+
 	gdBaseActionEditor(Channel* ch);
 
+	void zoomIn();
+	void zoomOut();
 	static void cb_zoomIn(Fl_Widget* w, void* p);
 	static void cb_zoomOut(Fl_Widget* w, void* p);
 	
@@ -64,6 +69,8 @@ protected:
   Computes total width, in pixel. */
 
 	void computeWidth();
+
+	void prepareWindow();
 
 public:
 
@@ -74,9 +81,6 @@ public:
 	whole Action Editor window. */
 	
 	virtual void rebuild() = 0;
-	
-	virtual void zoomIn();
-	virtual void zoomOut();
 
 	int handle(int e) override;
 

@@ -27,7 +27,7 @@
 
 #include "../../../core/const.h"
 #include "../../../core/graphics.h"
-#include "../../../core/sampleChannel.h"
+#include "../../../core/midiChannel.h"
 #include "../../../glue/recorder.h"
 #include "../../../utils/gui.h"
 #include "../../../utils/string.h"
@@ -41,7 +41,7 @@
 #include "../../elems/actionEditor/muteEditor.h"
 #include "../../elems/actionEditor/noteEditor.h"
 #include "../../elems/actionEditor/gridTool.h"
-#include "sampleActionEditor.h"
+#include "midiActionEditor.h"
 
 
 using std::string;
@@ -49,32 +49,21 @@ using std::string;
 
 namespace giada
 {
-gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
+gdMidiActionEditor::gdMidiActionEditor(MidiChannel* ch)
 	: gdBaseActionEditor(ch)
 {
 	computeWidth();
-
-	/* Container with zoom buttons and the action type selector. Scheme of the 
-	resizable boxes: |[--b1--][actionType][--b2--][+][-]| */
 
 	Fl_Group* upperArea = new Fl_Group(8, 8, w()-16, 20);
 
 	upperArea->begin();
 
-	  actionType = new geChoice(8, 8, 80, 20);
-	  gridTool   = new geGridTool(actionType->x()+actionType->w()+4, 8);
-		actionType->add("key press");
-		actionType->add("key release");
-		actionType->add("kill chan");
-		actionType->value(0);
+		gridTool = new geGridTool(8, 8);
 
-		if (ch->mode == ChannelMode::SINGLE_PRESS || ch->isAnyLoopMode())
-		actionType->deactivate();
-
-		geBox* b1  = new geBox(gridTool->x()+gridTool->w()+4, 8, 300, 20);    // padding actionType - zoomButtons
+		geBox *b1  = new geBox(gridTool->x()+gridTool->w()+4, 8, 300, 20);    // padding actionType - zoomButtons
 		zoomInBtn  = new geButton(w()-8-40-4, 8, 20, 20, "", zoomInOff_xpm, zoomInOn_xpm);
 		zoomOutBtn = new geButton(w()-8-20,   8, 20, 20, "", zoomOutOff_xpm, zoomOutOn_xpm);
-
+	
 	upperArea->end();
 	upperArea->resizable(b1);
 
@@ -85,13 +74,9 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 
 	viewport = new geScroll(8, 36, w()-16, h()-44);
 
-	ac = new geSampleActionEditor(viewport->x(), viewport->y(), ch);
-	viewport->add(ac);
-	viewport->add(new geResizerBar(ac->x(), ac->y()+ac->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
-	
-	vc = new geEnvelopeEditor(viewport->x(), ac->y()+ac->h()+RESIZER_BAR_H, G_ACTION_VOLUME, "volume", ch);
-	viewport->add(vc);
-	viewport->add(new geResizerBar(vc->x(), vc->y()+vc->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
+	pr = new geNoteEditor(viewport->x(), upperArea->y()+upperArea->h()+8, this);
+	viewport->add(pr);
+	viewport->add(new geResizerBar(pr->x(), pr->y()+pr->h(), viewport->w(), 30, 8));
 
 	end();
 	prepareWindow();
@@ -101,9 +86,8 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-void gdSampleActionEditor::rebuild()
+void gdMidiActionEditor::rebuild()
 {
-	ac->rebuild();
-	vc->rebuild();	
+	pr->rebuild();
 }
 } // giada::

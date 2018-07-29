@@ -121,6 +121,8 @@ sourcesCore =                            \
 	src/gui/dialogs/actionEditor/baseActionEditor.cpp   \
 	src/gui/dialogs/actionEditor/sampleActionEditor.h   \
 	src/gui/dialogs/actionEditor/sampleActionEditor.cpp \
+	src/gui/dialogs/actionEditor/midiActionEditor.h     \
+	src/gui/dialogs/actionEditor/midiActionEditor.cpp   \
 	src/gui/dialogs/browser/browserBase.h            \
 	src/gui/dialogs/browser/browserBase.cpp          \
 	src/gui/dialogs/browser/browserDir.h             \

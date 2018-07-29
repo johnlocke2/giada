@@ -29,22 +29,21 @@
 #include "../../../core/const.h"
 #include "../../../core/conf.h"
 #include "../../../utils/log.h"
-#include "../../dialogs/gd_actionEditor.h"
 #include "pianoItem.h"
 #include "pianoRoll.h"
 #include "noteEditor.h"
 
 
-using namespace giada::m;
+using namespace giada;
 
 
-geNoteEditor::geNoteEditor(int x, int y)
-  : Fl_Scroll(x, y, 200, 422)
+geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
+: Fl_Scroll(x, y, 200, 422),
+	m_base   (base)
 {
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
-
-	size(ae->totalWidth, conf::pianoRollH);
-	pianoRoll = new gePianoRoll(x, y, ae->totalWidth);
+	m_pianoRoll = new gePianoRoll(x, y, m_base->fullWidth);
+	
+	rebuild();
 }
 
 
@@ -53,9 +52,8 @@ geNoteEditor::geNoteEditor(int x, int y)
 
 geNoteEditor::~geNoteEditor()
 {
-	clear();
-	conf::pianoRollH = h();
-	conf::pianoRollY = pianoRoll->y();
+	m::conf::pianoRollH = h();
+	m::conf::pianoRollY = m_pianoRoll->y();
 }
 
 
@@ -64,7 +62,8 @@ geNoteEditor::~geNoteEditor()
 
 void geNoteEditor::rebuild()
 {
-	pianoRoll->rebuild();
+	size(m_base->fullWidth, m::conf::pianoRollH);
+	m_pianoRoll->rebuild();
 }
 
 
@@ -73,19 +72,19 @@ void geNoteEditor::rebuild()
 
 void geNoteEditor::draw()
 {
-	pianoRoll->size(this->w(), pianoRoll->h());  /// <--- not optimal
+	m_pianoRoll->size(this->w(), m_pianoRoll->h());  /// <--- not optimal
 
 	/* clear background */
 
 	fl_rectf(x(), y(), w(), h(), G_COLOR_GREY_1);
 
-	/* clip pianoRoll to pianoRollContainer size */
+	/* clip m_pianoRoll to pianoRollContainer size */
 
 	fl_push_clip(x(), y(), w(), h());
-	draw_child(*pianoRoll);
+	draw_child(*m_pianoRoll);
 	fl_pop_clip();
 
 	fl_color(G_COLOR_GREY_4);
 	fl_line_style(0);
-	fl_rect(x(), y(), static_cast<gdActionEditor*>(window())->totalWidth, h());
+	fl_rect(x(), y(), m_base->fullWidth, h());
 }

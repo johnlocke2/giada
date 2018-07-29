@@ -131,6 +131,7 @@ void gdBaseActionEditor::zoomIn()
 {
 	ratio /= 2;
 	computeWidth();
+	rebuild();
 	redraw();
 }
 
@@ -142,6 +143,7 @@ void gdBaseActionEditor::zoomOut()
 {
 	ratio *= 2;
 	computeWidth();
+	rebuild();
 	redraw();
 }
 
@@ -162,6 +164,23 @@ int gdBaseActionEditor::getActionType() const
 
 	assert(false);
 	return -1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdBaseActionEditor::prepareWindow()
+{
+	gu_setFavicon(this);
+
+	copy_label(string("Edit Actions in Channel " + gu_iToString(ch->index + 1)).c_str());
+
+	set_non_modal();
+	size_range(640, 284);
+	resizable(viewport);
+
+	show();
 }
 
 

@@ -50,8 +50,6 @@ public:
 	gdSampleActionEditor(SampleChannel* ch);
 
 	void rebuild() override;
-	void zoomIn() override;
-	void zoomOut() override;
 };
 } // giada::
 
