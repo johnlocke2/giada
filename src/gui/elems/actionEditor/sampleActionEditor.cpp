@@ -76,27 +76,27 @@ void geSampleActionEditor::rebuild()
 	namespace mr = m::recorder;
 	namespace cr = c::recorder;
 
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+	SampleChannel* ch = static_cast<SampleChannel*>(m_ch);
 
 	/* Remove all existing actions and set a new width, according to the current
 	zoom level. */
 
 	clear();
-	size(ae->fullWidth, h());
+	size(m_base->fullWidth, h());
 
-	vector<mr::Composite> comps = cr::getSampleActions(m_ch);
+	vector<mr::Composite> comps = cr::getSampleActions(ch);
 
 	for (mr::Composite comp : comps) {
 		gu_log("[geSampleActionEditor::rebuild] Action [%d, %d)\n", 
 			comp.a1.frame, comp.a2.frame);
-		Pixel px = x() + ae->frameToPixel(comp.a1.frame);
+		Pixel px = x() + m_base->frameToPixel(comp.a1.frame);
 		Pixel py = y() + 4;
 		Pixel pw = 0;
 		Pixel ph = h() - 8;
 		if (comp.a2.frame != -1)
-				pw = ae->frameToPixel(comp.a2.frame - comp.a1.frame);
+				pw = m_base->frameToPixel(comp.a2.frame - comp.a1.frame);
 
-		geSampleAction* a = new geSampleAction(px, py, pw, ph, m_ch, comp.a1, comp.a2);
+		geSampleAction* a = new geSampleAction(px, py, pw, ph, ch, comp.a1, comp.a2);
 		add(a);
 		resizable(a);
 	}
@@ -104,7 +104,7 @@ void geSampleActionEditor::rebuild()
 	/* If channel is LOOP_ANY, deactivate it: a loop mode channel cannot hold 
 	keypress/keyrelease actions. */
 	
-	m_ch->isAnyLoopMode() ? deactivate() : activate();
+	ch->isAnyLoopMode() ? deactivate() : activate();
 
 	redraw();
 }
@@ -138,16 +138,16 @@ void geSampleActionEditor::draw()
 
 int geSampleActionEditor::onPush()
 {
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+	SampleChannel* ch = static_cast<SampleChannel*>(m_ch);
 	
 	m_action = getActionAtCursor();
 
 	if (Fl::event_button1()) {    // Left button
 		if (m_action == nullptr) {  // No action under cursor: add a new one
-			if (Fl::event_x() >= ae->loopWidth) // Avoid click on grey area
+			if (Fl::event_x() >= m_base->loopWidth) // Avoid click on grey area
 				return 0;
-			Frame f = ae->pixelToFrame(Fl::event_x() - x());
-			c::recorder::recordSampleAction(m_ch, ae->getActionType(), f);
+			Frame f = m_base->pixelToFrame(Fl::event_x() - x());
+			c::recorder::recordSampleAction(ch, m_base->getActionType(), f);
 			rebuild();
 		}
 		else {                     // Action under cursor: get ready for move/resize
@@ -157,7 +157,7 @@ int geSampleActionEditor::onPush()
 	else
 	if (Fl::event_button3()) {  // Right button
 		if (m_action != nullptr) {
-			c::recorder::deleteSampleAction(m_ch, m_action->a1, m_action->a2);
+			c::recorder::deleteSampleAction(ch, m_action->a1, m_action->a2);
 			m_action = nullptr;
 			rebuild();	
 		}
@@ -227,12 +227,12 @@ int geSampleActionEditor::onRelease()
 
 	/* TODO - do this only if the action has been really altered */
 
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
+	SampleChannel* ch = static_cast<SampleChannel*>(m_ch);
 
-	Frame f1 = ae->pixelToFrame(m_action->x() - x());
-	Frame f2 = ae->pixelToFrame(m_action->x() + m_action->w() - x());
-	c::recorder::deleteSampleAction(m_ch, m_action->a1, m_action->a2);
-	c::recorder::recordSampleAction(m_ch, ae->getActionType(), f1, f2);
+	Frame f1 = m_base->pixelToFrame(m_action->x() - x());
+	Frame f2 = m_base->pixelToFrame(m_action->x() + m_action->w() - x());
+	c::recorder::deleteSampleAction(ch, m_action->a1, m_action->a2);
+	c::recorder::recordSampleAction(ch, m_base->getActionType(), f1, f2);
 	m_action = nullptr;
 
 	rebuild();

@@ -50,25 +50,18 @@ using namespace giada;
 gePianoRoll::gePianoRoll(int X, int Y, int W)
 	: geBaseActionEditor(X, Y, W, 40, nullptr)
 {
-
-	resizable(nullptr);                   // don't resize children (i.e. pianoItem)
-	size(W, (MAX_KEYS+1) * CELL_H);      // 128 MIDI channels * CELL_H height
-
 	if (m::conf::pianoRollY == -1)
 		position(x(), y()-(h()/2));  // center
 	else
 		position(x(), m::conf::pianoRollY);
 
-	drawSurface1();
-	drawSurface2();
-
-	build();
+	rebuild();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
-
+#if 0
 void gePianoRoll::build()
 {
 	using namespace m::recorder;
@@ -99,6 +92,7 @@ void gePianoRoll::build()
 
 	redraw();
 }
+#endif
 
 
 /* -------------------------------------------------------------------------- */
@@ -243,6 +237,7 @@ void gePianoRoll::draw()
 
 int gePianoRoll::handle(int e)
 {
+#if 0
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	int ret = Fl_Group::handle(e);
@@ -306,6 +301,7 @@ int gePianoRoll::handle(int e)
 		}
 	}
 	return ret;
+#endif
 }
 
 
@@ -314,11 +310,12 @@ int gePianoRoll::handle(int e)
 
 void gePianoRoll::recordAction(int note, int frame_a, int frame_b)
 {
+/*
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	c::recorder::recordMidiAction(ae->chan->index, note, frame_a, frame_b);
 	ae->chan->hasActions = true;
-	build();
+	build();*/
 }
 
 
@@ -335,7 +332,14 @@ int gePianoRoll::yToNote(int y)
 
 void gePianoRoll::rebuild()
 {
-	/* TODO wrong, call build */
-	for (int k=0; k<children(); k++)
-		static_cast<geBasePianoItem*>(child(k))->reposition(x());
+	/* Remove all existing actions and set a new width, according to the current
+	zoom level. */
+
+	clear();
+	size(m_base->fullWidth, (MAX_KEYS + 1) * CELL_H);
+
+	drawSurface1();
+	drawSurface2();
+
+	redraw();
 }

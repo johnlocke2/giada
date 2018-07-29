@@ -55,13 +55,6 @@ size. This function is designed for the Piano Roll (not for live recording). */
 
 void recordMidiAction(int chan, int note, int frame_a, int frame_b=0);
 
-void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b=0);
-
-void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fValue);
-
-void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a, 
-	bool moved);
-
 /* getMidiActions
 Returns a list of Composite actions, ready to be displayed in a MIDI note
 editor as pairs of NoteOn+NoteOff. */
@@ -69,8 +62,15 @@ editor as pairs of NoteOn+NoteOff. */
 std::vector<m::recorder::Composite> getMidiActions(int channel, 
 	int frameLimit);
 
-std::vector<const m::recorder::action*> getEnvelopeActions(const SampleChannel* ch,
+void recordEnvelopeAction(const Channel* ch, int type, int frame, float fValue);
+
+void deleteEnvelopeAction(const Channel* ch, const m::recorder::action* a, 
+	bool moved);
+
+std::vector<const m::recorder::action*> getEnvelopeActions(const Channel* ch,
 	int type);
+
+void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b=0);
 
 /* getSampleActions
 Returns a list of Composite actions, ready to be displayed in a Sample Action

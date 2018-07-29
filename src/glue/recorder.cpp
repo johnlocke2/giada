@@ -168,7 +168,7 @@ void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int fram
 
 
 
-void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fValue)
+void recordEnvelopeAction(const Channel* ch, int type, int frame, float fValue)
 {
 	namespace mr = m::recorder;
 
@@ -183,7 +183,7 @@ void recordEnvelopeAction(const SampleChannel* ch, int type, int frame, float fV
 /* -------------------------------------------------------------------------- */
 
 
-void deleteEnvelopeAction(const SampleChannel* ch, const m::recorder::action* a,
+void deleteEnvelopeAction(const Channel* ch, const m::recorder::action* a,
 	bool moved)
 {
 	namespace mr = m::recorder;
@@ -266,7 +266,7 @@ vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-vector<const m::recorder::action*> getEnvelopeActions(const SampleChannel* ch,
+vector<const m::recorder::action*> getEnvelopeActions(const Channel* ch,
 	int type)
 {
 	namespace mr = m::recorder;

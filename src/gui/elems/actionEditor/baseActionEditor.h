@@ -34,14 +34,14 @@
 #include "../../dialogs/actionEditor/baseActionEditor.h"
 
 
-class SampleChannel;
+class Channel;
 
 
 class geBaseActionEditor : public Fl_Group
 {
 protected:
 
-	SampleChannel* m_ch;
+	Channel* m_ch;
 
 	giada::gdBaseActionEditor* m_base;
 
@@ -49,7 +49,7 @@ protected:
 
 public:
 
-	geBaseActionEditor(int x, int y, int w, int h, SampleChannel* ch);
+	geBaseActionEditor(int x, int y, int w, int h, Channel* ch);
 
   /* updateActions
   Rebuild the actions widgets from scratch. */

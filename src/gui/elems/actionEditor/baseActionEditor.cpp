@@ -35,7 +35,7 @@
 using namespace giada;
 
 
-geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h, SampleChannel* ch)
+geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h, Channel* ch)
 	:	Fl_Group(x, y, w, h),
 	  m_ch    (ch),
 	  m_base  (static_cast<gdBaseActionEditor*>(window()))

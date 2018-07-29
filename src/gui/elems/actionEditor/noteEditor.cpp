@@ -42,8 +42,12 @@ geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
 	m_base   (base)
 {
 	m_pianoRoll = new gePianoRoll(x, y, m_base->fullWidth);
-	
+
 	rebuild();
+	
+	size(m_base->fullWidth, m::conf::pianoRollH);
+	
+	type(0); // Don't show scrollbars
 }
 
 
@@ -62,29 +66,6 @@ geNoteEditor::~geNoteEditor()
 
 void geNoteEditor::rebuild()
 {
-	size(m_base->fullWidth, m::conf::pianoRollH);
+	size(m_base->fullWidth, h());
 	m_pianoRoll->rebuild();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geNoteEditor::draw()
-{
-	m_pianoRoll->size(this->w(), m_pianoRoll->h());  /// <--- not optimal
-
-	/* clear background */
-
-	fl_rectf(x(), y(), w(), h(), G_COLOR_GREY_1);
-
-	/* clip m_pianoRoll to pianoRollContainer size */
-
-	fl_push_clip(x(), y(), w(), h());
-	draw_child(*m_pianoRoll);
-	fl_pop_clip();
-
-	fl_color(G_COLOR_GREY_4);
-	fl_line_style(0);
-	fl_rect(x(), y(), m_base->fullWidth, h());
 }

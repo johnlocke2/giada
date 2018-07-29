@@ -29,6 +29,7 @@
 #include "../../../utils/log.h"
 #include "../../../core/recorder.h"
 #include "../../../core/const.h"
+#include "../../../core/sampleChannel.h"
 #include "../../../glue/recorder.h"
 #include "../../dialogs/actionEditor/baseActionEditor.h"
 #include "envelopePoint.h"

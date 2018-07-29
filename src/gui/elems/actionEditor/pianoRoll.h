@@ -63,7 +63,7 @@ private:
 	void drawSurface2();
 
 
-	void build();
+	//void build();
 
 public:
 

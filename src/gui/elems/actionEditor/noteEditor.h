@@ -47,8 +47,6 @@ public:
 
 	geNoteEditor(int x, int y, giada::gdMidiActionEditor* base);
 	~geNoteEditor();
-
-	void draw() override;
 	
 	void rebuild();
 };
