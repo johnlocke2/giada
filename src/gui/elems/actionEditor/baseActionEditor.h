@@ -35,6 +35,7 @@
 
 
 class Channel;
+class geBaseAction;
 
 
 class geBaseActionEditor : public Fl_Group
@@ -44,6 +45,14 @@ protected:
 	Channel* m_ch;
 
 	giada::gdBaseActionEditor* m_base;
+
+	/* m_action
+	Selected action. Used while dragging. */
+
+	//geBaseAction* m_action;
+
+	/* baseDraw
+	Draws basic things like borders and grids. Optional background clear. */
 
   void baseDraw(bool clear=true) const;
 
@@ -55,6 +64,11 @@ public:
   Rebuild the actions widgets from scratch. */
   
 	virtual void rebuild() = 0;
+
+	/* getActionAtCursor
+	Returns the action under the mouse. nullptr if nothing found. */
+
+	geBaseAction* getActionAtCursor() const;	
 };
 
 #endif

@@ -173,6 +173,8 @@ sourcesCore =                            \
 	src/gui/elems/sampleEditor/shiftTool.cpp            \
 	src/gui/elems/actionEditor/baseActionEditor.h       \
 	src/gui/elems/actionEditor/baseActionEditor.cpp     \
+	src/gui/elems/actionEditor/baseAction.h             \
+	src/gui/elems/actionEditor/baseAction.cpp           \
 	src/gui/elems/actionEditor/envelopeEditor.h         \
 	src/gui/elems/actionEditor/envelopeEditor.cpp       \
 	src/gui/elems/actionEditor/envelopePoint.h          \

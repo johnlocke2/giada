@@ -46,8 +46,6 @@ private:
 		A = 11, GS = 0
 	};
 
-	int push_y;
-
 	Fl_Offscreen surface1;  // notes, no repeat
 	Fl_Offscreen surface2;  // lines, x-repeat
 
@@ -62,8 +60,9 @@ private:
 	void drawSurface1();
 	void drawSurface2();
 
-
-	//void build();
+	int onPush();
+	int onDrag();
+	int onRelease();
 
 public:
 

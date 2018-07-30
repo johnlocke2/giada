@@ -29,6 +29,7 @@
 #include "../../../core/const.h"
 #include "../../../core/clock.h"
 #include "gridTool.h"
+#include "baseAction.h"
 #include "baseActionEditor.h"
 
 
@@ -41,6 +42,20 @@ geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h, Channel* ch)
 	  m_base  (static_cast<gdBaseActionEditor*>(window()))
 
 {
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+geBaseAction* geBaseActionEditor::getActionAtCursor() const
+{
+	for (int i=0; i<children(); i++) {
+		geBaseAction* a = static_cast<geBaseAction*>(child(i));
+		if (a->hovered)
+			return a;
+	}
+	return nullptr;
 }
 
 

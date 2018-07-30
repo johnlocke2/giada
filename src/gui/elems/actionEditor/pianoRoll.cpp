@@ -103,8 +103,8 @@ void gePianoRoll::drawSurface1()
 	surface1 = fl_create_offscreen(CELL_W, h());
 	fl_begin_offscreen(surface1);
 
-	/* warning: only w() and h() come from this widget, x and y coordinates
-	 * are absolute, since we are writing in a memory chunk */
+	/* Warning: only w() and h() come from this widget, x and y coordinates are 
+	absolute, since we are writing in a memory chunk. */
 
 	fl_rectf(0, 0, CELL_W, h(), G_COLOR_GREY_1);
 
@@ -215,15 +215,13 @@ void gePianoRoll::drawSurface2()
 
 void gePianoRoll::draw()
 {
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
-
 	fl_copy_offscreen(x(), y(), CELL_W, h(), surface1, 0, 0);
 
-#if defined(__APPLE__)
-	for (int i=36; i<ae->totalWidth; i+=36) /// TODO: i < ae->coverX is faster
+#if defined(__APPLE__) // TODO - is this still useful?
+	for (int i=36; i<m_base->fullWidth; i+=36) /// TODO: i < ae->coverX is faster
 		fl_copy_offscreen(x()+i, y(), CELL_W, h(), surface2, 1, 0);
 #else
-	for (int i=CELL_W; i<ae->totalWidth; i+=CELL_W) /// TODO: i < ae->coverX is faster
+	for (int i=CELL_W; i<m_base->loopWidth; i+=CELL_W)
 		fl_copy_offscreen(x()+i, y(), CELL_W, h(), surface2, 0, 0);
 #endif
 
@@ -237,6 +235,17 @@ void gePianoRoll::draw()
 
 int gePianoRoll::handle(int e)
 {
+	switch (e) {
+		case FL_PUSH:
+			return onPush();
+		case FL_DRAG:
+			return onDrag();
+		case FL_RELEASE:
+			fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK); // Make sure cursor returns normal
+			return onRelease();
+		default:
+			return Fl_Group::handle(e);
+	}
 #if 0
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
@@ -302,6 +311,33 @@ int gePianoRoll::handle(int e)
 	}
 	return ret;
 #endif
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int gePianoRoll::onPush()
+{
+
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int gePianoRoll::onDrag()
+{
+
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int gePianoRoll::onRelease()
+{
+	
 }
 
 

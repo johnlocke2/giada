@@ -25,32 +25,31 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef GE_SAMPLE_ACTION_H
-#define GE_SAMPLE_ACTION_H
+#ifndef GE_BASE_ACTION_H
+#define GE_BASE_ACTION_H
 
 
 #include <FL/Fl_Box.H>
-#include "../../../core/recorder.h"
 
 
-class SampleChannel;
+class Channel;
 
 
-class geSampleAction : public Fl_Box
+class geBaseAction : public Fl_Box
 {
 private:
 
-	const SampleChannel* ch;
+	const Channel* m_ch;
+	
+	bool m_resizable;
 
 public:
 
 	static const int MIN_WIDTH    = 12;
 	static const int HANDLE_WIDTH = 6;
 
-	geSampleAction(int x, int y, int w, int h, const SampleChannel* ch,
-		const giada::m::recorder::action a1, const giada::m::recorder::action a2);
+	geBaseAction(int x, int y, int w, int h, bool resizable, const Channel* ch);
 
-	void draw() override;
 	int  handle(int e) override;
 
 	bool isOnEdges() const;
@@ -67,9 +66,6 @@ public:
 	bool  onLeftEdge;
 	bool  hovered;
 	int   pick;
-
-	const giada::m::recorder::action a1;
-	const giada::m::recorder::action a2;
 };
 
 
