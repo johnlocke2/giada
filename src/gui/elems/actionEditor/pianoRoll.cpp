@@ -34,6 +34,7 @@
 #include "../../../core/kernelMidi.h"
 #include "../../../utils/log.h"
 #include "../../../utils/string.h"
+#include "../../../utils/math.h"
 #include "../../../glue/recorder.h"
 #include "../../dialogs/gd_actionEditor.h"
 #include "pianoItem.h"
@@ -50,49 +51,9 @@ using namespace giada;
 gePianoRoll::gePianoRoll(int X, int Y, int W, MidiChannel* ch)
 	: geBaseActionEditor(X, Y, W, 40, ch)
 {
-	if (m::conf::pianoRollY == -1)
-		position(x(), y()-(h()/2));  // center
-	else
-		position(x(), m::conf::pianoRollY);
-
+	position(x(), m::conf::pianoRollY == -1 ? y()-(h()/2) : m::conf::pianoRollY);
 	rebuild();
 }
-
-
-/* -------------------------------------------------------------------------- */
-
-#if 0
-void gePianoRoll::build()
-{
-	using namespace m::recorder;
-
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
-	
-	clear();
-
-	int channel   = ae->chan->index;
-	int maxSample = m::clock::getFramesInLoop();
-
-	vector<Composite> actions = c::recorder::getMidiActions(channel, maxSample); 
-	for (Composite comp : actions)
-	{
-		m::MidiEvent e1 = comp.a1.iValue;
-		m::MidiEvent e2 = comp.a2.iValue;
-
-		gu_log("[gePianoRoll] ((0x%X, 0x%X, f=%d) - (0x%X, 0x%X, f=%d))\n", 
-			e1.getStatus(), e1.getNote(), comp.a1.frame,
-			e2.getStatus(), e2.getNote(), comp.a2.frame
-		);
-
-		if (comp.a2.frame != -1)
-			add(new gePianoItem(0, 0, x(), y(), comp.a1, comp.a2));
-		else
-			add(new gePianoItemOrphaned(0, 0, x(), y(), comp.a1));
-	}
-
-	redraw();
-}
-#endif
 
 
 /* -------------------------------------------------------------------------- */
@@ -186,10 +147,12 @@ void gePianoRoll::drawSurface1()
 void gePianoRoll::drawSurface2()
 {
 	surface2 = fl_create_offscreen(CELL_W, h());
+
 	fl_begin_offscreen(surface2);
 	fl_rectf(0, 0, CELL_W, h(), G_COLOR_GREY_1);
 	fl_color(G_COLOR_GREY_3);
 	fl_line_style(FL_DASH, 0, nullptr);
+
 	for (int i=1; i<=MAX_KEYS+1; i++) {
 		switch (i % KEYS) {
 			case (int) Notes::G:
@@ -205,6 +168,7 @@ void gePianoRoll::drawSurface2()
 			fl_line(0, i*CELL_H, CELL_W, i*CELL_H);
 		}
 	}
+
 	fl_line_style(0);
 	fl_end_offscreen();
 }
@@ -241,110 +205,65 @@ void gePianoRoll::onAddAction()
 }
 
 
+/* -------------------------------------------------------------------------- */
+
+
 void gePianoRoll::onDeleteAction()
 {
-
+	c::recorder::deleteMidiAction(static_cast<MidiChannel*>(m_ch), m_action->a1, m_action->a2);	
 }
-
-
-void gePianoRoll::onMoveAction()
-{
-
-}
-
-
-void gePianoRoll::onResizeAction()
-{
-
-}
-
-
-void gePianoRoll::onRefreshAction()
-{
-
-}
-
-
-
-#if 0
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
-
-	int ret = Fl_Group::handle(e);
-
-	switch (e) {
-		case FL_PUSH:	{
-
-			/* avoid click on grey area */
-
-			if (Fl::event_x() >= ae->coverX) {
-				ret = 1;
-				break;
-			}
-
-			push_y = Fl::event_y() - y();
-
-			if (Fl::event_button1()) {
-
-				/* ax is driven by grid, ay by the height in px of each note. */
-
-				int ax = Fl::event_x();
-				int ay = Fl::event_y();
-
-				/* Vertical snap. */
-
-				int edge = (ay-y()) % CELL_H;
-				if (edge != 0) ay -= edge;
-
-				/* If there are no pianoItems below the mouse, add a new one. */
-
-				gePianoItem* pianoItem = dynamic_cast<gePianoItem*>(Fl::belowmouse());
-				if (pianoItem == nullptr)
-					recordAction(yToNote(ay-y()), (ax-x()) * ae->zoom);
-			}
-			ret = 1;
-			break;
-		}
-
-		case FL_DRAG:	{
-
-			if (Fl::event_button3()) {
-
-				geNoteEditor* prc = static_cast<geNoteEditor*>(parent());
-				position(x(), Fl::event_y() - push_y);
-
-				if (y() > prc->y())
-					position(x(), prc->y());
-				else
-				if (y() < prc->y()+prc->h()-h())
-					position(x(), prc->y()+prc->h()-h());
-
-				prc->redraw();
-			}
-			ret = 1;
-			break;
-		}
-
-		case FL_MOUSEWHEEL: {   // nothing to do, just avoid small internal scroll
-			ret = 1;
-			break;
-		}
-	}
-	return ret;
-}
-#endif
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void gePianoRoll::recordAction(int note, int frame_a, int frame_b)
+void gePianoRoll::onMoveAction()
 {
-/*
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+	Pixel ex = Fl::event_x() - m_action->pick;
+	Pixel ey = snapToY(Fl::event_y() - y()) + y();
 
-	c::recorder::recordMidiAction(ae->chan->index, note, frame_a, frame_b);
-	ae->chan->hasActions = true;
-	build();*/
+	Pixel x1 = x();
+	Pixel x2 = (m_base->loopWidth + x()) - m_action->w();
+	Pixel y1 = y();
+	Pixel y2 = y() + h();
+
+	if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
+	if (ey < y1) ey = y1; else if (ey > y2) ey = y2;
+
+	m_action->position(ex, ey);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gePianoRoll::onResizeAction()
+{
+	Pixel ex = Fl::event_x();
+
+	Pixel x1 = x();
+	Pixel x2 = m_base->loopWidth + x();
+	
+	if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
+
+	if (m_action->onRightEdge) 
+		m_action->setRightEdge(ex - m_action->x());
+	else
+		m_action->setLeftEdge(ex);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gePianoRoll::onRefreshAction()
+{
+	Frame f1   = m_base->pixelToFrame(m_action->x() - x());
+	Frame f2   = m_base->pixelToFrame(m_action->x() + m_action->w() - x());
+	int   note = yToNote(m_action->y() - y());
+
+	c::recorder::deleteMidiAction(static_cast<MidiChannel*>(m_ch), m_action->a1, m_action->a2);	
+	c::recorder::recordMidiAction(m_ch->index, note, f1, f2);
 }
 
 
@@ -360,6 +279,12 @@ int gePianoRoll::yToNote(int p) const
 int gePianoRoll::noteToY(int n) const
 {
 	return (MAX_KEYS * CELL_H) - (n * gePianoRoll::CELL_H);
+}
+
+
+int gePianoRoll::snapToY(int p) const
+{
+	return u::math::quantize(p, CELL_H);
 }
 
 

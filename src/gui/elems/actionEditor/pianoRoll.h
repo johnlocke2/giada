@@ -66,12 +66,16 @@ private:
 	void drawSurface1();
 	void drawSurface2();
 
+	int snapToY(int p) const;
+	int yToNote(int y) const;
+	int noteToY(int n) const;
+
 public:
 
 	static const int MAX_KEYS    = 127;
 	static const int MAX_OCTAVES = 9;
 	static const int KEYS        = 12;
-	static const int CELL_H      = 18;
+	static const int CELL_H      = 20;
 	static const int CELL_W      = 40;
 
 	gePianoRoll(int x, int y, int w, MidiChannel* ch);
@@ -79,14 +83,6 @@ public:
 	void draw() override;
 
 	void rebuild() override;
-
-	int yToNote(int y) const;
-	int noteToY(int n) const;
-
-
-
-
-	void recordAction(int note, int frame_a, int frame_b=0);
 };
 
 

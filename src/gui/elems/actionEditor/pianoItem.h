@@ -39,59 +39,12 @@ class gdActionEditor;
 
 class gePianoItem : public geBaseAction
 {
-private:
-#if 0
-	struct giada::m::recorder::action a;
-	struct giada::m::recorder::action b;
-
-	int push_x;
-
-	/* changed
-	If Item has been moved or resized: re-recording needed. */
-
-	bool changed;
-
-	/* onLeft, RightEdge
-	If cursor is on a widget's edge. */
-
-	bool onLeftEdge;
-	bool onRightEdge;
-
-	/* old_x, old_w
-	Store previous width and position while dragging and moving, in order to 
-	restore it if overlap. */
-
-	int old_x, old_w;
-
-	/* getRelX/Y
-	Returns x/y point of this item, relative to piano roll (and not to entire 
-	screen). */
-
-	int getRelY();
-	int getRelX();
-
-	/* overlap
-	Checks if this item don't overlap with another one. */
-
-	bool overlap();
-#endif
-
 public:
-/*
-	static const int MIN_WIDTH    = 10;
-	static const int HANDLE_WIDTH = 5;
-*/
+
 	gePianoItem(int x, int y, int w, int h, giada::m::recorder::action a1, 
 		giada::m::recorder::action a2);
  
 	void draw() override;
-
-/*	int handle(int e) override;
-
-  void reposition(int pianoRollX) override;
-
-	void removeAction();
-*/
 };
 
 

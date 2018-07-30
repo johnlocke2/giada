@@ -34,6 +34,7 @@
 
 
 class SampleChannel;
+class MidiChannel;
 class geChannel;
 
 
@@ -61,6 +62,8 @@ editor as pairs of NoteOn+NoteOff. */
 
 std::vector<m::recorder::Composite> getMidiActions(int channel, 
 	int frameLimit);
+
+void deleteMidiAction(MidiChannel* ch, m::recorder::action a1, m::recorder::action a2);
 
 void recordEnvelopeAction(const Channel* ch, int type, int frame, float fValue);
 

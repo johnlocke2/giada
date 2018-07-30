@@ -42,7 +42,7 @@ float linearToDB(float f)
 /* -------------------------------------------------------------------------- */
 
 
-Frame quantize(Frame x, Frame step)
+int quantize(int x, int step)
 {
 	/* Source:
 	https://en.wikipedia.org/wiki/Quantization_(signal_processing)#Rounding_example */

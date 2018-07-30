@@ -83,7 +83,8 @@ public:
 	int handle(int e) override;
 
 	/* getActionAtCursor
-	Returns the action under the mouse. nullptr if nothing found. */
+	Returns the action under the mouse. nullptr if nothing found. Why not using
+	Fl::belowmouse? It would require a boring dynamic_cast. */
 
 	geBaseAction* getActionAtCursor() const;	
 };

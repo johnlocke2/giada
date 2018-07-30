@@ -36,6 +36,7 @@
 #include "../core/recorder.h"
 #include "../core/mixer.h"
 #include "../core/sampleChannel.h"
+#include "../core/midiChannel.h"
 #include "../utils/gui.h"
 #include "../utils/log.h"
 #include "recorder.h"
@@ -116,7 +117,7 @@ void clearMuteActions(geChannel* gch)
 void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 {
 	if (frame_b == 0)
-		frame_b = frame_a + G_DEFAULT_MIDI_ACTION_SIZE;
+		frame_b = frame_a + G_DEFAULT_ACTION_SIZE;
 
 	/* Avoid frame overflow. */
 
@@ -140,7 +141,7 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 		0x0000FF00);
 
 	if (next != nullptr && next->frame <= frame_b) {
-		frame_b = next->frame - 2;
+		frame_b = next->frame - 1;
 		gu_log("[recorder::recordMidiAction] Shrink new action, due to overlap\n");
 	}
 
@@ -152,12 +153,32 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 /* -------------------------------------------------------------------------- */
 
 
+void deleteMidiAction(MidiChannel* ch, m::recorder::action a1, m::recorder::action a2)
+{
+	m::recorder::deleteAction(ch->index, a1.frame, G_ACTION_MIDI, true, 
+		&m::mixer::mutex, a1.iValue, 0.0);
+	
+	/* If action 1 is not orphaned, send a note-off first in case we are deleting 
+	it in a middle of a key_on/key_off sequence. Conversely, orphaned actions
+	should not play, so no need to fire the note-off. */
+	
+	if (a2.frame != -1) {
+		ch->sendMidi(a2.iValue);
+		m::recorder::deleteAction(ch->index, a2.frame, G_ACTION_MIDI, true, 
+			&m::mixer::mutex, a2.iValue, 0.0);
+	}
+
+	ch->hasActions = m::recorder::hasActions(ch->index);
+}
+
+/* -------------------------------------------------------------------------- */
+
+
 void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b)
 {
-	/* TODO - use G_DEFAULT_MIDI_ACTION_SIZE (and change it to G_DEFAULT_ACTION_SIZE) */
 	if (ch->mode == ChannelMode::SINGLE_PRESS) {
 		m::recorder::rec(ch->index, G_ACTION_KEYPRESS, frame_a);
-		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame_b == 0 ? frame_a + 4096 : frame_b);
+		m::recorder::rec(ch->index, G_ACTION_KEYREL, frame_b == 0 ? frame_a + G_DEFAULT_ACTION_SIZE : frame_b);
 	}
 	else
 		m::recorder::rec(ch->index, type, frame_a);
@@ -165,7 +186,6 @@ void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int fram
 
 
 /* -------------------------------------------------------------------------- */
-
 
 
 void recordEnvelopeAction(const Channel* ch, int type, int frame, float fValue)

@@ -38,7 +38,7 @@ namespace math
 {
 float linearToDB(float f);
 float dBtoLinear(float f);
-Frame quantize(Frame x, Frame step);
+int quantize(int x, int step);
 
 /* map (template)
 Maps 'x' in range [a, b] to a new range [w, z]. Source:
