@@ -28,6 +28,7 @@
 #include <FL/fl_draw.H>
 #include "../../../core/const.h"
 #include "../../../core/conf.h"
+#include "../../../core/midiChannel.h"
 #include "../../../utils/log.h"
 #include "pianoItem.h"
 #include "pianoRoll.h"
@@ -41,13 +42,13 @@ geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
 : Fl_Scroll(x, y, 200, 422),
 	m_base   (base)
 {
-	m_pianoRoll = new gePianoRoll(x, y, m_base->fullWidth);
+	m_pianoRoll = new gePianoRoll(x, y, m_base->fullWidth, static_cast<MidiChannel*>(m_base->ch));
 
 	rebuild();
 	
 	size(m_base->fullWidth, m::conf::pianoRollH);
 	
-	type(0); // Don't show scrollbars
+	//type(0); // Don't show scrollbars
 }
 
 

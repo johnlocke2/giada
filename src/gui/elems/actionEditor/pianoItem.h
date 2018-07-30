@@ -31,16 +31,16 @@
 
 #include "../../../core/recorder.h"
 #include "../../../core/midiEvent.h"
-#include "basePianoItem.h"
+#include "baseAction.h"
 
 
 class gdActionEditor;
 
 
-class gePianoItem : public geBasePianoItem
+class gePianoItem : public geBaseAction
 {
 private:
-
+#if 0
 	struct giada::m::recorder::action a;
 	struct giada::m::recorder::action b;
 
@@ -74,21 +74,24 @@ private:
 	Checks if this item don't overlap with another one. */
 
 	bool overlap();
+#endif
 
 public:
-
+/*
 	static const int MIN_WIDTH    = 10;
 	static const int HANDLE_WIDTH = 5;
-
-	gePianoItem(int x, int y, int rel_x, int rel_y, 
-		struct giada::m::recorder::action a, struct giada::m::recorder::action b);
+*/
+	gePianoItem(int x, int y, int w, int h, giada::m::recorder::action a1, 
+		giada::m::recorder::action a2);
  
 	void draw() override;
-	int handle(int e) override;
+
+/*	int handle(int e) override;
 
   void reposition(int pianoRollX) override;
 
 	void removeAction();
+*/
 };
 
 

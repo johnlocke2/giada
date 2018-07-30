@@ -33,7 +33,7 @@
 #include "baseActionEditor.h"
 
 
-class gdActionEditor;
+class MidiChannel;
 
 
 class gePianoRoll : public geBaseActionEditor
@@ -74,18 +74,19 @@ public:
 	static const int CELL_H      = 18;
 	static const int CELL_W      = 40;
 
-	gePianoRoll(int x, int y, int w);
+	gePianoRoll(int x, int y, int w, MidiChannel* ch);
 
 	void draw() override;
 
 	void rebuild() override;
 
+	int yToNote(int y) const;
+	int noteToY(int n) const;
 
 
 
 
 	void recordAction(int note, int frame_a, int frame_b=0);
-	int yToNote(int y);
 };
 
 

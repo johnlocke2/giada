@@ -41,22 +41,19 @@
 using namespace giada::m;
 
 
-gePianoItem::gePianoItem(int X, int Y, int rel_x, int rel_y, recorder::action a,
-	recorder::action b)
-	: geBasePianoItem(X, Y, MIN_WIDTH),
-		a              (a),
-		b              (b),
-		changed        (false)
+gePianoItem::gePianoItem(int X, int Y, int W, int H, recorder::action a1,
+	recorder::action a2)
+: geBaseAction(X, Y, W, H, /*resizable=*/true, a1, a2)
 {
-	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
+/*	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
 	int newX = rel_x + (a.frame / ae->zoom);
 	int newY = rel_y + getY(kernelMidi::getB2(a.iValue));
 	int newW = (b.frame - a.frame) / ae->zoom;
-	resize(newX, newY, newW, h());
+	resize(newX, newY, newW, h());*/
 }
 
-
+#if 0
 /* -------------------------------------------------------------------------- */
 
 
@@ -102,18 +99,21 @@ bool gePianoItem::overlap()
 
 	return false;
 }
-
+#endif
 
 /* -------------------------------------------------------------------------- */
 
 
 void gePianoItem::draw()
 {
-	int _w = w() > MIN_WIDTH ? w() : MIN_WIDTH;
-	fl_rectf(x(), y()+2, _w, h()-3, (Fl_Color) selected ? G_COLOR_LIGHT_1 : G_COLOR_LIGHT_1);
+	if (a2.frame == -1)
+		fl_rect(x(), y()+2, MIN_WIDTH, h()-3, (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1);
+	else
+		fl_rectf(x(), y()+2, w(), h()-3, (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1);
 }
 
 
+#if 0
 /* -------------------------------------------------------------------------- */
 
 
@@ -302,3 +302,4 @@ int gePianoItem::getRelX()
 {
 	return x() - parent()->x();
 }
+#endif

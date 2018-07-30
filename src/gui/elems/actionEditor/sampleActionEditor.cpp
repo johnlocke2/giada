@@ -61,7 +61,7 @@ void geSampleActionEditor::rebuild()
 	namespace mr = m::recorder;
 	namespace cr = c::recorder;
 
-	SampleChannel* ch = static_cast<SampleChannel*>(m_ch);
+	const SampleChannel* ch = static_cast<const SampleChannel*>(m_ch);
 
 	/* Remove all existing actions and set a new width, according to the current
 	zoom level. */
@@ -124,7 +124,7 @@ void geSampleActionEditor::draw()
 void geSampleActionEditor::onAddAction()     
 {
 	Frame f = m_base->pixelToFrame(Fl::event_x() - x());
-	c::recorder::recordSampleAction(static_cast<SampleChannel*>(m_ch), 
+	c::recorder::recordSampleAction(static_cast<const SampleChannel*>(m_ch), 
 		m_base->getActionType(), f);
 }
 

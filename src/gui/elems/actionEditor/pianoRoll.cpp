@@ -29,7 +29,7 @@
 #include "../../../core/const.h"
 #include "../../../core/mixer.h"
 #include "../../../core/clock.h"
-#include "../../../core/channel.h"
+#include "../../../core/midiChannel.h"
 #include "../../../core/recorder.h"
 #include "../../../core/kernelMidi.h"
 #include "../../../utils/log.h"
@@ -47,8 +47,8 @@ using std::vector;
 using namespace giada;
 
 
-gePianoRoll::gePianoRoll(int X, int Y, int W)
-	: geBaseActionEditor(X, Y, W, 40, nullptr)
+gePianoRoll::gePianoRoll(int X, int Y, int W, MidiChannel* ch)
+	: geBaseActionEditor(X, Y, W, 40, ch)
 {
 	if (m::conf::pianoRollY == -1)
 		position(x(), y()-(h()/2));  // center
@@ -74,20 +74,20 @@ void gePianoRoll::build()
 	int maxSample = m::clock::getFramesInLoop();
 
 	vector<Composite> actions = c::recorder::getMidiActions(channel, maxSample); 
-	for (Composite composite : actions)
+	for (Composite comp : actions)
 	{
-		m::MidiEvent e1 = composite.a1.iValue;
-		m::MidiEvent e2 = composite.a2.iValue;
+		m::MidiEvent e1 = comp.a1.iValue;
+		m::MidiEvent e2 = comp.a2.iValue;
 
 		gu_log("[gePianoRoll] ((0x%X, 0x%X, f=%d) - (0x%X, 0x%X, f=%d))\n", 
-			e1.getStatus(), e1.getNote(), composite.a1.frame,
-			e2.getStatus(), e2.getNote(), composite.a2.frame
+			e1.getStatus(), e1.getNote(), comp.a1.frame,
+			e2.getStatus(), e2.getNote(), comp.a2.frame
 		);
 
-		if (composite.a2.frame != -1)
-			add(new gePianoItem(0, 0, x(), y(), composite.a1, composite.a2));
+		if (comp.a2.frame != -1)
+			add(new gePianoItem(0, 0, x(), y(), comp.a1, comp.a2));
 		else
-			add(new gePianoItemOrphaned(0, 0, x(), y(), composite.a1));
+			add(new gePianoItemOrphaned(0, 0, x(), y(), comp.a1));
 	}
 
 	redraw();
@@ -232,9 +232,12 @@ void gePianoRoll::draw()
 
 /* -------------------------------------------------------------------------- */
 
+
 void gePianoRoll::onAddAction()
 {
-
+	Frame frame = m_base->pixelToFrame(Fl::event_x() - x());
+	int   note  = yToNote(Fl::event_y() - y());
+	c::recorder::recordMidiAction(m_ch->index, note, frame);
 }
 
 
@@ -348,21 +351,52 @@ void gePianoRoll::recordAction(int note, int frame_a, int frame_b)
 /* -------------------------------------------------------------------------- */
 
 
-int gePianoRoll::yToNote(int y)
+int gePianoRoll::yToNote(int p) const
 {
-	return gePianoRoll::MAX_KEYS - (y / gePianoRoll::CELL_H);
+	return gePianoRoll::MAX_KEYS - (p / gePianoRoll::CELL_H);
 }
+
+
+int gePianoRoll::noteToY(int n) const
+{
+	return (MAX_KEYS * CELL_H) - (n * gePianoRoll::CELL_H);
+}
+
 
 /* -------------------------------------------------------------------------- */
 
 
 void gePianoRoll::rebuild()
 {
+	namespace mr = m::recorder;
+	namespace cr = c::recorder;
+
 	/* Remove all existing actions and set a new width, according to the current
 	zoom level. */
 
 	clear();
 	size(m_base->fullWidth, (MAX_KEYS + 1) * CELL_H);
+
+	int limit = m::clock::getFramesInLoop();
+
+	vector<mr::Composite> actions = cr::getMidiActions(m_ch->index, limit); 
+	for (mr::Composite comp : actions)
+	{
+		m::MidiEvent e1 = comp.a1.iValue;
+		m::MidiEvent e2 = comp.a2.iValue;
+
+		gu_log("[gePianoRoll::rebuild] ((0x%X, 0x%X, f=%d) - (0x%X, 0x%X, f=%d))\n", 
+			e1.getStatus(), e1.getNote(), comp.a1.frame,
+			e2.getStatus(), e2.getNote(), comp.a2.frame
+		);
+
+		Pixel px = x() + m_base->frameToPixel(comp.a1.frame);
+		Pixel py = y() + noteToY(e1.getNote());
+		Pixel pw = m_base->frameToPixel(comp.a2.frame - comp.a1.frame);
+		Pixel ph = CELL_H;
+
+		add(new gePianoItem(px, py, pw, ph, comp.a1, comp.a2));
+	}
 
 	drawSurface1();
 	drawSurface2();
