@@ -39,8 +39,8 @@ using namespace giada;
 geBaseActionEditor::geBaseActionEditor(int x, int y, int w, int h, Channel* ch)
 	:	Fl_Group(x, y, w, h),
 	  m_ch    (ch),
-	  m_base  (static_cast<gdBaseActionEditor*>(window()))
-
+	  m_base  (static_cast<gdBaseActionEditor*>(window())),
+	  m_action(nullptr)
 {
 }
 
@@ -104,4 +104,83 @@ void geBaseActionEditor::baseDraw(bool clear) const
 	int coverWidth = m_base->fullWidth - m_base->loopWidth;
 	if (coverWidth != 0)
 		fl_rectf(m_base->loopWidth+x(), y()+1, coverWidth, h()-2, G_COLOR_GREY_4);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geBaseActionEditor::handle(int e)
+{
+	switch (e) {
+		case FL_PUSH:
+			return push();
+		case FL_DRAG:
+			return drag();
+		case FL_RELEASE:
+			fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK); // Make sure cursor returns normal
+			return release();
+		default:
+			return Fl_Group::handle(e);
+	}
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geBaseActionEditor::push()
+{
+	m_action = getActionAtCursor();
+
+	if (Fl::event_button1()) {    // Left button
+		if (m_action == nullptr) {  // No action under cursor: add a new one
+			if (Fl::event_x() >= m_base->loopWidth) // Avoid click on grey area
+				return 0;
+			onAddAction();
+			rebuild();
+		}
+		else                        // Prepare for dragging
+			m_action->pick = Fl::event_x() - m_action->x();
+	}
+	else
+	if (Fl::event_button3()) {    // Right button
+		if (m_action != nullptr) {
+			onDeleteAction();
+			m_action = nullptr;
+			rebuild();	
+		}
+	}
+	return 1;	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geBaseActionEditor::drag()
+{
+	if (m_action == nullptr)
+		return 0;
+	if (m_action->isOnEdges())
+		onResizeAction();
+	else
+		onMoveAction();
+	redraw();
+	return 1;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int geBaseActionEditor::release()
+{
+	if (m_action == nullptr)
+		return 0;
+	/* TODO - do this only if the action has been actually altered */
+	onRefreshAction();
+	m_action = nullptr;
+	rebuild();	
+	return 1;	
 }

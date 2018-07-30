@@ -40,33 +40,27 @@ class geEnvelopeEditor : public geBaseActionEditor
 {
 private:
 
-	/* m_point
-	Pointer to the selected point. Used when dragging things around. */
-
-	geEnvelopePoint* m_point;
-
 	/* m_actionType
 	What type of action this envelope editor is dealing with. */
 	
 	int m_actionType;
 
-	geEnvelopePoint* getPointAtCursor() const;
+	void onAddAction()     override;
+	void onDeleteAction()  override;
+	void onMoveAction()    override;
+	void onResizeAction()  override{}; // nothing to do here
+	void onRefreshAction() override;
 
 	int calcPointX(int frame) const;
 	int calcPointY(float value) const;
 	bool isFirstPoint() const;
 	bool isLastPoint() const;
 
-	int onPush();
-	int onDrag();
-	int onRelease();
-
 public:
 
 	geEnvelopeEditor(int x, int y, int actionType, const char* l, SampleChannel* ch);
 
 	void draw() override;
-	int handle(int e) override;
 
 	void rebuild() override;
 };

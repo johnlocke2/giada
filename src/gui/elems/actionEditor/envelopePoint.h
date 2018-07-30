@@ -29,23 +29,19 @@
 #define GE_ENVELOPE_POINT_H
 
 
-#include <FL/Fl_Box.H>
 #include "../../../core/recorder.h"
+#include "baseAction.h"
 
 
-class geEnvelopePoint : public Fl_Box
+class geEnvelopePoint : public geBaseAction
 {
 public:
 
 	static const int SIDE = 12;
 
-	geEnvelopePoint(int x, int y, const giada::m::recorder::action* a);
+	geEnvelopePoint(int x, int y, giada::m::recorder::action a);
 
 	void draw() override;
-	int  handle(int e) override;
-
-	const giada::m::recorder::action* action;
-	bool hovered;
 };
 
 

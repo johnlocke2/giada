@@ -183,18 +183,17 @@ void recordEnvelopeAction(const Channel* ch, int type, int frame, float fValue)
 /* -------------------------------------------------------------------------- */
 
 
-void deleteEnvelopeAction(const Channel* ch, const m::recorder::action* a,
-	bool moved)
+void deleteEnvelopeAction(const Channel* ch, m::recorder::action a, bool moved)
 {
 	namespace mr = m::recorder;
 
 	/* Deleting first or last action: clear everything. Otherwise delete the 
 	selected action only. */
 
-	if (!moved && (a->frame == 0 || a->frame == m::clock::getFramesInLoop()))
-		mr::clearAction(ch->index, a->type);
+	if (!moved && (a.frame == 0 || a.frame == m::clock::getFramesInLoop()))
+		mr::clearAction(ch->index, a.type);
 	else
-		mr::deleteAction(ch->index, a->frame, a->type, false, &m::mixer::mutex);
+		mr::deleteAction(ch->index, a.frame, a.type, false, &m::mixer::mutex);
 }
 
 
@@ -266,12 +265,11 @@ vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-vector<const m::recorder::action*> getEnvelopeActions(const Channel* ch,
-	int type)
+vector<m::recorder::action> getEnvelopeActions(const Channel* ch, int type)
 {
 	namespace mr = m::recorder;
 
-	vector<const mr::action*> out;
+	vector<mr::action> out;
 
 	mr::sortActions();
 	mr::forEachAction([&](const mr::action* a)
@@ -286,7 +284,7 @@ vector<const m::recorder::action*> getEnvelopeActions(const Channel* ch,
 			  a->type != type)
 			return;
 
-		out.push_back(a);
+		out.push_back(*a);
 	});
 
 	return out;

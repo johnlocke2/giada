@@ -30,16 +30,12 @@
 
 
 #include <FL/Fl_Box.H>
-
-
-class Channel;
+#include "../../../core/recorder.h"
 
 
 class geBaseAction : public Fl_Box
 {
 private:
-
-	const Channel* m_ch;
 	
 	bool m_resizable;
 
@@ -48,7 +44,8 @@ public:
 	static const int MIN_WIDTH    = 12;
 	static const int HANDLE_WIDTH = 6;
 
-	geBaseAction(int x, int y, int w, int h, bool resizable, const Channel* ch);
+	geBaseAction(int x, int y, int w, int h, bool resizable,
+		giada::m::recorder::action a1, giada::m::recorder::action a2);
 
 	int  handle(int e) override;
 
@@ -66,6 +63,9 @@ public:
 	bool  onLeftEdge;
 	bool  hovered;
 	int   pick;
+
+	giada::m::recorder::action a1;
+	giada::m::recorder::action a2;
 };
 
 

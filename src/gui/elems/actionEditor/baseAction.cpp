@@ -31,14 +31,15 @@
 
 
 geBaseAction::geBaseAction(int X, int Y, int W, int H, bool resizable,
-	const Channel* ch)
+	giada::m::recorder::action a1, giada::m::recorder::action a2)
 : Fl_Box     (X, Y, W, H),
-  m_ch       (ch),
   m_resizable(resizable),
   onRightEdge(false),
   onLeftEdge (false),
   hovered    (false),
-  pick       (0)
+  pick       (0),
+  a1         (a1),
+  a2         (a2)
 {
 	if (w() < MIN_WIDTH)
 		size(MIN_WIDTH, h());

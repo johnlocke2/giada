@@ -40,6 +40,12 @@ class geBaseAction;
 
 class geBaseActionEditor : public Fl_Group
 {
+private:
+
+	int push();
+	int drag();
+	int release();
+
 protected:
 
 	Channel* m_ch;
@@ -49,12 +55,18 @@ protected:
 	/* m_action
 	Selected action. Used while dragging. */
 
-	//geBaseAction* m_action;
+	geBaseAction* m_action;
 
 	/* baseDraw
 	Draws basic things like borders and grids. Optional background clear. */
 
   void baseDraw(bool clear=true) const;
+
+	virtual void onAddAction()     = 0;
+	virtual void onDeleteAction()  = 0;
+	virtual void onMoveAction()    = 0;
+	virtual void onResizeAction()  = 0;
+	virtual void onRefreshAction() = 0;
 
 public:
 
@@ -64,6 +76,11 @@ public:
   Rebuild the actions widgets from scratch. */
   
 	virtual void rebuild() = 0;
+
+	/* handle
+	Override base FL_Group events. */
+	
+	int handle(int e) override;
 
 	/* getActionAtCursor
 	Returns the action under the mouse. nullptr if nothing found. */

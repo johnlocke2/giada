@@ -47,24 +47,9 @@ using namespace giada::m;
 
 
 geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
-  : geBaseActionEditor(x, y, 200, 40, ch),
-    m_action          (nullptr)
+: geBaseActionEditor(x, y, 200, 40, ch)
 {
 	rebuild();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-geSampleAction* geSampleActionEditor::getActionAtCursor()
-{
-	for (int i=0; i<children(); i++) {
-		geSampleAction* a = static_cast<geSampleAction*>(child(i));
-		if (a->hovered)
-			return a;
-	}
-	return nullptr;
 }
 
 
@@ -136,126 +121,61 @@ void geSampleActionEditor::draw()
 /* -------------------------------------------------------------------------- */
 
 
-int geSampleActionEditor::onPush()
+void geSampleActionEditor::onAddAction()     
 {
-	SampleChannel* ch = static_cast<SampleChannel*>(m_ch);
-	
-	m_action = getActionAtCursor();
-
-	if (Fl::event_button1()) {    // Left button
-		if (m_action == nullptr) {  // No action under cursor: add a new one
-			if (Fl::event_x() >= m_base->loopWidth) // Avoid click on grey area
-				return 0;
-			Frame f = m_base->pixelToFrame(Fl::event_x() - x());
-			c::recorder::recordSampleAction(ch, m_base->getActionType(), f);
-			rebuild();
-		}
-		else {                     // Action under cursor: get ready for move/resize
-			m_action->pick = Fl::event_x() - m_action->x();
-		}
-	}
-	else
-	if (Fl::event_button3()) {  // Right button
-		if (m_action != nullptr) {
-			c::recorder::deleteSampleAction(ch, m_action->a1, m_action->a2);
-			m_action = nullptr;
-			rebuild();	
-		}
-	}
-
-	return 1;
+	Frame f = m_base->pixelToFrame(Fl::event_x() - x());
+	c::recorder::recordSampleAction(static_cast<SampleChannel*>(m_ch), 
+		m_base->getActionType(), f);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-int geSampleActionEditor::onDrag()
+void geSampleActionEditor::onDeleteAction()  
 {
-	if (m_action == nullptr)
-		return 0;
-	if (m_action->isOnEdges())
-		resizeAction();
-	else
-		moveAction();
-	return 1;
+	c::recorder::deleteSampleAction(static_cast<SampleChannel*>(m_ch), m_action->a1, m_action->a2);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void geSampleActionEditor::moveAction()
+void geSampleActionEditor::onMoveAction()    
 {
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
-
 	Pixel ex = Fl::event_x() - m_action->pick;
 	if      (ex < x()) ex = x();
-	else if (ex + m_action->w() > ae->loopWidth + x()) ex = ae->loopWidth + x() - m_action->w();
+	else if (ex + m_action->w() > m_base->loopWidth + x()) ex = m_base->loopWidth + x() - m_action->w();
 
 	m_action->setPosition(ex);
-	redraw();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void geSampleActionEditor::resizeAction()
+void geSampleActionEditor::onResizeAction()  
 {
-	gdBaseActionEditor* ae = static_cast<gdBaseActionEditor*>(window());
-
 	Pixel ex = Fl::event_x();
 	if      (ex < x()) ex = x();
-	else if (ex > ae->loopWidth + x()) ex = ae->loopWidth + x();
+	else if (ex > m_base->loopWidth + x()) ex = m_base->loopWidth + x();
 
 	if (m_action->onRightEdge) 
 		m_action->setRightEdge(ex - m_action->x());
 	else
 		m_action->setLeftEdge(ex);
-	redraw();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-int geSampleActionEditor::onRelease()
+void geSampleActionEditor::onRefreshAction() 
 {
-	if (m_action == nullptr)
-		return 0;
-
-	/* TODO - do this only if the action has been really altered */
-
 	SampleChannel* ch = static_cast<SampleChannel*>(m_ch);
 
 	Frame f1 = m_base->pixelToFrame(m_action->x() - x());
 	Frame f2 = m_base->pixelToFrame(m_action->x() + m_action->w() - x());
 	c::recorder::deleteSampleAction(ch, m_action->a1, m_action->a2);
 	c::recorder::recordSampleAction(ch, m_base->getActionType(), f1, f2);
-	m_action = nullptr;
-
-	rebuild();
-
-	
-	return 1;
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int geSampleActionEditor::handle(int e)
-{
-	switch (e) {
-		case FL_PUSH:
-			return onPush();
-		case FL_DRAG:
-			return onDrag();
-		case FL_RELEASE:
-			fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK); // Make sure cursor returns normal
-			return onRelease();
-		default:
-			return Fl_Group::handle(e);
-	}
 }

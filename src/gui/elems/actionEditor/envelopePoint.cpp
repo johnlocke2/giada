@@ -33,31 +33,9 @@
 using namespace giada;
 
 
-geEnvelopePoint::geEnvelopePoint(int X, int Y, const m::recorder::action* a)
-	: Fl_Box (X, Y, SIDE, SIDE),
-	  action (a),
-	  hovered(false)
+geEnvelopePoint::geEnvelopePoint(int X, int Y, m::recorder::action a)
+	: geBaseAction(X, Y, SIDE, SIDE, /*resizable=*/false, a, {})
 {
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int geEnvelopePoint::handle(int e)
-{
-	switch (e) {
-		case FL_ENTER:
-			hovered = true;
-			redraw();
-			return 1;
-		case FL_LEAVE:
-			hovered = false;
-			redraw();
-			return 1;
-		default:
-			return Fl_Widget::handle(e);
-	}
 }
 
 

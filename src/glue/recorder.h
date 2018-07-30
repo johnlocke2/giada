@@ -64,11 +64,9 @@ std::vector<m::recorder::Composite> getMidiActions(int channel,
 
 void recordEnvelopeAction(const Channel* ch, int type, int frame, float fValue);
 
-void deleteEnvelopeAction(const Channel* ch, const m::recorder::action* a, 
-	bool moved);
+void deleteEnvelopeAction(const Channel* ch, m::recorder::action a, bool moved);
 
-std::vector<const m::recorder::action*> getEnvelopeActions(const Channel* ch,
-	int type);
+std::vector<m::recorder::action> getEnvelopeActions(const Channel* ch, int type);
 
 void recordSampleAction(const SampleChannel* ch, int type, int frame_a, int frame_b=0);
 

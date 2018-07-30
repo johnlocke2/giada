@@ -232,20 +232,37 @@ void gePianoRoll::draw()
 
 /* -------------------------------------------------------------------------- */
 
-
-int gePianoRoll::handle(int e)
+void gePianoRoll::onAddAction()
 {
-	switch (e) {
-		case FL_PUSH:
-			return onPush();
-		case FL_DRAG:
-			return onDrag();
-		case FL_RELEASE:
-			fl_cursor(FL_CURSOR_DEFAULT, FL_WHITE, FL_BLACK); // Make sure cursor returns normal
-			return onRelease();
-		default:
-			return Fl_Group::handle(e);
-	}
+
+}
+
+
+void gePianoRoll::onDeleteAction()
+{
+
+}
+
+
+void gePianoRoll::onMoveAction()
+{
+
+}
+
+
+void gePianoRoll::onResizeAction()
+{
+
+}
+
+
+void gePianoRoll::onRefreshAction()
+{
+
+}
+
+
+
 #if 0
 	gdActionEditor* ae = static_cast<gdActionEditor*>(window());
 
@@ -310,35 +327,8 @@ int gePianoRoll::handle(int e)
 		}
 	}
 	return ret;
+}
 #endif
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int gePianoRoll::onPush()
-{
-
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int gePianoRoll::onDrag()
-{
-
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int gePianoRoll::onRelease()
-{
-	
-}
 
 
 /* -------------------------------------------------------------------------- */

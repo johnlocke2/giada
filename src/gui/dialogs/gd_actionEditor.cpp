@@ -105,13 +105,13 @@ gdActionEditor::gdActionEditor(Channel* chan)
 		SampleChannel *ch = static_cast<SampleChannel*>(chan);
 
 		ac = new geSampleActionEditor  (scroller->x(), upperArea->y()+upperArea->h()+8, ch);
-		mc = new geMuteEditor    (scroller->x(), ac->y()+ac->h()+8);
-		vc = new geEnvelopeEditor(scroller->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, "volume", ch);
+		//mc = new geMuteEditor    (scroller->x(), ac->y()+ac->h()+8);
+		//vc = new geEnvelopeEditor(scroller->x(), mc->y()+mc->h()+8, G_ACTION_VOLUME, "volume", ch);
 		scroller->add(ac);
 		//scroller->add(new geResizerBar(ac->x(), ac->y()+ac->h(), scroller->w(), 8));
-		scroller->add(mc);
+		//scroller->add(mc);
 		//scroller->add(new geResizerBar(mc->x(), mc->y()+mc->h(), scroller->w(), 8));
-		scroller->add(vc);
+		//scroller->add(vc);
 		//scroller->add(new geResizerBar(vc->x(), vc->y()+vc->h(), scroller->w(), 8));
 
 		/* fill volume envelope with actions from recorder */

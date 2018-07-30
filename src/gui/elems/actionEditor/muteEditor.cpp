@@ -24,7 +24,7 @@
  *
  * -------------------------------------------------------------------------- */
 
-
+#if 0
 #include <FL/fl_draw.H>
 #include "../../../core/recorder.h"
 #include "../../../core/mixer.h"
@@ -423,3 +423,5 @@ int geMuteEditor::getSelectedPoint() {
 	}
 	return -1;
 }
+
+#endif

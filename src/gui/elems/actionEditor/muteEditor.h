@@ -24,7 +24,7 @@
  *
  * -------------------------------------------------------------------------- */
 
-
+#if 0
 #ifndef GE_MUTE_TOOL_H
 #define GE_MUTE_TOOL_H
 
@@ -99,4 +99,5 @@ public:
 	void rebuild();
 };
 
+#endif
 #endif

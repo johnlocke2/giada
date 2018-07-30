@@ -40,29 +40,17 @@ class geSampleActionEditor : public geBaseActionEditor
 {
 private:
 
-	/* action
-	Pointer to the selected action. Used when dragging action around. */
-
-	geSampleAction* m_action;
-
-	void moveAction();
-	void resizeAction();
-
-	/* getActionAtCursor
-	Returns the action under the mouse. nullptr if nothing found. */
-
-	geSampleAction* getActionAtCursor();
-
-	int onPush();
-	int onDrag();
-	int onRelease();
+	void onAddAction()     override;
+	void onDeleteAction()  override;
+	void onMoveAction()    override;
+	void onResizeAction()  override;
+	void onRefreshAction() override;
 
 public:
 
 	geSampleActionEditor(int x, int y, SampleChannel* ch);
 
 	void draw() override;
-	int  handle(int e) override;
 
 	void rebuild() override;
 };

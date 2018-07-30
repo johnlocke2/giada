@@ -49,6 +49,12 @@ private:
 	Fl_Offscreen surface1;  // notes, no repeat
 	Fl_Offscreen surface2;  // lines, x-repeat
 
+	void onAddAction()     override;
+	void onDeleteAction()  override;
+	void onMoveAction()    override;
+	void onResizeAction()  override;
+	void onRefreshAction() override;
+
 	/* drawSurface*
 	Generates a complex drawing in memory first and copy it to the screen at a
 	later point in time. Fl_Offscreen surface holds the necessary data.	The first
@@ -59,10 +65,6 @@ private:
 
 	void drawSurface1();
 	void drawSurface2();
-
-	int onPush();
-	int onDrag();
-	int onRelease();
 
 public:
 
@@ -75,9 +77,12 @@ public:
 	gePianoRoll(int x, int y, int w);
 
 	void draw() override;
-	int  handle(int e) override;
 
 	void rebuild() override;
+
+
+
+
 
 	void recordAction(int note, int frame_a, int frame_b=0);
 	int yToNote(int y);
