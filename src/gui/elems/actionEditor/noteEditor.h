@@ -29,14 +29,14 @@
 #define GE_NOTE_EDITOR_H
 
 
-#include <FL/Fl_Scroll.H>
 #include "../../dialogs/actionEditor/midiActionEditor.h"
+#include "../basics/scroll.h"
 
 
 class gePianoRoll;
 
 
-class geNoteEditor : public Fl_Scroll
+class geNoteEditor : public geScroll
 {
 private:
 

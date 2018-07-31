@@ -39,8 +39,8 @@ using namespace giada;
 
 
 geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
-: Fl_Scroll(x, y, 200, 422),
-	m_base   (base)
+: geScroll(x, y, 200, 422),
+	m_base  (base)
 {
 	m_pianoRoll = new gePianoRoll(x, y, m_base->fullWidth, static_cast<MidiChannel*>(m_base->ch));
 
@@ -48,6 +48,7 @@ geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
 	
 	size(m_base->fullWidth, m::conf::pianoRollH);
 	
+	type(Fl_Scroll::VERTICAL_ALWAYS);
 	//type(0); // Don't show scrollbars
 }
 
