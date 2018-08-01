@@ -43,10 +43,6 @@ class geGridTool;
 class geButton;
 class geButton;
 class geScroll;
-class geSampleActionEditor;
-class geMuteEditor;
-class geEnvelopeEditor;
-class geNoteEditor;
 
 
 namespace giada
@@ -95,11 +91,6 @@ public:
 	geButton*   zoomInBtn;
 	geButton*   zoomOutBtn;
 	geScroll*   viewport;       // widget container
-
-	geSampleActionEditor* ac;
-	geMuteEditor*         mc;
-	geEnvelopeEditor*     vc;
-	geNoteEditor*         pr;
 
 	Channel* ch;
 

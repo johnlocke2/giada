@@ -29,11 +29,12 @@
 #define GD_SAMPLE_ACTION_EDITOR_H
 
 
-
 #include "baseActionEditor.h"
 
 
 class SampleChannel;
+class geSampleActionEditor;
+class geEnvelopeEditor;
 
 
 namespace giada
@@ -45,6 +46,11 @@ private:
 	static const int RESIZER_BAR_H = 20;
 	static const int MIN_WIDGET_H  = 10;
 
+	geSampleActionEditor* ac;
+	geEnvelopeEditor*     vc;
+
+	int getActionType() const;
+	
 public:
 
 	gdSampleActionEditor(SampleChannel* ch);

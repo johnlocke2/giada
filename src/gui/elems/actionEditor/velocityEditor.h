@@ -25,34 +25,37 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef GD_MIDI_ACTION_EDITOR_H
-#define GD_MIDI_ACTION_EDITOR_H
+#ifndef GE_VELOCITY_EDITOR_H
+#define GE_VELOCITY_EDITOR_H
 
 
 #include "baseActionEditor.h"
 
 
 class MidiChannel;
-class geNoteEditor;
-class geVelocityEditor;
+class geEnvelopePoint;
 
 
-namespace giada
-{
-class gdMidiActionEditor : public gdBaseActionEditor
+class geVelocityEditor : public geBaseActionEditor
 {
 private:
 
-	geNoteEditor*     ne;
-	geVelocityEditor* ve;
+	void onAddAction()     override{};
+	void onDeleteAction()  override{};
+	void onMoveAction()    override{}; // todo
+	void onResizeAction()  override{};
+	void onRefreshAction() override{}; // todo
+
+	int calcPointY(int value) const;
 
 public:
 
-	gdMidiActionEditor(MidiChannel* ch);
+	geVelocityEditor(int x, int y, MidiChannel* ch);
+
+	void draw() override;
 
 	void rebuild() override;
 };
-} // giada::
 
 
 #endif

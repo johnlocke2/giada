@@ -127,10 +127,10 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 		frame_a -= overflow;
 	}
 
-	/* Prepare MIDI events, with maximum velocity (0x3F) for now. */
+	/* Prepare MIDI events, with maximum velocity. */
 
-	m::MidiEvent event_a = m::MidiEvent(m::MidiEvent::NOTE_ON,  note, 0x3F);
-	m::MidiEvent event_b = m::MidiEvent(m::MidiEvent::NOTE_OFF, note, 0x3F);
+	m::MidiEvent event_a = m::MidiEvent(m::MidiEvent::NOTE_ON,  note, G_MAX_VELOCITY);
+	m::MidiEvent event_b = m::MidiEvent(m::MidiEvent::NOTE_OFF, note, G_MAX_VELOCITY);
 
 	/* Avoid overlapping actions. Find the next action past frame_a and compare 
 	its frame: if smaller than frame_b, an overlap occurs. Shrink the new action

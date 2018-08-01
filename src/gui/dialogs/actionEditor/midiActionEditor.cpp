@@ -33,6 +33,7 @@
 #include "../../elems/basics/resizerBar.h"
 #include "../../elems/basics/box.h"
 #include "../../elems/actionEditor/noteEditor.h"
+#include "../../elems/actionEditor/velocityEditor.h"
 #include "../../elems/actionEditor/gridTool.h"
 #include "midiActionEditor.h"
 
@@ -67,9 +68,13 @@ gdMidiActionEditor::gdMidiActionEditor(MidiChannel* ch)
 
 	viewport = new geScroll(8, 36, w()-16, h()-44);
 
-	pr = new geNoteEditor(viewport->x(), upperArea->y()+upperArea->h()+8, this);
-	viewport->add(pr);
-	viewport->add(new geResizerBar(pr->x(), pr->y()+pr->h(), viewport->w(), 30, 8));
+	ne = new geNoteEditor(viewport->x(), viewport->y(), this);
+	viewport->add(ne);
+	viewport->add(new geResizerBar(ne->x(), ne->y()+ne->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
+	
+	ve = new geVelocityEditor(viewport->x(), ne->y()+ne->h()+RESIZER_BAR_H, ch);
+	viewport->add(ve);
+	viewport->add(new geResizerBar(ve->x(), ve->y()+ve->h(), viewport->w(), RESIZER_BAR_H, MIN_WIDGET_H));
 
 	end();
 	prepareWindow();
@@ -81,6 +86,7 @@ gdMidiActionEditor::gdMidiActionEditor(MidiChannel* ch)
 
 void gdMidiActionEditor::rebuild()
 {
-	pr->rebuild();
+	ne->rebuild();
+	ve->rebuild();
 }
 } // giada::

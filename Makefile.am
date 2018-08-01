@@ -175,6 +175,8 @@ sourcesCore =                            \
 	src/gui/elems/actionEditor/baseAction.cpp           \
 	src/gui/elems/actionEditor/envelopeEditor.h         \
 	src/gui/elems/actionEditor/envelopeEditor.cpp       \
+	src/gui/elems/actionEditor/velocityEditor.h         \
+	src/gui/elems/actionEditor/velocityEditor.cpp       \
 	src/gui/elems/actionEditor/envelopePoint.h          \
 	src/gui/elems/actionEditor/envelopePoint.cpp        \
 	src/gui/elems/actionEditor/pianoRoll.h              \
