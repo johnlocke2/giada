@@ -25,12 +25,9 @@
  * -------------------------------------------------------------------------- */
 
 
-#include <FL/fl_draw.H>
 #include "../../../core/const.h"
 #include "../../../core/conf.h"
 #include "../../../core/midiChannel.h"
-#include "../../../utils/log.h"
-#include "pianoItem.h"
 #include "pianoRoll.h"
 #include "noteEditor.h"
 

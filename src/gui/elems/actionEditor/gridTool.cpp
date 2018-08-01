@@ -25,15 +25,12 @@
 * --------------------------------------------------------------------------- */
 
 
-#include <cmath>
+#include <FL/Fl_Double_Window.H>
 #include "../../../core/conf.h"
-#include "../../../core/const.h"
 #include "../../../core/clock.h"
 #include "../../../utils/math.h"
-#include "../../dialogs/gd_actionEditor.h"
 #include "../basics/choice.h"
 #include "../basics/check.h"
-#include "sampleActionEditor.h"
 #include "gridTool.h"
 
 

@@ -25,20 +25,13 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../../core/const.h"
+#include <string>
 #include "../../../core/graphics.h"
 #include "../../../core/midiChannel.h"
-#include "../../../glue/recorder.h"
-#include "../../../utils/gui.h"
-#include "../../../utils/string.h"
 #include "../../elems/basics/scroll.h"
 #include "../../elems/basics/button.h"
 #include "../../elems/basics/resizerBar.h"
-#include "../../elems/basics/choice.h"
 #include "../../elems/basics/box.h"
-#include "../../elems/actionEditor/sampleActionEditor.h"
-#include "../../elems/actionEditor/envelopeEditor.h"
-#include "../../elems/actionEditor/muteEditor.h"
 #include "../../elems/actionEditor/noteEditor.h"
 #include "../../elems/actionEditor/gridTool.h"
 #include "midiActionEditor.h"

@@ -26,19 +26,16 @@
 
 
 #include <cassert>
+#include <string>
 #include "../../../utils/gui.h"
 #include "../../../utils/string.h"
-#include "../../../core/graphics.h"
 #include "../../../core/conf.h"
 #include "../../../core/const.h"
 #include "../../../core/clock.h"
-#include "../../../core/sampleChannel.h"
+#include "../../../core/channel.h"
 #include "../../elems/actionEditor/gridTool.h"
 #include "../../elems/basics/scroll.h"
-#include "../../elems/basics/button.h"
-#include "../../elems/basics/resizerBar.h"
 #include "../../elems/basics/choice.h"
-#include "../../elems/basics/box.h"
 #include "baseActionEditor.h"
 
 

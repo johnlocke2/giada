@@ -113,8 +113,6 @@ sourcesCore =                            \
 	src/gui/dialogs/sampleEditor.cpp       \
 	src/gui/dialogs/pluginWindowGUI.h      \
 	src/gui/dialogs/pluginWindowGUI.cpp    \
-	src/gui/dialogs/gd_actionEditor.h	     \
-	src/gui/dialogs/gd_actionEditor.cpp    \
 	src/gui/dialogs/pluginChooser.h        \
 	src/gui/dialogs/pluginChooser.cpp      \
 	src/gui/dialogs/actionEditor/baseActionEditor.h     \
@@ -183,14 +181,8 @@ sourcesCore =                            \
 	src/gui/elems/actionEditor/pianoRoll.cpp            \
 	src/gui/elems/actionEditor/noteEditor.h		          \
 	src/gui/elems/actionEditor/noteEditor.cpp           \
-	src/gui/elems/actionEditor/basePianoItem.h          \
-	src/gui/elems/actionEditor/basePianoItem.cpp        \
 	src/gui/elems/actionEditor/pianoItem.h              \
 	src/gui/elems/actionEditor/pianoItem.cpp            \
-	src/gui/elems/actionEditor/pianoItemOrphaned.h      \
-	src/gui/elems/actionEditor/pianoItemOrphaned.cpp    \
-	src/gui/elems/actionEditor/muteEditor.h             \
-	src/gui/elems/actionEditor/muteEditor.cpp           \
 	src/gui/elems/actionEditor/sampleActionEditor.h           \
 	src/gui/elems/actionEditor/sampleActionEditor.cpp         \
 	src/gui/elems/actionEditor/sampleAction.h                 \

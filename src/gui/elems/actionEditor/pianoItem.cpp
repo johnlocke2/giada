@@ -25,16 +25,8 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../../core/kernelMidi.h"
+#include <FL/fl_draw.H>
 #include "../../../core/const.h"
-#include "../../../core/mixer.h"
-#include "../../../core/channel.h"
-#include "../../../core/clock.h"
-#include "../../../core/midiChannel.h"
-#include "../../dialogs/gd_actionEditor.h"
-#include "noteEditor.h"
-#include "pianoRoll.h"
-#include "gridTool.h"
 #include "pianoItem.h"
 
 

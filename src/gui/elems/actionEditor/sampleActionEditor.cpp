@@ -26,19 +26,12 @@
 
 
 #include <FL/fl_draw.H>
-#include "../../../core/clock.h"
+#include "../../../core/const.h"
 #include "../../../core/sampleChannel.h"
 #include "../../../utils/log.h"
 #include "../../../glue/recorder.h"
-#include "../../dialogs/gd_mainWindow.h"
-#include "../../dialogs/actionEditor/baseActionEditor.h"
-#include "../mainWindow/keyboard/keyboard.h"
-#include "gridTool.h"
 #include "sampleAction.h"
 #include "sampleActionEditor.h"
-
-
-extern gdMainWindow* G_MainWin;
 
 
 using std::vector;

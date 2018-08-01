@@ -27,18 +27,13 @@
 
 #include "../../../core/conf.h"
 #include "../../../core/const.h"
-#include "../../../core/mixer.h"
 #include "../../../core/clock.h"
 #include "../../../core/midiChannel.h"
-#include "../../../core/recorder.h"
-#include "../../../core/kernelMidi.h"
 #include "../../../utils/log.h"
 #include "../../../utils/string.h"
 #include "../../../utils/math.h"
 #include "../../../glue/recorder.h"
-#include "../../dialogs/gd_actionEditor.h"
 #include "pianoItem.h"
-#include "pianoItemOrphaned.h"
 #include "noteEditor.h"
 #include "pianoRoll.h"
 
