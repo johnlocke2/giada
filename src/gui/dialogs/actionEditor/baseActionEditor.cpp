@@ -70,8 +70,6 @@ gdBaseActionEditor::~gdBaseActionEditor()
 	conf::actionEditorW = w();
 	conf::actionEditorH = h();
 	conf::actionEditorZoom = ratio;
-
-	/** CHECKME - missing clear() ? */
 }
 
 
@@ -171,7 +169,9 @@ void gdBaseActionEditor::prepareWindow()
 {
 	gu_setFavicon(this);
 
-	copy_label(string("Edit Actions in Channel " + gu_iToString(ch->index + 1)).c_str());
+	string l = "Action Editor";
+	if (ch->name != "") l += " - " + ch->name;
+	copy_label(l.c_str());
 
 	set_non_modal();
 	size_range(640, 284);

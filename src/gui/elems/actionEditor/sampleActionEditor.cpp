@@ -137,8 +137,11 @@ void geSampleActionEditor::onDeleteAction()
 void geSampleActionEditor::onMoveAction()    
 {
 	Pixel ex = Fl::event_x() - m_action->pick;
-	if      (ex < x()) ex = x();
-	else if (ex + m_action->w() > m_base->loopWidth + x()) ex = m_base->loopWidth + x() - m_action->w();
+
+	Pixel x1 = x();
+	Pixel x2 = m_base->loopWidth + x() - m_action->w();
+
+	if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
 
 	m_action->setPosition(ex);
 }
@@ -150,6 +153,12 @@ void geSampleActionEditor::onMoveAction()
 void geSampleActionEditor::onResizeAction()  
 {
 	Pixel ex = Fl::event_x();
+
+	Pixel x1 = x();
+	Pixel x2 = m_base->loopWidth + x();
+
+	//if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
+
 	if      (ex < x()) ex = x();
 	else if (ex > m_base->loopWidth + x()) ex = m_base->loopWidth + x();
 
