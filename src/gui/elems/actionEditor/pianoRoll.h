@@ -81,8 +81,11 @@ public:
 	gePianoRoll(int x, int y, int w, MidiChannel* ch);
 
 	void draw() override;
+	int  handle(int e) override;
 
 	void rebuild() override;
+
+	int pick;
 };
 
 

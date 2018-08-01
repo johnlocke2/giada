@@ -49,7 +49,8 @@ using namespace giada;
 
 
 gePianoRoll::gePianoRoll(int X, int Y, int W, MidiChannel* ch)
-	: geBaseActionEditor(X, Y, W, 40, ch)
+	: geBaseActionEditor(X, Y, W, 40, ch),
+	  pick              (0)
 {
 	position(x(), m::conf::pianoRollY == -1 ? y()-(h()/2) : m::conf::pianoRollY);
 	rebuild();
@@ -191,6 +192,23 @@ void gePianoRoll::draw()
 
 	baseDraw(false);
 	draw_children();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int gePianoRoll::handle(int e)
+{
+	if (e == FL_PUSH && Fl::event_button3()) {
+		pick = Fl::event_y() - y();
+		return geBaseActionEditor::handle(e);
+	}
+	if (e == FL_DRAG && Fl::event_button3()) {
+		static_cast<geNoteEditor*>(parent())->scroll();
+		return 1;
+	}
+	return geBaseActionEditor::handle(e);
 }
 
 

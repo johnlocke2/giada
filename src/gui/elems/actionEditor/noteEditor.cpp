@@ -66,6 +66,24 @@ geNoteEditor::~geNoteEditor()
 /* -------------------------------------------------------------------------- */
 
 
+void geNoteEditor::scroll()
+{
+	Pixel ey = Fl::event_y() - m_pianoRoll->pick;
+
+	Pixel y1 = y();
+	Pixel y2 = (y() + h()) - m_pianoRoll->h();
+
+	if (ey > y1) ey = y1; else if (ey < y2) ey = y2;
+
+	m_pianoRoll->position(x(), ey);
+
+	redraw();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void geNoteEditor::rebuild()
 {
 	size(m_base->fullWidth, h());
