@@ -59,10 +59,11 @@ public:
 
 	void setPosition(int p);
 
-	bool  onRightEdge;
-	bool  onLeftEdge;
-	bool  hovered;
-	int   pick;
+	bool onRightEdge;
+	bool onLeftEdge;
+	bool hovered;
+	bool altered;
+	int  pick;
 
 	giada::m::recorder::action a1;
 	giada::m::recorder::action a2;

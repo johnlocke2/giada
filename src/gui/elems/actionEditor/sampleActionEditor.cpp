@@ -157,10 +157,7 @@ void geSampleActionEditor::onResizeAction()
 	Pixel x1 = x();
 	Pixel x2 = m_base->loopWidth + x();
 
-	//if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
-
-	if      (ex < x()) ex = x();
-	else if (ex > m_base->loopWidth + x()) ex = m_base->loopWidth + x();
+	if (ex < x1) ex = x1; else if (ex > x2) ex = x2;
 
 	if (m_action->onRightEdge) 
 		m_action->setRightEdge(ex - m_action->x());

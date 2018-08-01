@@ -37,6 +37,7 @@ geBaseAction::geBaseAction(int X, int Y, int W, int H, bool resizable,
   onRightEdge(false),
   onLeftEdge (false),
   hovered    (false),
+  altered    (false),
   pick       (0),
   a1         (a1),
   a2         (a2)

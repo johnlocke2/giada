@@ -166,6 +166,7 @@ int geBaseActionEditor::drag()
 		onResizeAction();
 	else
 		onMoveAction();
+	m_action->altered = true;
 	redraw();
 	return 1;
 }
@@ -176,11 +177,12 @@ int geBaseActionEditor::drag()
 
 int geBaseActionEditor::release()
 {
-	if (m_action == nullptr)
-		return 0;
-	/* TODO - do this only if the action has been actually altered */
-	onRefreshAction();
+	int ret = 0;
+	if (m_action != nullptr && m_action->altered) {
+		onRefreshAction();
+		rebuild();
+		ret = 1;
+	}
 	m_action = nullptr;
-	rebuild();	
-	return 1;	
+	return ret;
 }
