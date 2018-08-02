@@ -83,7 +83,7 @@ std::vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch);
 void deleteSampleAction(SampleChannel* ch, m::recorder::action a1, 
 	m::recorder::action a2);
 
-void setVelocity(const SampleChannel* ch, m::recorder::action a, float value);
+void setVelocity(const Channel* ch, m::recorder::action a, int value);
 }}} // giada::c::recorder::
 
 #endif

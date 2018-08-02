@@ -148,12 +148,8 @@ void geVelocityEditor::onRefreshAction()
 
 	float fv = m_base->pixelToValue((m_action->y() - y()) + geEnvelopePoint::SIDE / 2, h());
 	int   iv = u::math::map<float, int>(fv, 0.0, 1.0, 0, G_MAX_VELOCITY);
-	
-	printf("%d\n", iv);
-#if 0
-	Frame f = m_base->pixelToFrame((m_action->x() - x()) + geEnvelopePoint::SIDE / 2);
-	float v = m_base->pixelToValue((m_action->y() - y()) + geEnvelopePoint::SIDE / 2, h());
-	c::recorder::deleteEnvelopeAction(m_ch, m_action->a1, /*moved=*/true);
-	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
-#endif
+
+	c::recorder::setVelocity(m_ch, m_action->a1, iv);
+
+	m_base->rebuild(this);  // Rebuild pianoRoll as well
 }

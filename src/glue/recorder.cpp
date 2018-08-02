@@ -314,9 +314,18 @@ vector<m::recorder::action> getEnvelopeActions(const Channel* ch, int type)
 /* -------------------------------------------------------------------------- */
 
 
-void setVelocity(const SampleChannel* ch, m::recorder::action a, float value)
+void setVelocity(const Channel* ch, m::recorder::action a, int value)
 {
-	
+	/* TODO - this is super ugly: delete the action and add a new one with the
+	modified values. This shit will go away as soon as we'll refactor m::recorder
+	for good. */
+
+	m::MidiEvent event = m::MidiEvent(a.iValue);
+	event.setVelocity(value);
+
+	m::recorder::deleteAction(ch->index, a.frame, G_ACTION_MIDI, true, 
+		&m::mixer::mutex, a.iValue, 0.0);
+	m::recorder::rec(ch->index, G_ACTION_MIDI, a.frame, event.getRaw());
 }
 
 
