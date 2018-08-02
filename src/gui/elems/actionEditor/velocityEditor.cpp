@@ -121,26 +121,6 @@ void geVelocityEditor::rebuild()
 	redraw();
 }
 
-#if 0
-/* -------------------------------------------------------------------------- */
-
-
-void geVelocityEditor::onAddAction()     
-{
-	Frame f = m_base->pixelToFrame(Fl::event_x() - x());
-	float v = m_base->pixelToValue(Fl::event_y() - y(), h());
-	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geVelocityEditor::onDeleteAction()  
-{
-	c::recorder::deleteEnvelopeAction(m_ch, m_action->a1, /*moved=*/false);
-}
-
 
 /* -------------------------------------------------------------------------- */
 
@@ -148,22 +128,14 @@ void geVelocityEditor::onDeleteAction()
 void geVelocityEditor::onMoveAction()    
 {
 	Pixel side = geEnvelopePoint::SIDE / 2;
-	Pixel ex   = Fl::event_x() - side;
 	Pixel ey   = Fl::event_y() - side;
 
-	Pixel x1 = x() - side;
-	Pixel x2 = m_base->loopWidth + x() - side;
 	Pixel y1 = y() - side;
 	Pixel y2 = y() + h() - side;
 
-	/* x-axis constraints. */
-	if      (isFirstPoint() || ex < x1) ex = x1; 
-	else if (isLastPoint()  || ex > x2) ex = x2;
-
-	/* y-axis constraints. */
 	if (ey < y1) ey = y1; else if (ey > y2) ey = y2;
 
-	m_action->position(ex, ey);
+	m_action->position(m_action->x(), ey);
 	redraw();
 }
 
@@ -173,9 +145,10 @@ void geVelocityEditor::onMoveAction()
 
 void geVelocityEditor::onRefreshAction() 
 {
+#if 0
 	Frame f = m_base->pixelToFrame((m_action->x() - x()) + geEnvelopePoint::SIDE / 2);
 	float v = m_base->pixelToValue((m_action->y() - y()) + geEnvelopePoint::SIDE / 2, h());
 	c::recorder::deleteEnvelopeAction(m_ch, m_action->a1, /*moved=*/true);
 	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
-}
 #endif
+}

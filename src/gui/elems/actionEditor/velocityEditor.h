@@ -40,11 +40,11 @@ class geVelocityEditor : public geBaseActionEditor
 {
 private:
 
+	void onMoveAction()    override;
+	void onRefreshAction() override;
 	void onAddAction()     override{};
 	void onDeleteAction()  override{};
-	void onMoveAction()    override{}; // todo
 	void onResizeAction()  override{};
-	void onRefreshAction() override{}; // todo
 
 	int calcPointY(int value) const;
 
