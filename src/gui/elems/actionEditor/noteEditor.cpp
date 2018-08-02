@@ -39,7 +39,7 @@ geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
 : geScroll(x, y, 200, 422),
 	m_base  (base)
 {
-	m_pianoRoll = new gePianoRoll(x, y, m_base->fullWidth, static_cast<MidiChannel*>(m_base->ch));
+	pianoRoll = new gePianoRoll(x, y, m_base->fullWidth, static_cast<MidiChannel*>(m_base->ch));
 
 	rebuild();
 	
@@ -56,7 +56,7 @@ geNoteEditor::geNoteEditor(int x, int y, gdMidiActionEditor* base)
 geNoteEditor::~geNoteEditor()
 {
 	m::conf::pianoRollH = h();
-	m::conf::pianoRollY = m_pianoRoll->y();
+	m::conf::pianoRollY = pianoRoll->y();
 }
 
 
@@ -65,14 +65,14 @@ geNoteEditor::~geNoteEditor()
 
 void geNoteEditor::scroll()
 {
-	Pixel ey = Fl::event_y() - m_pianoRoll->pick;
+	Pixel ey = Fl::event_y() - pianoRoll->pick;
 
 	Pixel y1 = y();
-	Pixel y2 = (y() + h()) - m_pianoRoll->h();
+	Pixel y2 = (y() + h()) - pianoRoll->h();
 
 	if (ey > y1) ey = y1; else if (ey < y2) ey = y2;
 
-	m_pianoRoll->position(x(), ey);
+	pianoRoll->position(x(), ey);
 
 	redraw();
 }
@@ -84,5 +84,5 @@ void geNoteEditor::scroll()
 void geNoteEditor::rebuild()
 {
 	size(m_base->fullWidth, h());
-	m_pianoRoll->rebuild();
+	pianoRoll->rebuild();
 }

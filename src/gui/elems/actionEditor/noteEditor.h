@@ -41,7 +41,6 @@ class geNoteEditor : public geScroll
 private:
 
 	giada::gdMidiActionEditor* m_base;
-	gePianoRoll* m_pianoRoll;
 
 public:
 
@@ -50,6 +49,8 @@ public:
 
 	void rebuild();
 	void scroll();
+
+	gePianoRoll* pianoRoll;
 };
 
 

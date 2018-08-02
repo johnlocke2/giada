@@ -97,7 +97,7 @@ gdSampleActionEditor::gdSampleActionEditor(SampleChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-void gdSampleActionEditor::rebuild()
+void gdSampleActionEditor::rebuild(geBaseActionEditor* p)
 {
 	ac->rebuild();
 	vc->rebuild();	

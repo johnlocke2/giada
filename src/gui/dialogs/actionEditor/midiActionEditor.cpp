@@ -34,6 +34,7 @@
 #include "../../elems/basics/box.h"
 #include "../../elems/actionEditor/noteEditor.h"
 #include "../../elems/actionEditor/velocityEditor.h"
+#include "../../elems/actionEditor/pianoRoll.h"
 #include "../../elems/actionEditor/gridTool.h"
 #include "midiActionEditor.h"
 
@@ -84,9 +85,15 @@ gdMidiActionEditor::gdMidiActionEditor(MidiChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-void gdMidiActionEditor::rebuild()
+void gdMidiActionEditor::rebuild(geBaseActionEditor* p)
 {
-	ne->rebuild();
-	ve->rebuild();
+	/* Don't rebuild widgets if the rebuild() call come from them. Not all widgets
+	do this, only those that require cross-editors update such as the noteEditor
+	and the velocityEditor. */
+
+	if (static_cast<gePianoRoll*>(p) != ne->pianoRoll)
+		ne->rebuild();
+	if (static_cast<geVelocityEditor*>(p) != ve)
+		ve->rebuild();
 }
 } // giada::

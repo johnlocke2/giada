@@ -43,6 +43,7 @@ class geGridTool;
 class geButton;
 class geButton;
 class geScroll;
+class geBaseActionEditor;
 
 
 namespace giada
@@ -74,9 +75,10 @@ public:
 
 	/* rebuild
 	Forces all internal widgets to rebuild themselves. Used when refreshing the
-	whole Action Editor window. */
+	whole Action Editor window. Optional pointer to p to tell which editor
+	requested the rebuild (if any). */
 	
-	virtual void rebuild() = 0;
+	virtual void rebuild(geBaseActionEditor* p=nullptr) = 0;
 
 	int handle(int e) override;
 
