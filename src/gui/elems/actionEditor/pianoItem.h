@@ -39,6 +39,10 @@ class gdActionEditor;
 
 class gePianoItem : public geBaseAction
 {
+private:
+
+	int calcVelocityH() const;
+
 public:
 
 	gePianoItem(int x, int y, int w, int h, giada::m::recorder::action a1, 

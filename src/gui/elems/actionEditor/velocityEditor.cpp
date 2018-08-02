@@ -85,7 +85,7 @@ void geVelocityEditor::draw()
 int geVelocityEditor::calcPointY(int value) const
 {
 	float v = u::math::map<int, float>(value, 0, G_MAX_VELOCITY, 0.0, 1.0);
-	return y() + m_base->valueToPixel(v, h() - geEnvelopePoint::SIDE);
+	return y() + m_base->valueToPixel(v, h() - geEnvelopePoint::SIDE); // TODO - use math::map directly!
 }
 
 

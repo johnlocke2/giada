@@ -27,14 +27,16 @@
 
 #include <FL/fl_draw.H>
 #include "../../../core/const.h"
+#include "../../../core/midiEvent.h"
+#include "../../../utils/math.h"
 #include "pianoItem.h"
 
 
-using namespace giada::m;
+using namespace giada;
 
 
-gePianoItem::gePianoItem(int X, int Y, int W, int H, recorder::action a1,
-	recorder::action a2)
+gePianoItem::gePianoItem(int X, int Y, int W, int H, m::recorder::action a1,
+	m::recorder::action a2)
 : geBaseAction(X, Y, W, H, /*resizable=*/true, a1, a2)
 {
 }
@@ -45,8 +47,30 @@ gePianoItem::gePianoItem(int X, int Y, int W, int H, recorder::action a1,
 
 void gePianoItem::draw()
 {
-	if (a2.frame == -1)  // Orphaned
-		fl_rect(x(), y()+2, MIN_WIDTH, h()-3, (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1);
-	else
-		fl_rectf(x(), y()+2, w(), h()-3, (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1);
+	int  color    = (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1;
+	bool orphaned = a2.frame == -1;
+
+	int by = y() + 2;
+	int bh = h() - 3;
+
+	
+	if (orphaned) {
+		fl_rect(x(), by, MIN_WIDTH, bh, color);
+		fl_line(x(), by, x() + MIN_WIDTH, by + bh);
+	}
+	else {
+		int vh = calcVelocityH();
+		fl_rectf(x(), by + (bh - vh), w(), vh, color);
+		fl_rect(x(), by, w(), bh, color);
+	}
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+int gePianoItem::calcVelocityH() const
+{
+	int v = m::MidiEvent(a1.iValue).getVelocity();
+	return u::math::map<int, int>(v, 0, G_MAX_VELOCITY, 0, h() - 3);
 }
