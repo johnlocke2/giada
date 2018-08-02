@@ -88,9 +88,9 @@ int geVelocityEditor::valueToY(int v) const
 }
 
 
-int geVelocityEditor::yToValue(int Y) const
+int geVelocityEditor::yToValue(int px) const
 {
-	return u::math::map<int, int>(Y, h() - geEnvelopePoint::SIDE, 1, 0, G_MAX_VELOCITY);	
+	return u::math::map<int, int>(px, h() - geEnvelopePoint::SIDE, 1, 0, G_MAX_VELOCITY);	
 }
 
 
@@ -149,7 +149,7 @@ void geVelocityEditor::onMoveAction()
 
 void geVelocityEditor::onRefreshAction() 
 {
-	c::recorder::setVelocity(m_ch, m_action->a1, yToValue(m_action->y() - y()));
+	c::recorder::setVelocity(m_ch, m_action->a1, yToValue(m_action->y()));
 
 	m_base->rebuild(this);  // Rebuild pianoRoll as well
 }
