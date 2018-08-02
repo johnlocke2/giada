@@ -79,7 +79,7 @@ void geEnvelopeEditor::draw()
 	for (int i=0; i<children(); i++) {
 		geEnvelopePoint* p = static_cast<geEnvelopePoint*>(child(i));
 		if (m_action == nullptr)
-			p->position(p->x(), calcPointY(p->a1.fValue));
+			p->position(p->x(), valueToY(p->a1.fValue));
 		if (i > 0) {
 			x2 = p->x() + side;
 			y2 = p->y() + side;
@@ -111,7 +111,7 @@ void geEnvelopeEditor::rebuild()
 
 	for (mr::action a : actions) {
 		gu_log("[geEnvelopeEditor::rebuild] Action %d\n", a.frame);
-		add(new geEnvelopePoint(calcPointX(a.frame), calcPointY(a.fValue), a)); 		
+		add(new geEnvelopePoint(frameToX(a.frame), valueToY(a.fValue), a)); 		
 	}
 
 	resizable(nullptr);
@@ -138,15 +138,21 @@ bool geEnvelopeEditor::isLastPoint() const
 /* -------------------------------------------------------------------------- */
 
 
-int geEnvelopeEditor::calcPointX(int frame) const
+int geEnvelopeEditor::frameToX(int frame) const
 {
 	return x() + m_base->frameToPixel(frame) - (geEnvelopePoint::SIDE / 2);
 }
 
 
-int geEnvelopeEditor::calcPointY(float value) const
+int geEnvelopeEditor::valueToY(float value) const
 {
-	return y() + m_base->valueToPixel(value, h()) - (geEnvelopePoint::SIDE / 2);
+	return u::math::map<float, int>(value, 0.0, 1.0, y() + (h() - geEnvelopePoint::SIDE), y());
+}
+
+
+float geEnvelopeEditor::yToValue(int pixel) const
+{
+	return u::math::map<int, float>(pixel, h() - geEnvelopePoint::SIDE, 0, 0.0, 1.0);	
 }
 
 
@@ -156,7 +162,7 @@ int geEnvelopeEditor::calcPointY(float value) const
 void geEnvelopeEditor::onAddAction()     
 {
 	Frame f = m_base->pixelToFrame(Fl::event_x() - x());
-	float v = m_base->pixelToValue(Fl::event_y() - y(), h());
+	float v = yToValue(Fl::event_y() - y());
 	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
 }
 
@@ -181,8 +187,8 @@ void geEnvelopeEditor::onMoveAction()
 
 	Pixel x1 = x() - side;
 	Pixel x2 = m_base->loopWidth + x() - side;
-	Pixel y1 = y() - side;
-	Pixel y2 = y() + h() - side;
+	Pixel y1 = y();
+	Pixel y2 = y() + h() - geEnvelopePoint::SIDE;
 
 	/* x-axis constraints. */
 	if      (isFirstPoint() || ex < x1) ex = x1; 
@@ -202,7 +208,7 @@ void geEnvelopeEditor::onMoveAction()
 void geEnvelopeEditor::onRefreshAction() 
 {
 	Frame f = m_base->pixelToFrame((m_action->x() - x()) + geEnvelopePoint::SIDE / 2);
-	float v = m_base->pixelToValue((m_action->y() - y()) + geEnvelopePoint::SIDE / 2, h());
+	float v = yToValue(m_action->y() - y());
 	c::recorder::deleteEnvelopeAction(m_ch, m_action->a1, /*moved=*/true);
 	c::recorder::recordEnvelopeAction(m_ch, m_actionType, f, v);
 }

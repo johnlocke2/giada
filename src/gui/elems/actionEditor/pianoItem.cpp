@@ -53,7 +53,6 @@ void gePianoItem::draw()
 	int by = y() + 2;
 	int bh = h() - 3;
 
-	
 	if (orphaned) {
 		fl_rect(x(), by, MIN_WIDTH, bh, color);
 		fl_line(x(), by, x() + MIN_WIDTH, by + bh);

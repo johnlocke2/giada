@@ -68,7 +68,7 @@ void geVelocityEditor::draw()
 	for (int i=0; i<children(); i++) {
 		geEnvelopePoint* p = static_cast<geEnvelopePoint*>(child(i));
 		if (m_action == nullptr)
-			p->position(p->x(), calcPointY(m::MidiEvent(p->a1.iValue).getVelocity()));
+			p->position(p->x(), valueToY(m::MidiEvent(p->a1.iValue).getVelocity()));
 		Pixel x1 = p->x() + side;
 		Pixel y1 = p->y();
 		Pixel y2 = y() + h();
@@ -82,10 +82,15 @@ void geVelocityEditor::draw()
 /* -------------------------------------------------------------------------- */
 
 
-int geVelocityEditor::calcPointY(int value) const
+int geVelocityEditor::valueToY(int v) const
 {
-	float v = u::math::map<int, float>(value, 0, G_MAX_VELOCITY, 0.0, 1.0);
-	return y() + m_base->valueToPixel(v, h() - geEnvelopePoint::SIDE); // TODO - use math::map directly!
+	return u::math::map<int, int>(v, 0, G_MAX_VELOCITY, y() + (h() - geEnvelopePoint::SIDE), y());
+}
+
+
+int geVelocityEditor::yToValue(int Y) const
+{
+	return u::math::map<int, int>(Y, h() - geEnvelopePoint::SIDE, 1, 0, G_MAX_VELOCITY);	
 }
 
 
@@ -111,7 +116,7 @@ void geVelocityEditor::rebuild()
 		gu_log("[geVelocityEditor::rebuild] f=%d\n", comp.a1.frame);
 
 		Pixel px = x() + m_base->frameToPixel(comp.a1.frame);
-		Pixel py = y() + calcPointY(m::MidiEvent(comp.a1.iValue).getVelocity());
+		Pixel py = y() + valueToY(m::MidiEvent(comp.a1.iValue).getVelocity());
 
 		add(new geEnvelopePoint(px, py, comp.a1));
 	}
@@ -129,7 +134,7 @@ void geVelocityEditor::onMoveAction()
 {
 	Pixel ey = Fl::event_y() - (geEnvelopePoint::SIDE / 2);
 
-	Pixel y1 = y() + 1;
+	Pixel y1 = y();
 	Pixel y2 = y() + h() - geEnvelopePoint::SIDE;
 
 	if (ey < y1) ey = y1; else if (ey > y2) ey = y2;
@@ -144,10 +149,7 @@ void geVelocityEditor::onMoveAction()
 
 void geVelocityEditor::onRefreshAction() 
 {
-	float fv = m_base->pixelToValue(m_action->y() - y(), h() - geEnvelopePoint::SIDE);
-	int   iv = u::math::map<float, int>(fv, 0.0, 1.0, 0, G_MAX_VELOCITY);
-
-	c::recorder::setVelocity(m_ch, m_action->a1, iv);
+	c::recorder::setVelocity(m_ch, m_action->a1, yToValue(m_action->y() - y()));
 
 	m_base->rebuild(this);  // Rebuild pianoRoll as well
 }

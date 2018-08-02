@@ -34,6 +34,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Scroll.H>
 #include "../../../core/types.h"
+#include "../../../utils/math.h"
 #include "../window.h"
 
 
@@ -84,8 +85,6 @@ public:
 
 	Pixel frameToPixel(Frame f) const;
 	Frame pixelToFrame(Pixel p) const;
-	Pixel valueToPixel(float f, Pixel range) const;
-	float pixelToValue(Pixel p, Pixel range) const;
 	int getActionType() const;
 
 	geChoice*   actionType;

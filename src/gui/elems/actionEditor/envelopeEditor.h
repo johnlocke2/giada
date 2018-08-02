@@ -51,10 +51,12 @@ private:
 	void onResizeAction()  override{}; // nothing to do here
 	void onRefreshAction() override;
 
-	int calcPointX(int frame) const;
-	int calcPointY(float value) const;
+	int   frameToX(int frame) const;
+	int   valueToY(float value) const;
+	float yToValue(int pixel) const;
+
 	bool isFirstPoint() const;
-	bool isLastPoint() const;
+	bool isLastPoint()  const;
 
 public:
 

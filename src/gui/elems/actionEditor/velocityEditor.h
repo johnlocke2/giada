@@ -46,7 +46,8 @@ private:
 	void onDeleteAction()  override{};
 	void onResizeAction()  override{};
 
-	int calcPointY(int value) const;
+	int valueToY(int v) const;
+	int yToValue(int y) const;
 
 public:
 
