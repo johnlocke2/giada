@@ -85,7 +85,7 @@ void geVelocityEditor::draw()
 int geVelocityEditor::calcPointY(int value) const
 {
 	float v = u::math::map<int, float>(value, 0, G_MAX_VELOCITY, 0.0, 1.0);
-	return y() + m_base->valueToPixel(v, h()) - (geEnvelopePoint::SIDE / 2);
+	return y() + m_base->valueToPixel(v, h() - geEnvelopePoint::SIDE);
 }
 
 
@@ -127,11 +127,10 @@ void geVelocityEditor::rebuild()
 
 void geVelocityEditor::onMoveAction()    
 {
-	Pixel side = geEnvelopePoint::SIDE / 2;
-	Pixel ey   = Fl::event_y() - side;
+	Pixel ey = Fl::event_y() - (geEnvelopePoint::SIDE / 2);
 
-	Pixel y1 = y() - side;
-	Pixel y2 = y() + h() - side;
+	Pixel y1 = y() + 1;
+	Pixel y2 = y() + h() - geEnvelopePoint::SIDE;
 
 	if (ey < y1) ey = y1; else if (ey > y2) ey = y2;
 
@@ -145,8 +144,7 @@ void geVelocityEditor::onMoveAction()
 
 void geVelocityEditor::onRefreshAction() 
 {
-
-	float fv = m_base->pixelToValue((m_action->y() - y()) + geEnvelopePoint::SIDE / 2, h());
+	float fv = m_base->pixelToValue(m_action->y() - y(), h() - geEnvelopePoint::SIDE);
 	int   iv = u::math::map<float, int>(fv, 0.0, 1.0, 0, G_MAX_VELOCITY);
 
 	c::recorder::setVelocity(m_ch, m_action->a1, iv);

@@ -54,7 +54,7 @@ void clearStartStopActions(geChannel* gch);
 Records a new MIDI action at frame_a. If frame_b == 0, uses the default action
 size. This function is designed for the Piano Roll (not for live recording). */
 
-void recordMidiAction(int chan, int note, int frame_a, int frame_b=0);
+void recordMidiAction(int chan, int note, int velocity, int frame_a, int frame_b=0);
 
 /* getMidiActions
 Returns a list of Composite actions, ready to be displayed in a MIDI note

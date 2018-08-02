@@ -114,7 +114,7 @@ void clearMuteActions(geChannel* gch)
 /* -------------------------------------------------------------------------- */
 
 
-void recordMidiAction(int chan, int note, int frame_a, int frame_b)
+void recordMidiAction(int chan, int note, int velocity, int frame_a, int frame_b)
 {
 	if (frame_b == 0)
 		frame_b = frame_a + G_DEFAULT_ACTION_SIZE;
@@ -129,8 +129,8 @@ void recordMidiAction(int chan, int note, int frame_a, int frame_b)
 
 	/* Prepare MIDI events, with maximum velocity. */
 
-	m::MidiEvent event_a = m::MidiEvent(m::MidiEvent::NOTE_ON,  note, G_MAX_VELOCITY);
-	m::MidiEvent event_b = m::MidiEvent(m::MidiEvent::NOTE_OFF, note, G_MAX_VELOCITY);
+	m::MidiEvent event_a = m::MidiEvent(m::MidiEvent::NOTE_ON,  note, velocity);
+	m::MidiEvent event_b = m::MidiEvent(m::MidiEvent::NOTE_OFF, note, velocity);
 
 	/* Avoid overlapping actions. Find the next action past frame_a and compare 
 	its frame: if smaller than frame_b, an overlap occurs. Shrink the new action
