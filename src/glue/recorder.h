@@ -80,8 +80,10 @@ the Composite struct if left empty (with action2.frame = -1). */
 
 std::vector<m::recorder::Composite> getSampleActions(const SampleChannel* ch);
 
-void deleteSampleAction(SampleChannel* ch, const m::recorder::action a1, 
-	const m::recorder::action a2);
+void deleteSampleAction(SampleChannel* ch, m::recorder::action a1, 
+	m::recorder::action a2);
+
+void setVelocity(const SampleChannel* ch, m::recorder::action a, float value);
 }}} // giada::c::recorder::
 
 #endif

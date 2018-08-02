@@ -220,8 +220,8 @@ void deleteEnvelopeAction(const Channel* ch, m::recorder::action a, bool moved)
 /* -------------------------------------------------------------------------- */
 
 
-void deleteSampleAction(SampleChannel* ch, const m::recorder::action a1, 
-	const m::recorder::action a2)
+void deleteSampleAction(SampleChannel* ch, m::recorder::action a1, 
+	m::recorder::action a2)
 {
 	namespace mr = m::recorder;
 
@@ -308,6 +308,15 @@ vector<m::recorder::action> getEnvelopeActions(const Channel* ch, int type)
 	});
 
 	return out;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void setVelocity(const SampleChannel* ch, m::recorder::action a, float value)
+{
+	
 }
 
 
