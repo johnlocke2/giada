@@ -114,6 +114,7 @@ void gdBaseActionEditor::zoomIn()
 		ratio /= 2;
 		computeWidth();
 		rebuild();
+		centerViewportIn();
 		redraw();
 	}
 	else
@@ -130,10 +131,29 @@ void gdBaseActionEditor::zoomOut()
 		ratio *= 2;
 		computeWidth();
 		rebuild();
+		centerViewportOut();
 		redraw();
 	}
 	else
 		ratio = MAX_RATIO;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdBaseActionEditor::centerViewportIn()
+{
+	int sx = Fl::event_x() + (viewport->xposition() * 2);
+	viewport->scroll_to(sx, viewport->yposition());	
+}
+
+
+void gdBaseActionEditor::centerViewportOut()
+{
+	int sx = -((Fl::event_x() + viewport->xposition()) / 2) + viewport->xposition();
+	if (sx < 0) sx = 0;
+	viewport->scroll_to(sx, viewport->yposition());
 }
 
 

@@ -70,6 +70,9 @@ protected:
 
 	void computeWidth();
 
+	void centerViewportIn();
+	void centerViewportOut();
+
 	void prepareWindow();
 
 public:
