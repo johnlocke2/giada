@@ -29,6 +29,7 @@
 #include "../../../utils/log.h"
 #include "../../../utils/math.h"
 #include "../../../core/const.h"
+#include "../../../core/conf.h"
 #include "../../../core/clock.h"
 #include "../../../core/midiChannel.h"
 #include "../../../glue/recorder.h"
@@ -41,9 +42,18 @@ using namespace giada;
 
 
 geVelocityEditor::geVelocityEditor(int x, int y, MidiChannel* ch)
-:	geBaseActionEditor(x, y, 200, 40, ch)
+:	geBaseActionEditor(x, y, 200, m::conf::velocityEditorH, ch)
 {
 	rebuild();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+geVelocityEditor::~geVelocityEditor()
+{
+	m::conf::velocityEditorH = h();
 }
 
 

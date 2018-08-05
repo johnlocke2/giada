@@ -27,6 +27,7 @@
 
 #include <FL/fl_draw.H>
 #include "../../../core/const.h"
+#include "../../../core/conf.h"
 #include "../../../core/sampleChannel.h"
 #include "../../../utils/log.h"
 #include "../../../glue/recorder.h"
@@ -40,9 +41,18 @@ using namespace giada::m;
 
 
 geSampleActionEditor::geSampleActionEditor(int x, int y, SampleChannel* ch)
-: geBaseActionEditor(x, y, 200, 40, ch)
+: geBaseActionEditor(x, y, 200, conf::sampleActionEditorH, ch)
 {
 	rebuild();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+geSampleActionEditor::~geSampleActionEditor()
+{
+	conf::sampleActionEditorH = h();
 }
 
 

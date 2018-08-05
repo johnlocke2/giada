@@ -49,6 +49,7 @@ private:
 public:
 
 	geSampleActionEditor(int x, int y, SampleChannel* ch);
+	~geSampleActionEditor();
 
 	void draw() override;
 

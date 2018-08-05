@@ -28,6 +28,7 @@
 #include <FL/fl_draw.H>
 #include "../../../utils/log.h"
 #include "../../../core/const.h"
+#include "../../../core/conf.h"
 #include "../../../core/sampleChannel.h"
 #include "../../../glue/recorder.h"
 #include "envelopePoint.h"
@@ -40,11 +41,20 @@ using namespace giada;
 
 geEnvelopeEditor::geEnvelopeEditor(int x, int y, int actionType, const char* l, 
 	SampleChannel* ch)
-:	geBaseActionEditor(x, y, 200, 40, ch),	
+:	geBaseActionEditor(x, y, 200, m::conf::envelopeEditorH, ch),	
   m_actionType      (actionType)
 {
 	copy_label(l);
 	rebuild();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+geEnvelopeEditor::~geEnvelopeEditor()
+{
+	m::conf::envelopeEditorH = h();
 }
 
 

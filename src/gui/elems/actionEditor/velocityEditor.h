@@ -52,6 +52,7 @@ private:
 public:
 
 	geVelocityEditor(int x, int y, MidiChannel* ch);
+	~geVelocityEditor();
 
 	void draw() override;
 

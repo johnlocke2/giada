@@ -61,6 +61,7 @@ private:
 public:
 
 	geEnvelopeEditor(int x, int y, int actionType, const char* l, SampleChannel* ch);
+	~geEnvelopeEditor();
 
 	void draw() override;
 
