@@ -37,7 +37,8 @@ using namespace giada;
 
 gePianoItem::gePianoItem(int X, int Y, int W, int H, m::recorder::action a1,
 	m::recorder::action a2)
-: geBaseAction(X, Y, W, H, /*resizable=*/true, a1, a2)
+: geBaseAction(X, Y, W, H, /*resizable=*/true, a1, a2),
+  orphaned    (a2.frame == -1)
 {
 }
 
@@ -47,8 +48,7 @@ gePianoItem::gePianoItem(int X, int Y, int W, int H, m::recorder::action a1,
 
 void gePianoItem::draw()
 {
-	int  color    = (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1;
-	bool orphaned = a2.frame == -1;
+	int color = (Fl_Color) hovered ? G_COLOR_LIGHT_2 : G_COLOR_LIGHT_1;
 
 	int by = y() + 2;
 	int bh = h() - 3;

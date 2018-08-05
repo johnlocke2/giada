@@ -49,6 +49,8 @@ public:
 		giada::m::recorder::action a2);
  
 	void draw() override;
+
+	bool orphaned;
 };
 
 

@@ -236,8 +236,11 @@ void gePianoRoll::onDeleteAction()
 
 void gePianoRoll::onMoveAction()
 {
+	/* Y computation:  - (CELL_H/2) is wrong: we should need the y pick value as 
+	done with x. Let's change this when vertical piano zoom will be available. */
+
 	Pixel ex = Fl::event_x() - m_action->pick;
-	Pixel ey = snapToY(Fl::event_y() - y()) + y();
+	Pixel ey = snapToY(Fl::event_y() - y() - (CELL_H/2)) + y();
 
 	Pixel x1 = x();
 	Pixel x2 = (m_base->loopWidth + x()) - m_action->w();
@@ -256,6 +259,9 @@ void gePianoRoll::onMoveAction()
 
 void gePianoRoll::onResizeAction()
 {
+	if (static_cast<gePianoItem*>(m_action)->orphaned)
+		return;
+
 	Pixel ex = Fl::event_x();
 
 	Pixel x1 = x();
@@ -275,8 +281,11 @@ void gePianoRoll::onResizeAction()
 
 void gePianoRoll::onRefreshAction()
 {
-	Frame f1   = m_base->pixelToFrame(m_action->x() - x());
-	Frame f2   = m_base->pixelToFrame(m_action->x() + m_action->w() - x());
+	if (static_cast<gePianoItem*>(m_action)->orphaned)
+		return;
+
+	Frame f1 = m_base->pixelToFrame(m_action->x() - x());
+	Frame f2 = m_base->pixelToFrame(m_action->x() + m_action->w() - x());
 	
 	int note     = yToNote(m_action->y() - y());
 	int velocity = m::MidiEvent(m_action->a1.iValue).getVelocity();
