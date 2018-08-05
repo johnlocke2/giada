@@ -110,10 +110,14 @@ Frame gdBaseActionEditor::pixelToFrame(Pixel p) const
 
 void gdBaseActionEditor::zoomIn()
 {
-	ratio /= 2;
-	computeWidth();
-	rebuild();
-	redraw();
+	if (ratio / 2 > MIN_RATIO) {
+		ratio /= 2;
+		computeWidth();
+		rebuild();
+		redraw();
+	}
+	else
+		ratio = MIN_RATIO;
 }
 
 
@@ -122,10 +126,14 @@ void gdBaseActionEditor::zoomIn()
 
 void gdBaseActionEditor::zoomOut()
 {
-	ratio *= 2;
-	computeWidth();
-	rebuild();
-	redraw();
+	if (ratio * 2 < MAX_RATIO) {
+		ratio *= 2;
+		computeWidth();
+		rebuild();
+		redraw();
+	}
+	else
+		ratio = MAX_RATIO;
 }
 
 

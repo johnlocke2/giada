@@ -53,8 +53,10 @@ class gdBaseActionEditor : public gdWindow
 {
 protected:
 
-	static const int RESIZER_BAR_H = 20;
-	static const int MIN_WIDGET_H  = 10;
+	static constexpr int   RESIZER_BAR_H = 20;
+	static constexpr int   MIN_WIDGET_H  = 10;
+	static constexpr float MIN_RATIO     = 25.0f;
+	static constexpr float MAX_RATIO     = 40000.0f;
 
 	gdBaseActionEditor(Channel* ch);
 
