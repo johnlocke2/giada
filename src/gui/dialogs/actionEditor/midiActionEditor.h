@@ -50,7 +50,7 @@ public:
 
 	gdMidiActionEditor(MidiChannel* ch);
 
-	void rebuild(geBaseActionEditor* p=nullptr) override;
+	void rebuild() override;
 };
 } // giada::
 

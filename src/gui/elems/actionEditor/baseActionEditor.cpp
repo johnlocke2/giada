@@ -135,10 +135,8 @@ int geBaseActionEditor::push()
 
 	if (Fl::event_button1()) {    // Left button
 		if (m_action == nullptr) {  // No action under cursor: add a new one
-			if (Fl::event_x() >= m_base->loopWidth) // Avoid click on grey area
-				return 0;
-			onAddAction();
-			rebuild();
+			if (Fl::event_x() < m_base->loopWidth) // Avoid click on grey area
+				onAddAction();
 		}
 		else                        // Prepare for dragging
 			m_action->pick = Fl::event_x() - m_action->x();
@@ -148,7 +146,6 @@ int geBaseActionEditor::push()
 		if (m_action != nullptr) {
 			onDeleteAction();
 			m_action = nullptr;
-			rebuild();	
 		}
 	}
 	return 1;	
@@ -180,7 +177,6 @@ int geBaseActionEditor::release()
 	int ret = 0;
 	if (m_action != nullptr && m_action->altered) {
 		onRefreshAction();
-		rebuild();
 		ret = 1;
 	}
 	m_action = nullptr;

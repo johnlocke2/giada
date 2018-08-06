@@ -161,5 +161,5 @@ void geVelocityEditor::onRefreshAction()
 {
 	c::recorder::setVelocity(m_ch, m_action->a1, yToValue(m_action->y() - y()));
 
-	m_base->rebuild(this);  // Rebuild pianoRoll as well
+	m_base->rebuild();  // Rebuild pianoRoll as well
 }

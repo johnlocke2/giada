@@ -55,7 +55,7 @@ public:
 
 	gdSampleActionEditor(SampleChannel* ch);
 
-	void rebuild(geBaseActionEditor* p=nullptr) override;
+	void rebuild() override;
 };
 } // giada::
 

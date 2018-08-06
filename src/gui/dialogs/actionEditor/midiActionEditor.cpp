@@ -85,15 +85,9 @@ gdMidiActionEditor::gdMidiActionEditor(MidiChannel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-void gdMidiActionEditor::rebuild(geBaseActionEditor* p)
+void gdMidiActionEditor::rebuild()
 {
-	/* Don't rebuild widgets if the rebuild() call come from them. Not all widgets
-	do this, only those that require cross-editors update such as the noteEditor
-	and the velocityEditor. */
-
-	if (static_cast<gePianoRoll*>(p) != ne->pianoRoll)
-		ne->rebuild();
-	if (static_cast<geVelocityEditor*>(p) != ve)
-		ve->rebuild();
+	ne->rebuild();
+	ve->rebuild();
 }
 } // giada::

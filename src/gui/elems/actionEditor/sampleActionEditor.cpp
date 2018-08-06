@@ -129,6 +129,7 @@ void geSampleActionEditor::onAddAction()
 	Frame f = m_base->pixelToFrame(Fl::event_x() - x());
 	c::recorder::recordSampleAction(static_cast<const SampleChannel*>(m_ch), 
 		m_base->getActionType(), f);
+	rebuild();
 }
 
 
@@ -138,6 +139,7 @@ void geSampleActionEditor::onAddAction()
 void geSampleActionEditor::onDeleteAction()  
 {
 	c::recorder::deleteSampleAction(static_cast<SampleChannel*>(m_ch), m_action->a1, m_action->a2);
+	rebuild();
 }
 
 
@@ -187,4 +189,5 @@ void geSampleActionEditor::onRefreshAction()
 	Frame f2 = m_base->pixelToFrame(m_action->x() + m_action->w() - x());
 	c::recorder::deleteSampleAction(ch, m_action->a1, m_action->a2);
 	c::recorder::recordSampleAction(ch, m_base->getActionType(), f1, f2);
+	rebuild();
 }
